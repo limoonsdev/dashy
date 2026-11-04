@@ -5,6 +5,29 @@ use App\Services\Vms\VmCatalog;
 return [
     /*
     |--------------------------------------------------------------------------
+    | Provider
+    |--------------------------------------------------------------------------
+    |
+    | "proxmox" uses the API below. "incus" uses the Incus/LXD API and is meant
+    | for setups that cannot run Proxmox: images are pulled from the simplestreams
+    | remote instead of ISO files.
+    */
+    'provider' => env('VM_PROVIDER', 'proxmox'),
+
+    'incus' => [
+        'url' => env('INCUS_URL', 'https://127.0.0.1:8443'),
+        'token' => env('INCUS_TOKEN'),
+        'project' => env('INCUS_PROJECT', 'default'),
+        'remote' => env('INCUS_REMOTE', 'images'),
+        'image' => env('INCUS_IMAGE', 'debian/12'),
+        'storage' => env('INCUS_STORAGE', 'default'),
+        'network' => env('INCUS_NETWORK', 'incusbr0'),
+        'verify_tls' => env('INCUS_VERIFY_TLS', true),
+        'timeout' => (int) env('INCUS_TIMEOUT', 60),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Proxmox VE connection
     |--------------------------------------------------------------------------
     |

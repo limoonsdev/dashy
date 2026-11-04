@@ -124,6 +124,10 @@
                         ]],
                         ['label' => 'Terminal', 'icon' => 'browser-terminal', 'href' => route('terminal'), 'active' => request()->is('terminal*'), 'navigate' => false, 'visible' => $teamWide && auth()->user()?->can('canAccessTerminal')],
                         ['label' => 'Toolkit', 'icon' => 'layers', 'href' => route('toolkit'), 'active' => request()->is('toolkit*'), 'visible' => $teamWide],
+                        ['label' => 'File manager', 'icon' => 'grid', 'href' => route('files.index'), 'active' => request()->is('files*'), 'visible' => $teamWide],
+                        ['label' => 'Workflows', 'icon' => 'time-back', 'href' => route('workflows.index'), 'active' => request()->is('workflows*'), 'visible' => $teamWide],
+                        ['label' => 'AI assistant', 'icon' => 'admin', 'href' => route('assistant.index'), 'active' => request()->is('assistant*'), 'visible' => $teamWide],
+                        ['label' => 'Dev environments', 'icon' => 'browser-terminal', 'href' => route('dev.environments'), 'active' => request()->is('dev/*'), 'visible' => $teamWide],
                         ['label' => 'Virtual machines', 'icon' => 'servers', 'href' => route('vms.index'), 'active' => request()->is('vms*'), 'visible' => $teamWide],
                     ],
                     'Infrastructure' => [

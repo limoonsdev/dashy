@@ -24,7 +24,13 @@ use App\Http\Controllers\UploadController;
 use App\Http\Middleware\UseSessionTeamApiToken;
 use App\Livewire\Admin\Index as AdminIndex;
 use App\Livewire\Analytics;
+use App\Livewire\Assistant\Index as AssistantIndex;
+use App\Livewire\Dev\Environments as DevEnvironments;
+use App\Livewire\Files\Index as FilesIndex;
+use App\Livewire\Settings\Ai as SettingsAi;
+use App\Livewire\Settings\Bot as SettingsBot;
 use App\Livewire\Toolkit\Index as ToolkitIndex;
+use App\Livewire\Workflows\Index as WorkflowsIndex;
 use App\Livewire\Vms\Index as VmsIndex;
 use App\Livewire\Boarding\Index as BoardingIndex;
 use App\Livewire\Dashboard;
@@ -287,6 +293,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/settings/backup', SettingsBackup::class)->name('settings.backup');
         Route::get('/settings/email', SettingsEmail::class)->name('settings.email');
         Route::get('/settings/oauth', SettingsOauth::class)->name('settings.oauth');
+        Route::get('/settings/bot', SettingsBot::class)->name('settings.bot');
+        Route::get('/settings/ai', SettingsAi::class)->name('settings.ai');
         Route::get('/settings/oauth/{provider}', SettingsOauth::class)
             ->where('provider', '[A-Za-z0-9_-]+')
             ->name('settings.oauth.provider');
@@ -344,6 +352,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::get('/terminal', TerminalIndex::class)->name('terminal')->middleware('can.access.terminal')->middleware('access.team-wide');
     Route::get('/toolkit', ToolkitIndex::class)->name('toolkit')->middleware('access.team-wide');
+    Route::get('/files', FilesIndex::class)->name('files.index')->middleware('access.team-wide');
+    Route::get('/assistant', AssistantIndex::class)->name('assistant.index')->middleware('access.team-wide');
+    Route::get('/workflows', WorkflowsIndex::class)->name('workflows.index')->middleware('access.team-wide');
+    Route::get('/dev/environments', DevEnvironments::class)->name('dev.environments')->middleware('access.team-wide');
     Route::get('/vms', VmsIndex::class)->name('vms.index')->middleware('access.team-wide');
     Route::post('/terminal/auth', function () {
         if (auth()->check()) {

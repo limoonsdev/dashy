@@ -9,6 +9,8 @@
             ['label' => 'Authentication', 'route' => 'settings.oauth', 'icon' => 'keys'],
             ['label' => 'Email', 'route' => 'settings.email', 'icon' => 'mail'],
             ['label' => 'Backup', 'route' => 'settings.backup', 'icon' => 'database'],
+            ['label' => 'Chat bot', 'route' => 'settings.bot', 'icon' => 'link'],
+            ['label' => 'AI assistant', 'route' => 'settings.ai', 'icon' => 'admin'],
         ],
     ];
 @endphp

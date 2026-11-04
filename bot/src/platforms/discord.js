@@ -1,4 +1,4 @@
-import { limit } from '../format.js';
+import { commandEmbed } from '../embeds.js';
 import { verifyDiscordSignature } from '../signatures.js';
 
 export async function handleDiscord({ headers, rawBody, config, router }) {
@@ -34,11 +34,12 @@ export async function handleDiscord({ headers, rawBody, config, router }) {
 
     const reply = await router({ platform: 'discord', userId, text });
 
+    // Discord gets a card; the router still returns plain text for the other platforms.
     return {
         status: 200,
         body: {
             type: 4,
-            data: { content: limit(reply, 1900), flags: 64 },
+            data: { embeds: [commandEmbed(name, reply)], flags: 64 },
         },
     };
 }
@@ -84,5 +85,21 @@ export function discordCommandDefinitions() {
             options: [{ type: 3, name: 'host', description: 'Hostname to resolve', required: true }],
         },
         { name: 'id', description: 'Show your platform user id.' },
+        { name: 'fleet', description: 'Summarise servers, applications and unreachable hosts.' },
+        {
+            name: 'search',
+            description: 'Find a server, application or database by name.',
+            options: [{ type: 3, name: 'term', description: 'Name to search for', required: true }],
+        },
+        {
+            name: 'app',
+            description: 'Show one application by uuid or name.',
+            options: [{ type: 3, name: 'name', description: 'Application uuid or name', required: true }],
+        },
+        {
+            name: 'db',
+            description: 'Show one database by uuid or name.',
+            options: [{ type: 3, name: 'name', description: 'Database uuid or name', required: true }],
+        },
     ];
 }

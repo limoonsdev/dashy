@@ -139,6 +139,7 @@
             const theme = localStorage.theme === 'purple' ? 'custom' : (localStorage.theme || 'dark');
             root.dataset.navStyle = localStorage.navStyle === 'floating' ? 'floating' : 'default';
             root.dataset.navItems = localStorage.navItems === 'flat' ? 'flat' : '3d';
+            root.dataset.font = localStorage.dashyFont || 'inter';
             localStorage.theme = theme;
             if (localStorage.themeColor) localStorage.themeColor = window.normalizeThemeColor(localStorage.themeColor);
             if (theme === 'custom') {
@@ -153,6 +154,16 @@
             root.style.setProperty('--theme-base-color', window.hexToOklch(localStorage.themeColor));
             root.style.setProperty('--theme-accent-foreground', window.themeAccentForeground(localStorage.themeColor));
             document.querySelector('meta[name=theme-color]')?.setAttribute('content', isDark ? '#101010' : '#ffffff');
+        };
+        // Typeface picked on the Appearance page. The CSS maps data-font to a font stack.
+        window.setDashyFont = (font) => {
+            const allowed = ['inter', 'system', 'humanist', 'serif', 'mono', 'rounded', 'condensed'];
+            const value = allowed.includes(font) ? font : 'inter';
+            document.documentElement.dataset.font = value;
+            localStorage.dashyFont = value;
+            document.querySelectorAll('[data-font-option]').forEach((element) => {
+                element.setAttribute('aria-pressed', String(element.dataset.fontOption === value));
+            });
         };
         // Time lines for chart tooltips. By default only the browser time zone is shown;
         // the "Chart times" option on the Appearance page adds the UTC time.

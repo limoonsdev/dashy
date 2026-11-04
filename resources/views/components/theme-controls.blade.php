@@ -246,6 +246,45 @@
         </div>
     </section>
 
+    <section class="application-settings-section">
+        <div class="application-settings-section-header">
+            <div>
+                <h2>Typeface</h2>
+                <p>Change the font used across the whole dashboard, in this browser.</p>
+            </div>
+        </div>
+        <div class="application-settings-section-body grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            @foreach ([
+                ['value' => 'inter', 'label' => 'Inter', 'stack' => "'Inter', sans-serif", 'description' => 'The default. Tight and neutral.'],
+                ['value' => 'system', 'label' => 'System UI', 'stack' => 'system-ui, sans-serif', 'description' => 'The font of your operating system.'],
+                ['value' => 'humanist', 'label' => 'Humanist', 'stack' => "'Segoe UI', Tahoma, sans-serif", 'description' => 'Open shapes, easy to read at small sizes.'],
+                ['value' => 'serif', 'label' => 'Serif', 'stack' => 'Georgia, serif', 'description' => 'A bookish, editorial look.'],
+                ['value' => 'mono', 'label' => 'Monospace', 'stack' => "ui-monospace, Consolas, monospace", 'description' => 'Fixed width, for a terminal feel.'],
+                ['value' => 'rounded', 'label' => 'Rounded', 'stack' => "'Nunito', 'Segoe UI', sans-serif", 'description' => 'Soft and friendly.'],
+                ['value' => 'condensed', 'label' => 'Condensed', 'stack' => "'Arial Narrow', sans-serif", 'description' => 'Narrow, fits more on screen.'],
+            ] as $font)
+                <button type="button" data-font-option="{{ $font['value'] }}"
+                    aria-pressed="false"
+                    onclick="window.setDashyFont('{{ $font['value'] }}')"
+                    class="group overflow-hidden rounded-[10px] border border-neutral-200 bg-white text-left transition-[border-color,box-shadow] hover:border-neutral-300 hover:shadow-sm aria-pressed:border-dashy aria-pressed:bg-dashy/[0.06] aria-pressed:ring-2 aria-pressed:ring-dashy/25 dark:border-white/[0.07] dark:bg-white/[0.05] dark:hover:border-white/[0.12] dark:aria-pressed:border-brand-light dark:aria-pressed:bg-brand-light/[0.08]">
+                    <div class="flex h-16 items-center justify-center border-b border-neutral-200 bg-neutral-50 px-3 text-xl dark:border-white/[0.07] dark:bg-black/15"
+                        style="font-family: {{ $font['stack'] }}">
+                        Aa Bb 123
+                    </div>
+                    <div class="p-3">
+                        <span class="text-sm font-semibold text-black dark:text-fg">{{ $font['label'] }}</span>
+                        <p class="mt-1 text-xs leading-5 text-neutral-500 dark:text-fg-dim">{{ $font['description'] }}</p>
+                    </div>
+                </button>
+            @endforeach
+        </div>
+        <script>
+            document.querySelectorAll('[data-font-option]').forEach(function (element) {
+                element.setAttribute('aria-pressed', String(element.dataset.fontOption === (localStorage.dashyFont || 'inter')));
+            });
+        </script>
+    </section>
+
     {{-- Custom theme dialog: presets, a preview, four colors, and a share code. Save applies the draft. --}}
     <template x-teleport="body">
         <div x-show="dialogOpen" x-cloak @keydown.escape.window="dialogOpen = false"

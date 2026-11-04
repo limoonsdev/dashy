@@ -16,6 +16,10 @@ export const COMMANDS = [
     { name: 'whois', description: 'Show the raw WHOIS record.', usage: 'whois example.com' },
     { name: 'ip', description: 'Resolve a hostname to its addresses.', usage: 'ip example.com' },
     { name: 'id', description: 'Show your platform user id.', usage: 'id' },
+    { name: 'fleet', description: 'Summarise servers, applications and unreachable hosts.', usage: 'fleet' },
+    { name: 'search', description: 'Find a server, application or database by name.', usage: 'search <term>' },
+    { name: 'app', description: 'Show one application by uuid or name.', usage: 'app <uuid|name>' },
+    { name: 'db', description: 'Show one database by uuid or name.', usage: 'db <uuid|name>' },
 ];
 
 function requireApi(dashy) {
@@ -211,6 +215,100 @@ export function createCommands({ dashy, lookup, config, startedAt = Date.now() }
                 }
 
                 return `${result.domain}\n${result.addresses.join('\n')}`;
+            },
+        },
+        {
+            name: 'fleet',
+            run: async () => {
+                const client = api();
+                const [servers, applications, databases] = await Promise.all([
+                    client.servers(),
+                    client.applications(),
+                    client.databases(),
+                ]);
+                const all = servers ?? [];
+                const unreachable = all.filter((server) => (server.is_reachable ?? server.settings?.is_reachable) === false);
+
+                return [
+                    `servers: ${all.length} (${unreachable.length} unreachable)`,
+                    `applications: ${applications?.length ?? 0}`,
+                    `databases: ${databases?.length ?? 0}`,
+                    unreachable.length ? `check: ${unreachable.slice(0, 8).map((server) => oneLine(server.name ?? server.uuid, 32)).join(', ')}` : 'everything looks reachable',
+                ].join('\n');
+            },
+        },
+        {
+            name: 'search',
+            run: async (ctx) => {
+                const term = String(ctx.args.join(' ') ?? '').trim().toLowerCase();
+
+                if (term === '') {
+                    return 'Usage: /search <term>';
+                }
+
+                const client = api();
+                const [servers, applications, databases] = await Promise.all([
+                    client.servers(),
+                    client.applications(),
+                    client.databases(),
+                ]);
+                const matches = [
+                    ...(servers ?? []).filter((item) => String(item.name ?? '').toLowerCase().includes(term)).map((item) => `server: ${oneLine(item.name, 40)} — ${item.uuid}`),
+                    ...(applications ?? []).filter((item) => String(item.name ?? '').toLowerCase().includes(term)).map((item) => `app: ${oneLine(item.name, 40)} — ${item.uuid}`),
+                    ...(databases ?? []).filter((item) => String(item.name ?? '').toLowerCase().includes(term)).map((item) => `database: ${oneLine(item.name, 40)} — ${item.uuid}`),
+                ];
+
+                return bullets(matches.slice(0, 20), `Nothing matches “${term}”.`);
+            },
+        },
+        {
+            name: 'app',
+            run: async (ctx) => {
+                const needle = String(ctx.args.join(' ') ?? '').trim().toLowerCase();
+
+                if (needle === '') {
+                    return 'Usage: /app <uuid|name>';
+                }
+
+                const applications = await api().applications();
+                const match = (applications ?? []).find((application) => String(application.uuid ?? '').toLowerCase() === needle
+                    || String(application.name ?? '').toLowerCase() === needle);
+
+                if (!match) {
+                    return `No application matches “${needle}”.`;
+                }
+
+                return [
+                    oneLine(match.name ?? match.uuid, 60),
+                    `status: ${statusLabel(match.status)}`,
+                    `domain: ${String(match.fqdn ?? '').split(',')[0] || 'none'}`,
+                    `uuid: ${match.uuid}`,
+                ].join('\n');
+            },
+        },
+        {
+            name: 'db',
+            run: async (ctx) => {
+                const needle = String(ctx.args.join(' ') ?? '').trim().toLowerCase();
+
+                if (needle === '') {
+                    return 'Usage: /db <uuid|name>';
+                }
+
+                const databases = await api().databases();
+                const match = (databases ?? []).find((database) => String(database.uuid ?? '').toLowerCase() === needle
+                    || String(database.name ?? '').toLowerCase() === needle);
+
+                if (!match) {
+                    return `No database matches “${needle}”.`;
+                }
+
+                return [
+                    oneLine(match.name ?? match.uuid, 60),
+                    `engine: ${match.database_type ?? match.type ?? 'database'}`,
+                    `status: ${statusLabel(match.status)}`,
+                    `uuid: ${match.uuid}`,
+                ].join('\n');
             },
         },
     ];
