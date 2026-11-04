@@ -13,7 +13,7 @@
             ];
             $presetCard = 'flex w-full flex-col items-start gap-0.5 rounded-lg border px-3 py-2 text-left transition-colors';
             $presetIdle = 'border-neutral-200 hover:bg-neutral-100/80 dark:border-white/[0.08] dark:hover:bg-white/[0.035]';
-            $presetActive = 'border-coollabs bg-coollabs/5 dark:border-brand-light/60 dark:bg-brand/10';
+            $presetActive = 'border-dashy bg-dashy/5 dark:border-brand-light/60 dark:bg-brand/10';
         @endphp
 
         {{-- The rows live in Alpine. They reach the server only with Save, because the entangle is not live. --}}
@@ -154,7 +154,7 @@
                                             :disabled="includedBy(row, level.name) !== null"
                                             class="peer absolute inset-0 z-10 m-0 h-full w-full cursor-pointer appearance-none opacity-0 disabled:cursor-not-allowed" />
                                         <span
-                                            class="pointer-events-none absolute inset-0 rounded-[5px] border border-neutral-300 bg-white transition-colors peer-checked:border-coollabs peer-checked:bg-coollabs peer-focus-visible:ring-2 peer-focus-visible:ring-coollabs/25 dark:border-white/[0.14] dark:bg-white/[0.045] dark:peer-checked:border-brand dark:peer-checked:bg-brand"></span>
+                                            class="pointer-events-none absolute inset-0 rounded-[5px] border border-neutral-300 bg-white transition-colors peer-checked:border-dashy peer-checked:bg-dashy peer-focus-visible:ring-2 peer-focus-visible:ring-dashy/25 dark:border-white/[0.14] dark:bg-white/[0.045] dark:peer-checked:border-brand dark:peer-checked:bg-brand"></span>
                                         <svg class="pointer-events-none absolute inset-0 m-auto size-3 text-white opacity-0 peer-checked:opacity-100"
                                             viewBox="0 0 12 12" fill="none" aria-hidden="true">
                                             <path d="m2.25 6.15 2.35 2.3 5.15-5" stroke="currentColor" stroke-width="1.8"

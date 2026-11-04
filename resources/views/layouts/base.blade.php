@@ -344,13 +344,13 @@
     <meta name="twitter:site" content="@dashyio" />
     <meta name="twitter:title" content="Dashy" />
     <meta name="twitter:description" content="An open-source & self-hostable Heroku / Netlify / Vercel alternative." />
-    <meta name="twitter:image" content="https://cdn.coollabs.io/og-images/dashy.png" />
+    <meta name="twitter:image" content="{{ asset('dashy-transparent.png') }}" />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://dashy.io" />
     <meta property="og:title" content="Dashy" />
     <meta property="og:description" content="An open-source & self-hostable Heroku / Netlify / Vercel alternative." />
     <meta property="og:site_name" content="Dashy" />
-    <meta property="og:image" content="https://cdn.coollabs.io/og-images/dashy.png" />
+    <meta property="og:image" content="{{ asset('dashy-transparent.png') }}" />
     @use('App\Models\InstanceSettings')
     @php
 
@@ -389,9 +389,6 @@
             display: none !important;
         }
     </style>
-    @if (config('app.name') == 'Dashy Cloud')
-        <script defer data-domain="app.dashy.io" src="https://analytics.coollabs.io/js/plausible.js"></script>
-    @endif
     @auth
         <script type="text/javascript" src="{{ URL::asset('js/echo.js') }}"></script>
         <script type="text/javascript" src="{{ URL::asset('js/pusher.js') }}"></script>

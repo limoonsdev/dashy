@@ -7,14 +7,14 @@
                 <button type="button" x-on:click="selected = 'monthly'"
                     class="app-tab h-6! px-2.5!"
                     :class="selected === 'monthly'
-                        ? 'bg-coollabs/10 text-coollabs ring-1 ring-coollabs/25 dark:bg-brand/15 dark:text-brand-light dark:ring-brand-light/25'
+                        ? 'bg-dashy/10 text-dashy ring-1 ring-dashy/25 dark:bg-brand/15 dark:text-brand-light dark:ring-brand-light/25'
                         : ''">
                     Monthly
                 </button>
                 <button type="button" x-on:click="selected = 'yearly'"
                     class="app-tab h-6! px-2.5!"
                     :class="selected === 'yearly'
-                        ? 'bg-coollabs/10 text-coollabs ring-1 ring-coollabs/25 dark:bg-brand/15 dark:text-brand-light dark:ring-brand-light/25'
+                        ? 'bg-dashy/10 text-dashy ring-1 ring-dashy/25 dark:bg-brand/15 dark:text-brand-light dark:ring-brand-light/25'
                         : ''">
                     Yearly
                 </button>

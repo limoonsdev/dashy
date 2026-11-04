@@ -92,7 +92,7 @@
                 <template x-for="preset in presets" :key="preset.name">
                     <button type="button" @click="applyPreset(preset)" :title="preset.name"
                         :aria-label="`Use ${preset.name} theme`"
-                        class="group relative aspect-square overflow-hidden rounded-md border border-black/10 transition-transform hover:scale-105 focus:outline-none focus-visible:ring-2 focus-visible:ring-coollabs dark:border-white/10"
+                        class="group relative aspect-square overflow-hidden rounded-md border border-black/10 transition-transform hover:scale-105 focus:outline-none focus-visible:ring-2 focus-visible:ring-dashy dark:border-white/10"
                         :style="`background: ${preset.theme ? preset.theme.background : '#0a0a0a'}`">
                         <span class="absolute inset-y-0 left-0 w-[36%]"
                             :style="`background: ${preset.theme ? preset.theme.sidebar : '#1a0f2d'}`"></span>

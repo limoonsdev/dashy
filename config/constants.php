@@ -12,6 +12,9 @@ return [
         'helper_version' => $upstream['helper']['version'],
         'railpack_version' => '0.43.0',
         'self_hosted' => env('SELF_HOSTED', true),
+        // A locally built instance (version "local-<commit>") follows this repository.
+        'source_repository' => env('DASHY_SOURCE_REPOSITORY', 'limoonsdev/dashy'),
+        'source_branch' => env('DASHY_SOURCE_BRANCH', 'main'),
         'autoupdate' => env('AUTOUPDATE'),
         'base_config_path' => env('BASE_CONFIG_PATH', '/data/dashy'),
         // Development only: Docker volumes that the testing-host server mounts at /data/dashy and /data/dashy/backups.
@@ -22,10 +25,10 @@ return [
         'dev_seed_ip' => env('DEV_SEED_IP') ?: '127.0.0.1',
         'registry_url' => env('REGISTRY_URL', 'docker.io'),
         'helper_image' => env('HELPER_IMAGE', env('REGISTRY_URL', 'docker.io').'/coollabsio/coolify-helper'),
-        'cdn_url' => env('CDN_URL', 'https://cdn.coollabs.io'),
-        'versions_url' => env('VERSIONS_URL', env('CDN_URL', 'https://cdn.coollabs.io').'/dashy/versions.json'),
-        'upgrade_script_url' => env('UPGRADE_SCRIPT_URL', env('CDN_URL', 'https://cdn.coollabs.io').'/dashy/upgrade.sh'),
-        'releases_url' => env('RELEASES_URL', 'https://cdn.coollabs.io/dashy/releases.json'),
+        'cdn_url' => env('CDN_URL', 'https://cdn.dashy.io'),
+        'versions_url' => env('VERSIONS_URL', env('CDN_URL', 'https://cdn.dashy.io').'/dashy/versions.json'),
+        'upgrade_script_url' => env('UPGRADE_SCRIPT_URL', env('CDN_URL', 'https://cdn.dashy.io').'/dashy/upgrade.sh'),
+        'releases_url' => env('RELEASES_URL', 'https://cdn.dashy.io/dashy/releases.json'),
         // "sequential" or "concurrent". Empty uses sequential on self-hosted and concurrent on Dashy Cloud.
         'scheduled_jobs_dispatch_mode' => env('SCHEDULED_JOBS_DISPATCH_MODE'),
     ],
@@ -41,7 +44,7 @@ return [
     ],
 
     'services' => [
-        'official' => 'https://cdn.coollabs.io/dashy/service-templates-latest.json',
+        'official' => 'https://cdn.dashy.io/dashy/service-templates-latest.json',
         'file_name' => 'service-templates-latest.json',
         // Shared across HTTP/Horizon nodes when CACHE_DRIVER is redis (default).
         'cache_key' => 'dashy:service-templates-bundle',

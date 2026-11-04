@@ -90,7 +90,7 @@ $serverListboxOptions = array_merge(
         <x-application.settings-section id="metrics-overview-section" title="Overview"
             helper="{{ $scoped ? 'Current resource usage for the selected server.' : 'Current resource usage across the selected servers.' }}">
             <div class="grid grid-cols-2 gap-px overflow-hidden rounded-lg bg-neutral-200 sm:grid-cols-3 lg:grid-cols-6 dark:bg-white/[0.07]">
-                <div class="flex flex-col bg-[var(--coollabs-base)] px-4 py-3">
+                <div class="flex flex-col bg-[var(--dashy-base)] px-4 py-3">
                     <span class="text-[11px] font-medium tracking-wide text-neutral-500 uppercase dark:text-fg-dim">Servers online</span>
                     <span class="mt-1 text-xl font-semibold tabular-nums text-black dark:text-fg">{{ $kpis['serversOnline'] ?? 0 }}<span class="text-neutral-400 dark:text-fg-faint">/{{ $kpis['serversTotal'] ?? 0 }}</span></span>
                     @php
@@ -119,7 +119,7 @@ $serverListboxOptions = array_merge(
                         </div>
                     </div>
                 </div>
-                <div class="flex flex-col bg-[var(--coollabs-base)] px-4 py-3">
+                <div class="flex flex-col bg-[var(--dashy-base)] px-4 py-3">
                     <span class="flex items-center text-[11px] font-medium tracking-wide text-neutral-500 uppercase dark:text-fg-dim">
                         {{ $scoped ? 'CPU' : 'Fleet CPU' }}
                         @if ($kpis['cpuApproximate'] ?? false)
@@ -140,7 +140,7 @@ $serverListboxOptions = array_merge(
                         ])
                     </div>
                 </div>
-                <div class="flex flex-col bg-[var(--coollabs-base)] px-4 py-3">
+                <div class="flex flex-col bg-[var(--dashy-base)] px-4 py-3">
                     <span class="text-[11px] font-medium tracking-wide text-neutral-500 uppercase dark:text-fg-dim">{{ $scoped ? 'Memory' : 'Fleet memory' }}</span>
                     <span class="mt-1 text-xl font-semibold tabular-nums text-black dark:text-fg">{{ round($kpis['memPercent'] ?? 0) }}%</span>
                     <div class="mt-auto pt-3">
@@ -156,7 +156,7 @@ $serverListboxOptions = array_merge(
                         ])
                     </div>
                 </div>
-                <div class="flex flex-col bg-[var(--coollabs-base)] px-4 py-3">
+                <div class="flex flex-col bg-[var(--dashy-base)] px-4 py-3">
                     <span class="text-[11px] font-medium tracking-wide text-neutral-500 uppercase dark:text-fg-dim">{{ $scoped ? 'Disk' : 'Fleet disk' }}</span>
                     <span class="mt-1 text-xl font-semibold tabular-nums text-black dark:text-fg">{{ round($kpis['diskPercent'] ?? 0) }}%</span>
                     <div class="mt-auto pt-3">
@@ -172,7 +172,7 @@ $serverListboxOptions = array_merge(
                         ])
                     </div>
                 </div>
-                <div class="flex flex-col bg-[var(--coollabs-base)] px-4 py-3">
+                <div class="flex flex-col bg-[var(--dashy-base)] px-4 py-3">
                     <span class="text-[11px] font-medium tracking-wide text-neutral-500 uppercase dark:text-fg-dim">{{ $scoped ? 'Network' : 'Fleet network' }}</span>
                     <span class="mt-1 text-xl font-semibold tabular-nums text-black dark:text-fg">{{ formatBytes(($kpis['netRx'] ?? 0) + ($kpis['netTx'] ?? 0)) }}/s</span>
                     <div class="mt-auto pt-3">
@@ -188,7 +188,7 @@ $serverListboxOptions = array_merge(
                         ])
                     </div>
                 </div>
-                <div class="col-span-2 flex flex-col bg-[var(--coollabs-base)] px-4 py-3 sm:col-span-1">
+                <div class="col-span-2 flex flex-col bg-[var(--dashy-base)] px-4 py-3 sm:col-span-1">
                     <span class="text-[11px] font-medium tracking-wide text-neutral-500 uppercase dark:text-fg-dim">Containers</span>
                     <span class="mt-1 text-xl font-semibold tabular-nums text-black dark:text-fg">{{ compactNumber($kpis['containers'] ?? 0) }}</span>
                     <div class="mt-auto pt-3">

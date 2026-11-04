@@ -5,8 +5,8 @@
         <x-toast />
         <x-error-page
             code="500"
-            title="Wait, this is not cool..."
-            description="There has been an error with the following error message:"
+            title="Something broke on our side."
+            description="Dashy hit an unexpected error while handling this request. The details below help you (or whoever runs this instance) fix it."
             tone="danger">
             @if ($exception->getMessage() !== '')
                 <div class="error-message">

@@ -40,7 +40,7 @@
         --sth-strong: var(--color-fg);
         --sth-secondary: var(--color-fg-dim);
         --sth-muted: var(--color-fg-faint);
-        --sth-border: var(--coollabs-line);
+        --sth-border: var(--dashy-line);
         --sth-surface: var(--color-raised);
         --sth-scrollbar-track: var(--color-panel);
         --sth-scrollbar-thumb: var(--color-selected);

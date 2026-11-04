@@ -8,7 +8,7 @@
 {{-- KPI stat-tile grid skeleton, mirroring an analytics Overview tile grid. --}}
 <div class="grid {{ $grid }} gap-px overflow-hidden {{ $rounded }} bg-neutral-200 dark:bg-white/[0.07]">
     @for ($i = 0; $i < (int) $count; $i++)
-        <div class="flex flex-col bg-[var(--coollabs-base)] px-4 py-3">
+        <div class="flex flex-col bg-[var(--dashy-base)] px-4 py-3">
             <span class="text-[11px] font-medium tracking-wide text-neutral-500 uppercase dark:text-fg-dim">
                 {{ $labels[$i] ?? 'Metric' }}
             </span>

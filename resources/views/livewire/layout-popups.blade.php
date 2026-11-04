@@ -37,7 +37,7 @@
                         if (checkNumber > 5) {
                             this.popups.realtime = true;
                             console.error(
-                                'Dashy could not connect to its real-time service. This will cause unusual problems on the UI if not fixed! Please check the related documentation (https://dashy.io/docs/knowledge-base/cloudflare/tunnels/overview) or get help on Discord (https://coollabs.io/discord).)'
+                                'Dashy could not connect to its real-time service. This will cause unusual problems on the UI if not fixed! Please check the related documentation (https://dashy.io/docs/knowledge-base/cloudflare/tunnels/overview) or get help on Discord (https://dashy.io/docs).)'
                             );
                         }
 
@@ -111,12 +111,12 @@
                                     </h2>
                                     <p class="mt-1 text-[12px] leading-5 text-neutral-500 dark:text-fg-dim">
                                         This will cause unusual problems on the UI. Open the
-                                        <a class="font-medium text-coollabs underline decoration-coollabs/30 underline-offset-2 transition-colors hover:text-coollabs-100 dark:text-brand-light dark:decoration-brand-light/30 dark:hover:text-brand-light/90"
+                                        <a class="font-medium text-dashy underline decoration-dashy/30 underline-offset-2 transition-colors hover:text-dashy-100 dark:text-brand-light dark:decoration-brand-light/30 dark:hover:text-brand-light/90"
                                             href="https://dashy.io/docs/knowledge-base/server/firewall"
                                             target="_blank" rel="noopener noreferrer">required ports</a>
                                         or get help on
-                                        <a class="font-medium text-coollabs underline decoration-coollabs/30 underline-offset-2 transition-colors hover:text-coollabs-100 dark:text-brand-light dark:decoration-brand-light/30 dark:hover:text-brand-light/90"
-                                            href="https://coollabs.io/discord" target="_blank"
+                                        <a class="font-medium text-dashy underline decoration-dashy/30 underline-offset-2 transition-colors hover:text-dashy-100 dark:text-brand-light dark:decoration-brand-light/30 dark:hover:text-brand-light/90"
+                                            href="https://dashy.io/docs" target="_blank"
                                             rel="noopener noreferrer">Discord</a>.
                                     </p>
                                 </div>
@@ -165,26 +165,28 @@
                                 <p x-show="!reminders.sponsorship.compact" x-transition.opacity
                                     class="mt-1 text-[12px] leading-5 text-neutral-500 dark:text-fg-dim">
                                     Dashy is profitable thanks to <span
-                                        class="font-semibold text-coollabs dark:text-brand-light">you</span>. Your support
+                                        class="font-semibold text-dashy dark:text-brand-light">you</span>. Your support
                                     helps us build more features and keep improving the project.
                                 </p>
                             </div>
                         </div>
 
                         <div class="flex flex-col gap-2 sm:flex-row sm:items-center">
-                            <a target="_blank" href="https://github.com/sponsors/coollabsio"
+                            <a target="_blank" rel="noopener noreferrer"
+                                href="https://github.com/limoonsdev/dashy"
                                 class="button button-highlighted h-9 justify-center sm:flex-1">
-                                GitHub Sponsors
+                                Star on GitHub
                             </a>
                             <a x-show="!reminders.sponsorship.compact" x-transition.opacity target="_blank"
-                                href="https://opencollective.com/coollabsio/donate?interval=month&amount=10&name=&legalName=&email="
+                                rel="noopener noreferrer" href="https://dashy.io/docs"
                                 class="button h-9 justify-center sm:flex-1">
-                                Open Collective
+                                Documentation
                             </a>
                             <a x-show="!reminders.sponsorship.compact" x-transition.opacity
-                                href="https://donate.stripe.com/8x2bJ104ifmB9kB45u38402" target="_blank"
+                                href="https://github.com/limoonsdev/dashy/issues" target="_blank"
+                                rel="noopener noreferrer"
                                 class="button h-9 justify-center sm:flex-1">
-                                Stripe
+                                Report an issue
                             </a>
                             <button x-show="!reminders.sponsorship.compact" x-transition.opacity type="button"
                                 class="h-9 cursor-pointer px-2 text-[12px] font-medium text-neutral-500 transition-colors hover:text-black sm:shrink-0 dark:text-fg-dim dark:hover:text-fg"
@@ -266,7 +268,7 @@
                                     Enable at least one notification channel so you receive important alerts.
                                     Visit
                                     <a href="{{ route('notifications.email') }}" {{ wireNavigate() }}
-                                        class="font-medium text-coollabs underline decoration-coollabs/30 underline-offset-2 transition-colors hover:text-coollabs-100 dark:text-brand-light dark:decoration-brand-light/30 dark:hover:text-brand-light/90">notifications</a>
+                                        class="font-medium text-dashy underline decoration-dashy/30 underline-offset-2 transition-colors hover:text-dashy-100 dark:text-brand-light dark:decoration-brand-light/30 dark:hover:text-brand-light/90">notifications</a>
                                     to get started.
                                 </p>
                             </div>

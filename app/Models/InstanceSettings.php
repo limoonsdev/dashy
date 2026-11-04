@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Once;
 use Spatie\Url\Url;
 
@@ -230,17 +232,30 @@ class InstanceSettings extends Model
         return once(function () {
             $settings = InstanceSettings::query()->find(0);
 
-            // A database that was only migrated, or seeded before a failure, has no row 0.
-            // Every page that reads the instance settings (login and registration first)
-            // then fails with a 404, so create the defaults instead of locking the
-            // instance out of its own UI.
             if ($settings === null) {
+                // A database that was only migrated, or seeded before a failure, has no row 0.
+                // Every page that reads the instance settings (login and registration first)
+                // then fails, so write the row with the database defaults: a raw insert skips
+                // casts and model events, and ON CONFLICT tolerates a request racing this one.
                 try {
-                    $settings = InstanceSettings::forceCreate(['id' => 0]);
+                    DB::table('instance_settings')->insertOrIgnore(['id' => 0]);
                 } catch (\Throwable $e) {
-                    // Another request created the row between the lookup and the insert.
-                    $settings = InstanceSettings::query()->find(0) ?? throw $e;
+                    Log::error('Could not create the missing instance settings row', ['error' => $e->getMessage()]);
                 }
+
+                $settings = InstanceSettings::query()->find(0);
+            }
+
+            if ($settings === null) {
+                // Still missing: the table is incomplete or read-only. Render the UI with
+                // in-memory defaults instead of failing every single request.
+                Log::error('Instance settings row 0 is missing and could not be created');
+
+                $settings = new InstanceSettings;
+                $settings->setAttribute('id', 0);
+                $settings->setAttribute('is_registration_enabled', true);
+                $settings->setAttribute('is_auto_update_enabled', true);
+                $settings->setAttribute('is_dashboard_force_https_enabled', true);
             }
 
             return $settings;

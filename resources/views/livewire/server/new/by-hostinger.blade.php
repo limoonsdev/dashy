@@ -9,7 +9,7 @@
                 New to Hostinger?
                 <a href="https://www.hostinger.com/vps/dashy-hosting?ref=dashy.io" target="_blank"
                     rel="noopener noreferrer"
-                    class="font-medium text-coollabs hover:underline dark:text-brand-light">Create an account</a>
+                    class="font-medium text-dashy hover:underline dark:text-brand-light">Create an account</a>
                 through Dashy's affiliate link.
             </p>
         </div>

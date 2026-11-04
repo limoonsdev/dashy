@@ -4,6 +4,7 @@ namespace App\Jobs;
 
 use App\Actions\Server\UpdateDashy;
 use App\Models\Server;
+use App\Services\DashySourceRelease;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeEncrypted;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -26,12 +27,20 @@ class UpdateDashyJob implements ShouldBeEncrypted, ShouldQueue
     public function handle(): void
     {
         try {
-            CheckForUpdatesJob::dispatchSync();
-            $settings = instanceSettings();
-            if (! $settings->new_version_available) {
-                Log::info('No new version available. Skipping update.');
+            if (DashySourceRelease::isSourceBuild()) {
+                if (! DashySourceRelease::updateAvailable(fresh: true)) {
+                    Log::info('No new Dashy commit. Skipping update.');
 
-                return;
+                    return;
+                }
+            } else {
+                CheckForUpdatesJob::dispatchSync();
+                $settings = instanceSettings();
+                if (! $settings->new_version_available) {
+                    Log::info('No new version available. Skipping update.');
+
+                    return;
+                }
             }
 
             $server = Server::findOrFail(0);

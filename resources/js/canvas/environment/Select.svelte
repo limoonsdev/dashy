@@ -61,7 +61,7 @@
   {#if open}
     <div class="listbox-panel" style={above ? 'top: auto; bottom: calc(100% + 0.25rem)' : ''} role="listbox" aria-label={label} bind:this={list}>
       {#each options as option, i (option.value)}
-        <button type="button" class="listbox-option text-[13px]!" style:background={i === active ? 'var(--coollabs-fill)' : null} role="option" aria-selected={option.value === value}
+        <button type="button" class="listbox-option text-[13px]!" style:background={i === active ? 'var(--dashy-fill)' : null} role="option" aria-selected={option.value === value}
           onpointerenter={() => (active = i)} onclick={() => pick(option)}>
           <span class="truncate">{option.label}</span>
           {#if option.value === value}

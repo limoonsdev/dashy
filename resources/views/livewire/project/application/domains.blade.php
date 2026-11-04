@@ -299,7 +299,7 @@
                         x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
                         x-transition:leave-end="opacity-0 -translate-y-2 sm:scale-95"
                         class="application-settings-form application-settings-section relative flex max-h-[calc(100dvh-2rem)] w-full flex-col overflow-hidden lg:w-auto lg:min-w-2xl lg:max-w-4xl"
-                        style="box-shadow: 0 0 0 1px var(--coollabs-hairline), var(--shadow-modal)">
+                        style="box-shadow: 0 0 0 1px var(--dashy-hairline), var(--shadow-modal)">
                         <header class="flex-nowrap!">
                             <h3 class="min-w-0 flex-1 truncate">Domain settings</h3>
                             <button type="button" @click="closeEditDomain()"
@@ -396,7 +396,7 @@
                     <div class="absolute inset-0 bg-black/50 backdrop-blur-[2px]"></div>
                     <div x-show="modalOpen" x-trap.inert.noscroll="modalOpen"
                         class="application-settings-form application-settings-section relative w-full lg:min-w-[36rem] lg:max-w-2xl"
-                        style="box-shadow: 0 0 0 1px var(--coollabs-hairline), var(--shadow-modal)">
+                        style="box-shadow: 0 0 0 1px var(--dashy-hairline), var(--shadow-modal)">
                         <header>
                             <h3>Use a different port?</h3>
                             <button type="button"

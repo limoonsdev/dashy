@@ -151,7 +151,7 @@
                 <div class="absolute inset-0 h-full w-full bg-black/55 backdrop-blur-[3px]"></div>
                 <div x-show="emailModalOpen" x-trap.inert.noscroll="emailModalOpen"
                     class="application-settings-form application-settings-section relative w-full max-w-xl overflow-hidden"
-                    style="box-shadow: 0 0 0 1px var(--coollabs-hairline), var(--shadow-modal)">
+                    style="box-shadow: 0 0 0 1px var(--dashy-hairline), var(--shadow-modal)">
                     <header>
                         <div>
                             <h3>{{ $show_verification ? 'Verify new email' : 'Change email' }}</h3>

@@ -42,7 +42,7 @@
                 <x-reicon name="deploy-canvas" class="size-3.5" />
                 Canvas
                 <span
-                    class="ml-0.5 inline-flex items-center rounded-full bg-coollabs px-1.5 py-px text-[10px] leading-4 font-semibold text-white">
+                    class="ml-0.5 inline-flex items-center rounded-full bg-dashy px-1.5 py-px text-[10px] leading-4 font-semibold text-white">
                     Try it
                 </span>
             </a>

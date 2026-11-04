@@ -51,7 +51,7 @@
                             <div aria-hidden="true" data-code-digit
                                 class="flex h-14 w-11 items-center justify-center rounded-md border bg-white text-xl font-semibold text-neutral-900 transition-colors dark:bg-coolgray-100 dark:text-white"
                                 :class="codeFocused && (code.length === {{ $i }} || (code.length === 6 && {{ $i }} === 5))
-                                    ? 'border-coollabs ring-1 ring-coollabs'
+                                    ? 'border-dashy ring-1 ring-dashy'
                                     : 'border-neutral-300 dark:border-white/10'"
                                 x-text="code[{{ $i }}] ?? ''"></div>
                         @endfor

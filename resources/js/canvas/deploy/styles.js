@@ -13,11 +13,11 @@ const CSS = `
     --cv-subtle: light-dark(#737373, var(--color-fg-faint));
     --cv-placeholder: light-dark(#a3a3a3, var(--color-fg-faint));
     /* The app's card border (app.css), as on the environment canvas cards. */
-    --cv-line: var(--coollabs-hairline, light-dark(#e5e5e5, rgb(255 255 255 / 0.08)));
+    --cv-line: var(--dashy-hairline, light-dark(#e5e5e5, rgb(255 255 255 / 0.08)));
     --cv-input-bg: light-dark(#fafafa, rgb(255 255 255 / 0.04));
     --cv-input-line: light-dark(#e5e5e5, rgb(255 255 255 / 0.08));
-    --cv-brand: light-dark(var(--color-coollabs), var(--color-brand));
-    --cv-brand-text: light-dark(var(--color-coollabs), var(--color-brand-light));
+    --cv-brand: light-dark(var(--color-dashy), var(--color-brand));
+    --cv-brand-text: light-dark(var(--color-dashy), var(--color-brand-light));
     position: absolute; inset: 0; z-index: 10;
     display: grid; grid-template-columns: 15.5rem minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr);
     gap: 8px; padding: 8px;

@@ -86,7 +86,7 @@
                 </ul>
                 <a href="{{ \App\Models\IntegrationToken::cloudflareTokenTemplateUrl($capabilities) }}"
                     target="_blank" rel="noopener noreferrer"
-                    class="font-medium text-coollabs hover:underline dark:text-brand-light">
+                    class="font-medium text-dashy hover:underline dark:text-brand-light">
                     Create a replacement token in Cloudflare
                 </a>
             </div>

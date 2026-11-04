@@ -169,7 +169,7 @@
         ...linkPath(a, b),
         selected: isSelected,
         faded: hover && !related,
-        stroke: isSelected ? 'fill-none stroke-coollabs dark:stroke-warning'
+        stroke: isSelected ? 'fill-none stroke-dashy dark:stroke-warning'
           : link.missing ? `ec-missing fill-none stroke-red-400 dark:stroke-red-400/70 ${hover && !related ? 'opacity-20' : ''}`
           : related ? 'fill-none stroke-neutral-700 dark:stroke-white/80'
           : hover ? 'fill-none stroke-neutral-400 opacity-20 dark:stroke-white/40'
@@ -991,10 +991,10 @@
             ><title>{shape.title}</title></path>
           {/each}
           {#each pendingPaths as d, i (i)}
-            <path {d} stroke-width="2" stroke-linecap="round" class="ec-temp fill-none stroke-coollabs dark:stroke-warning" />
+            <path {d} stroke-width="2" stroke-linecap="round" class="ec-temp fill-none stroke-dashy dark:stroke-warning" />
           {/each}
           {#if tempPath}
-            <path d={tempPath} stroke-width="2" stroke-linecap="round" class="ec-temp fill-none stroke-coollabs dark:stroke-warning" />
+            <path d={tempPath} stroke-width="2" stroke-linecap="round" class="ec-temp fill-none stroke-dashy dark:stroke-warning" />
           {/if}
         </svg>
         <div class="absolute top-0 left-0">
@@ -1002,7 +1002,7 @@
             <button
               type="button"
               class="absolute max-w-48 -translate-x-1/2 -translate-y-1/2 cursor-pointer truncate rounded-full border px-2 py-0.5 text-[11px] font-medium shadow-sm transition-opacity {shape.selected
-                ? 'border-coollabs bg-white text-coollabs dark:border-warning dark:bg-panel dark:text-warning'
+                ? 'border-dashy bg-white text-dashy dark:border-warning dark:bg-panel dark:text-warning'
                 : 'border-neutral-200 bg-white text-neutral-600 dark:border-white/[0.1] dark:bg-panel dark:text-fg-dim'} {shape.faded ? 'opacity-30' : ''}"
               style:left="{shape.mid.x}px"
               style:top="{shape.mid.y}px"
@@ -1045,7 +1045,7 @@
           {#each shapes as shape (shape.link.id)}
             {#each [shape.from, shape.to] as at, i (i)}
               <span
-                class="absolute size-3 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white shadow dark:border-raised {shape.selected ? 'bg-coollabs dark:bg-warning' : 'bg-neutral-400 dark:bg-neutral-500'} {shape.faded ? 'opacity-30' : ''}"
+                class="absolute size-3 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white shadow dark:border-raised {shape.selected ? 'bg-dashy dark:bg-warning' : 'bg-neutral-400 dark:bg-neutral-500'} {shape.faded ? 'opacity-30' : ''}"
                 style:left="{at.x}px"
                 style:top="{at.y}px"
               ></span>

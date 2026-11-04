@@ -212,7 +212,7 @@
                                 title="{{ $navMenu['backTitle'] }}" aria-label="{{ $navMenu['backTitle'] }}"
                                 class="menu-item menu-back bg-transparent! hover:bg-neutral-100! dark:hover:bg-white/[0.06]!" :class="collapsed && 'lg:justify-center lg:px-0'">
                                 <span class="menu-back-icon flex shrink-0 items-center justify-center">
-                                    <x-reicon name="chevron-down" class="size-3 rotate-90 text-coollabs dark:text-fg-dim" />
+                                    <x-reicon name="chevron-down" class="size-3 rotate-90 text-dashy dark:text-fg-dim" />
                                 </span>
                                 <span class="flex-1 truncate pr-6 text-center font-medium text-black dark:text-fg"
                                     :class="collapsed && 'lg:hidden'">{{ $navMenu['label'] }}</span>
@@ -238,7 +238,7 @@
                                 class="menu-item menu-back bg-transparent! hover:bg-neutral-100! dark:hover:bg-white/[0.06]!" :class="collapsed && 'lg:justify-center lg:px-0'">
                                 {{-- As wide as a menu icon (with its tile), so the chevron lines up with the icons below. --}}
                                 <span class="menu-back-icon flex shrink-0 items-center justify-center">
-                                    <x-reicon name="chevron-down" class="size-3 rotate-90 text-coollabs dark:text-fg-dim" />
+                                    <x-reicon name="chevron-down" class="size-3 rotate-90 text-dashy dark:text-fg-dim" />
                                 </span>
                                 <span class="flex-1 truncate pr-6 text-center font-medium text-black dark:text-fg"
                                     :class="collapsed && 'lg:hidden'">{{ $submenuItem['label'] }}</span>
@@ -284,7 +284,7 @@
                                 <span class="flex-1 truncate pl-6 text-center font-medium text-black dark:text-fg"
                                     :class="collapsed && 'lg:hidden'">{{ $navContextName }}</span>
                                 <span class="menu-back-icon flex shrink-0 items-center justify-center">
-                                    <x-reicon name="chevron-down" class="size-3 -rotate-90 text-coollabs dark:text-fg-dim" />
+                                    <x-reicon name="chevron-down" class="size-3 -rotate-90 text-dashy dark:text-fg-dim" />
                                 </span>
                             </button>
                         </li>
@@ -305,7 +305,7 @@
                                 :class="collapsed && 'lg:justify-center lg:px-0'">
                                 <x-reicon :name="$item['icon']" class="menu-item-icon" />
                                 <span class="menu-item-label flex-1 text-left" :class="collapsed && 'lg:hidden'">{{ $item['label'] }}</span>
-                                <x-reicon name="chevron-down" class="nav-chevron size-3 -rotate-90 text-coollabs dark:text-fg-faint" ::class="collapsed && 'lg:hidden'" />
+                                <x-reicon name="chevron-down" class="nav-chevron size-3 -rotate-90 text-dashy dark:text-fg-faint" ::class="collapsed && 'lg:hidden'" />
                             </button>
                         @else
                             <a title="{{ $item['label'] }}" href="{{ $item['href'] }}"

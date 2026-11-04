@@ -25,9 +25,13 @@
                 <h1 class="mt-1 text-[22px] font-semibold leading-7 tracking-tight text-black dark:text-fg">Dashboard</h1>
                 <p class="mt-1 text-[12px] text-neutral-500 dark:text-fg-dim">Projects, servers and deployments at a glance.</p>
             </div>
-            <div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px] text-neutral-500 dark:text-fg-dim">
+            <div class="flex flex-wrap items-center gap-x-4 gap-y-2 text-[11px] text-neutral-500 dark:text-fg-dim">
                 <span><b class="font-semibold text-black dark:text-fg">{{ $projectCount }}</b> projects</span>
                 <span><b class="font-semibold text-black dark:text-fg">{{ $serverCount }}</b> servers</span>
+                {{-- Only renders a button when the source repository has a newer commit. --}}
+                @if (isInstanceAdmin() && ! isCloud())
+                    <livewire:upgrade :full-button="true" :quiet="true" key="dashboard-upgrade" />
+                @endif
             </div>
         </div>
 

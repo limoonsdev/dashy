@@ -52,7 +52,7 @@ class Help extends Component
                     return;
                 }
             } else {
-                send_user_an_email($mail, auth()->user()?->email, 'feedback@coollabs.io');
+                send_user_an_email($mail, auth()->user()?->email, 'feedback@dashy.io');
             }
             $this->dispatch('success', 'Feedback sent.', 'We will get in touch with you as soon as possible.');
             $this->reset('description', 'subject');

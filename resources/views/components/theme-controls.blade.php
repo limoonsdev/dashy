@@ -19,7 +19,7 @@
                         aria-haspopup="dialog" :aria-expanded="dialogOpen"
                         class="group block w-full overflow-hidden rounded-[10px] border border-neutral-200 bg-white text-left transition-[border-color,box-shadow] hover:border-neutral-300 hover:shadow-sm dark:border-white/[0.07] dark:bg-white/[0.05] dark:hover:border-white/[0.12]"
                         :class="theme === 'custom'
-                            ? 'border-coollabs! bg-coollabs/[0.06]! ring-2 ring-coollabs/25 dark:border-brand-light! dark:bg-brand-light/[0.08]! dark:ring-brand-light/25'
+                            ? 'border-dashy! bg-dashy/[0.06]! ring-2 ring-dashy/25 dark:border-brand-light! dark:bg-brand-light/[0.08]! dark:ring-brand-light/25'
                             : ''">
                         <div class="flex h-20 items-center justify-center border-b border-neutral-200 bg-neutral-100 dark:border-white/[0.07] dark:bg-black/20">
                             <x-theme-controls.swatch theme="customTheme" class="h-12 w-24" />
@@ -27,7 +27,7 @@
                         <div class="p-3">
                             <div class="flex items-center justify-between gap-2">
                                 <span class="text-sm font-semibold text-black dark:text-fg">{{ $option['label'] }}</span>
-                                <x-reicon name="check-circle" class="size-4 text-coollabs dark:text-brand-light"
+                                <x-reicon name="check-circle" class="size-4 text-dashy dark:text-brand-light"
                                     x-show="theme === 'custom'" x-cloak />
                             </div>
                             <p class="mt-1 text-xs leading-5 text-neutral-500 dark:text-fg-dim">
@@ -41,7 +41,7 @@
                         @keydown.enter.prevent="setTheme('{{ $option['value'] }}')"
                         class="group relative overflow-hidden rounded-[10px] border border-neutral-200 bg-white text-left transition-[border-color,box-shadow] hover:border-neutral-300 hover:shadow-sm dark:border-white/[0.07] dark:bg-white/[0.05] dark:hover:border-white/[0.12]"
                         :class="theme === '{{ $option['value'] }}'
-                            ? 'border-coollabs! bg-coollabs/[0.06]! ring-2 ring-coollabs/25 dark:border-brand-light! dark:bg-brand-light/[0.08]! dark:ring-brand-light/25'
+                            ? 'border-dashy! bg-dashy/[0.06]! ring-2 ring-dashy/25 dark:border-brand-light! dark:bg-brand-light/[0.08]! dark:ring-brand-light/25'
                             : ''">
                         <div class="h-20 {{ $option['preview'] }} border-b border-neutral-200 dark:border-white/[0.07]">
                             <div class="flex h-full items-center justify-center">
@@ -55,7 +55,7 @@
                                 <span class="text-sm font-semibold text-black dark:text-fg">
                                     {{ $option['label'] }}
                                 </span>
-                                <x-reicon name="check-circle" class="size-4 text-coollabs dark:text-brand-light"
+                                <x-reicon name="check-circle" class="size-4 text-dashy dark:text-brand-light"
                                     x-show="theme === '{{ $option['value'] }}'" x-cloak />
                             </div>
                             <p class="mt-1 text-xs leading-5 text-neutral-500 dark:text-fg-dim">
@@ -83,7 +83,7 @@
                 <button type="button" @click="setWidth('{{ $option['value'] }}')"
                     class="group overflow-hidden rounded-[10px] border border-neutral-200 bg-white text-left transition-[border-color,box-shadow] hover:border-neutral-300 hover:shadow-sm dark:border-white/[0.07] dark:bg-white/[0.05] dark:hover:border-white/[0.12]"
                     :class="pageWidth === '{{ $option['value'] }}'
-                        ? 'border-coollabs! bg-coollabs/[0.06]! ring-2 ring-coollabs/25 dark:border-brand-light! dark:bg-brand-light/[0.08]! dark:ring-brand-light/25'
+                        ? 'border-dashy! bg-dashy/[0.06]! ring-2 ring-dashy/25 dark:border-brand-light! dark:bg-brand-light/[0.08]! dark:ring-brand-light/25'
                         : ''">
                     <div class="flex h-20 items-center border-b border-neutral-200 bg-neutral-50 px-4 dark:border-white/[0.07] dark:bg-black/15">
                         <div class="flex h-11 w-full gap-1.5 rounded-md border border-neutral-300 bg-white p-1.5 dark:border-white/15 dark:bg-[#181818]">
@@ -98,7 +98,7 @@
                     <div class="p-3">
                         <div class="flex items-center justify-between gap-2">
                             <span class="text-sm font-semibold text-black dark:text-fg">{{ $option['label'] }}</span>
-                            <x-reicon name="check-circle" class="size-4 text-coollabs dark:text-brand-light"
+                            <x-reicon name="check-circle" class="size-4 text-dashy dark:text-brand-light"
                                 x-show="pageWidth === '{{ $option['value'] }}'" x-cloak />
                         </div>
                         <p class="mt-1 text-xs leading-5 text-neutral-500 dark:text-fg-dim">{{ $option['description'] }}</p>
@@ -123,7 +123,7 @@
                 <button type="button" @click="setNavStyle('{{ $option['value'] }}')"
                     class="group overflow-hidden rounded-[10px] border border-neutral-200 bg-white text-left transition-[border-color,box-shadow] hover:border-neutral-300 hover:shadow-sm dark:border-white/[0.07] dark:bg-white/[0.05] dark:hover:border-white/[0.12]"
                     :class="navStyle === '{{ $option['value'] }}'
-                        ? 'border-coollabs! bg-coollabs/[0.06]! ring-2 ring-coollabs/25 dark:border-brand-light! dark:bg-brand-light/[0.08]! dark:ring-brand-light/25'
+                        ? 'border-dashy! bg-dashy/[0.06]! ring-2 ring-dashy/25 dark:border-brand-light! dark:bg-brand-light/[0.08]! dark:ring-brand-light/25'
                         : ''">
                     @php($floating = $option['value'] === 'floating')
                     <div @class([
@@ -150,7 +150,7 @@
                     <div class="p-3">
                         <div class="flex items-center justify-between gap-2">
                             <span class="text-sm font-semibold text-black dark:text-fg">{{ $option['label'] }}</span>
-                            <x-reicon name="check-circle" class="size-4 text-coollabs dark:text-brand-light"
+                            <x-reicon name="check-circle" class="size-4 text-dashy dark:text-brand-light"
                                 x-show="navStyle === '{{ $option['value'] }}'" x-cloak />
                         </div>
                         <p class="mt-1 text-xs leading-5 text-neutral-500 dark:text-fg-dim">{{ $option['description'] }}</p>
@@ -175,7 +175,7 @@
                 <button type="button" @click="setNavItems('{{ $option['value'] }}')"
                     class="group overflow-hidden rounded-[10px] border border-neutral-200 bg-white text-left transition-[border-color,box-shadow] hover:border-neutral-300 hover:shadow-sm dark:border-white/[0.07] dark:bg-white/[0.05] dark:hover:border-white/[0.12]"
                     :class="navItems === '{{ $option['value'] }}'
-                        ? 'border-coollabs! bg-coollabs/[0.06]! ring-2 ring-coollabs/25 dark:border-brand-light! dark:bg-brand-light/[0.08]! dark:ring-brand-light/25'
+                        ? 'border-dashy! bg-dashy/[0.06]! ring-2 ring-dashy/25 dark:border-brand-light! dark:bg-brand-light/[0.08]! dark:ring-brand-light/25'
                         : ''">
                     @php($tiles = $option['value'] === '3d')
                     <div class="flex h-20 flex-col justify-center gap-1.5 border-b border-neutral-200 bg-neutral-50 px-4 dark:border-white/[0.07] dark:bg-black/15">
@@ -198,7 +198,7 @@
                     <div class="p-3">
                         <div class="flex items-center justify-between gap-2">
                             <span class="text-sm font-semibold text-black dark:text-fg">{{ $option['label'] }}</span>
-                            <x-reicon name="check-circle" class="size-4 text-coollabs dark:text-brand-light"
+                            <x-reicon name="check-circle" class="size-4 text-dashy dark:text-brand-light"
                                 x-show="navItems === '{{ $option['value'] }}'" x-cloak />
                         </div>
                         <p class="mt-1 text-xs leading-5 text-neutral-500 dark:text-fg-dim">{{ $option['description'] }}</p>
@@ -223,7 +223,7 @@
                 <button type="button" @click="setChartTimes('{{ $option['value'] }}')"
                     class="group overflow-hidden rounded-[10px] border border-neutral-200 bg-white text-left transition-[border-color,box-shadow] hover:border-neutral-300 hover:shadow-sm dark:border-white/[0.07] dark:bg-white/[0.05] dark:hover:border-white/[0.12]"
                     :class="chartTimes === '{{ $option['value'] }}'
-                        ? 'border-coollabs! bg-coollabs/[0.06]! ring-2 ring-coollabs/25 dark:border-brand-light! dark:bg-brand-light/[0.08]! dark:ring-brand-light/25'
+                        ? 'border-dashy! bg-dashy/[0.06]! ring-2 ring-dashy/25 dark:border-brand-light! dark:bg-brand-light/[0.08]! dark:ring-brand-light/25'
                         : ''">
                     <div class="flex h-20 items-center justify-center border-b border-neutral-200 bg-neutral-50 px-4 dark:border-white/[0.07] dark:bg-black/15">
                         <div class="rounded-md border border-neutral-300 bg-white px-2.5 py-1.5 text-[11px] leading-4 dark:border-white/15 dark:bg-[#181818]">
@@ -236,7 +236,7 @@
                     <div class="p-3">
                         <div class="flex items-center justify-between gap-2">
                             <span class="text-sm font-semibold text-black dark:text-fg">{{ $option['label'] }}</span>
-                            <x-reicon name="check-circle" class="size-4 text-coollabs dark:text-brand-light"
+                            <x-reicon name="check-circle" class="size-4 text-dashy dark:text-brand-light"
                                 x-show="chartTimes === '{{ $option['value'] }}'" x-cloak />
                         </div>
                         <p class="mt-1 text-xs leading-5 text-neutral-500 dark:text-fg-dim">{{ $option['description'] }}</p>
@@ -261,7 +261,7 @@
                     x-transition:leave="transition ease-in duration-150"
                     x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95"
                     class="application-settings-form application-settings-section relative flex max-h-[calc(100dvh-1rem)] w-full max-w-5xl flex-col overflow-hidden sm:max-h-[calc(100dvh-2rem)]"
-                    style="box-shadow: 0 0 0 1px var(--coollabs-hairline), var(--shadow-modal)">
+                    style="box-shadow: 0 0 0 1px var(--dashy-hairline), var(--shadow-modal)">
                     <header class="shrink-0">
                         <div class="min-w-0 flex-1 py-0.5">
                             <h3 id="custom-theme-title" class="truncate">Custom theme</h3>
@@ -286,7 +286,7 @@
                                             class="group flex flex-col gap-1.5 rounded-lg p-1 text-left outline-0 focus-visible:ring-1 focus-visible:ring-accent">
                                             <x-theme-controls.swatch theme="(preset.theme ?? preset.swatch)"
                                                 class="h-14 w-full transition-shadow group-hover:shadow-md"
-                                                ::class="isDraftPreset(preset) && 'ring-2 ring-coollabs ring-offset-2 ring-offset-white dark:ring-brand-light dark:ring-offset-panel'" />
+                                                ::class="isDraftPreset(preset) && 'ring-2 ring-dashy ring-offset-2 ring-offset-white dark:ring-brand-light dark:ring-offset-panel'" />
                                             <span class="truncate text-xs text-neutral-600 dark:text-fg-dim" x-text="preset.name"></span>
                                         </button>
                                     </template>

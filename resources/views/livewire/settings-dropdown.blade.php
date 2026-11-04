@@ -111,7 +111,7 @@
 
                 <section
                     class="application-settings-form application-settings-section relative flex max-h-[calc(100dvh-3rem)] !w-full max-w-5xl flex-col overflow-hidden"
-                    style="box-shadow: 0 0 0 1px var(--coollabs-hairline), var(--shadow-modal)">
+                    style="box-shadow: 0 0 0 1px var(--dashy-hairline), var(--shadow-modal)">
                     <header class="relative !pr-11">
                         <div class="flex min-w-0 items-center gap-3">
                         <div

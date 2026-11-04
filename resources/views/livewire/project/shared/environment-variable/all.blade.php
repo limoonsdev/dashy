@@ -116,7 +116,7 @@
                                 @endphp
                                 <span @class([
                                     'flex size-4 shrink-0 items-center justify-center rounded-[5px] border',
-                                    'border-coollabs bg-coollabs text-white dark:border-brand dark:bg-brand dark:text-white' => $selected,
+                                    'border-dashy bg-dashy text-white dark:border-brand dark:bg-brand dark:text-white' => $selected,
                                     'border-neutral-300 bg-white dark:border-white/[0.14] dark:bg-white/[0.045]' => ! $selected,
                                 ])>
                                     @if ($selected)
@@ -134,7 +134,7 @@
                                     <span>{{ $label }}</span>
                                     <span @class([
                                         'flex size-4 shrink-0 items-center justify-center rounded-[5px] border',
-                                        'border-coollabs bg-coollabs text-white dark:border-brand dark:bg-brand dark:text-white' => $environmentFilter === $value,
+                                        'border-dashy bg-dashy text-white dark:border-brand dark:bg-brand dark:text-white' => $environmentFilter === $value,
                                         'border-neutral-300 bg-white dark:border-white/[0.14] dark:bg-white/[0.045]' => $environmentFilter !== $value,
                                     ])>
                                         @if ($environmentFilter === $value)
@@ -157,7 +157,7 @@
                                     @endphp
                                     <span @class([
                                         'flex size-4 shrink-0 items-center justify-center rounded-[5px] border',
-                                        'border-coollabs bg-coollabs text-white dark:border-brand dark:bg-brand dark:text-white' => $serviceSelected,
+                                        'border-dashy bg-dashy text-white dark:border-brand dark:bg-brand dark:text-white' => $serviceSelected,
                                         'border-neutral-300 bg-white dark:border-white/[0.14] dark:bg-white/[0.045]' => ! $serviceSelected,
                                     ])>
                                         @if ($serviceSelected)

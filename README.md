@@ -187,6 +187,6 @@ Create the API token in **Security → API tokens** with `read` and `write` abil
 
 ## Credits and license
 
-Dashy is a fork of [Coolify](https://github.com/coollabsio/coolify), released under the Apache License 2.0. Upstream copyright remains with the Coolify authors. Dashy is not affiliated with or endorsed by Coolify.
+Dashy is released under the Apache License 2.0. Parts of it are based on open-source code whose copyright remains with its original authors; those notices are kept in the source files. Dashy is an independent project and is not affiliated with or endorsed by any upstream project.
 
 See [LICENSE](LICENSE) for the full text.

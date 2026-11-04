@@ -1246,7 +1246,7 @@ else
     echo " - Building $DASHY_IMAGE_REF from the fetched source. This takes several minutes on the first run."
     log "Building $DASHY_IMAGE_REF from /data/dashy/source"
     if ! DOCKER_BUILDKIT=1 docker build --progress=plain \
-        --build-arg "DASHY_VERSION=${LATEST_VERSION}" \
+        --build-arg "DASHY_VERSION=${LATEST_IMAGE}" \
         -f /data/dashy/source/docker/production/Dockerfile \
         -t "$DASHY_IMAGE_REF" \
         /data/dashy/source; then
@@ -1343,7 +1343,9 @@ done
 
 if [ "$HEALTH" != "healthy" ]; then
     echo " - ERROR: Dashy container is not healthy after ${HEALTH_WAIT}s. Status: $HEALTH"
-    echo " - Please check: docker logs dashy"
+    echo " - Recent container logs:"
+    docker logs dashy 2>&1 | tail -n 40 | sed 's/^/     /' | tee -a "$INSTALLATION_LOG_WITH_DATE"
+    echo " - Full logs: docker logs dashy"
     exit 1
 fi
 
@@ -1412,5 +1414,5 @@ printf '  %sLog file: %s%s\n\n' "$C_DIM" "$INSTALLATION_LOG_WITH_DATE" "$C_RESET
 
 log_section "Installation Complete"
 log "Dashy installation completed successfully"
-log "Version: ${LATEST_VERSION}"
+log "Version: ${LATEST_IMAGE}"
 log "Log file: ${INSTALLATION_LOG_WITH_DATE}"

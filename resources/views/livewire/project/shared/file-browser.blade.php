@@ -181,12 +181,12 @@
             <div class="flex flex-wrap items-center px-4 py-2.5 text-sm">
                 @foreach ($this->breadcrumbs() as $crumb)
                     @if ($loop->index > 1)
-                        <span class="text-coollabs-subtle">/</span>
+                        <span class="text-dashy-subtle">/</span>
                     @endif
                     <button type="button" x-on:click="run('Loading files...', () => $wire.goTo(@js($crumb['path'])))"
                         @class([
                             'text-current font-medium cursor-default' => $loop->last,
-                            'cursor-pointer text-coollabs-subtle underline-offset-4 hover:text-current hover:underline' => ! $loop->last,
+                            'cursor-pointer text-dashy-subtle underline-offset-4 hover:text-current hover:underline' => ! $loop->last,
                         ])>
                         {{ $crumb['label'] }}
                     </button>
@@ -198,7 +198,7 @@
                 @dragover.prevent="dragging = true"
                 @dragleave.prevent="dragging = false"
                 @drop.prevent="dragging = false; if ($event.dataTransfer.files.length) { uploadFile($event.dataTransfer.files[0]) }"
-                :class="dragging ? 'ring-2 ring-coollabs/40 dark:ring-white/30' : ''"
+                :class="dragging ? 'ring-2 ring-dashy/40 dark:ring-white/30' : ''"
                 class="transition-[box-shadow] duration-150 ease-out motion-reduce:transition-none">
                 @if (count($entries) === 0)
                     <x-empty size="sm" title="This folder is empty"
@@ -223,12 +223,12 @@
                             <div wire:key="entry-{{ $entry['name'] }}" class="data-table-row file-table-grid">
                                 <div class="flex items-center">
                                     <x-reicon :name="$entry['type'] === 'dir' ? 'folder-filled' : 'file'"
-                                        class="size-4 {{ $entry['type'] === 'dir' ? 'text-coollabs dark:text-neutral-200' : 'text-coollabs-subtle opacity-70' }}" />
+                                        class="size-4 {{ $entry['type'] === 'dir' ? 'text-dashy dark:text-neutral-200' : 'text-dashy-subtle opacity-70' }}" />
                                 </div>
                                 <div class="min-w-0">
                                     @if ($entry['type'] === 'dir')
                                         <button type="button" x-on:click="run('Loading files...', () => $wire.open(@js($entry['name'])))"
-                                            class="block w-full cursor-pointer truncate text-left font-medium hover:text-coollabs hover:underline dark:hover:text-white">{{ $entry['name'] }}</button>
+                                            class="block w-full cursor-pointer truncate text-left font-medium hover:text-dashy hover:underline dark:hover:text-white">{{ $entry['name'] }}</button>
                                     @else
                                         <span class="block truncate">{{ $entry['name'] }}</span>
                                     @endif
@@ -238,14 +238,14 @@
                                     <x-modal-input title="Change permissions">
                                         <x-slot:content>
                                             <button type="button" title="Edit permissions"
-                                                class="cursor-pointer rounded-md px-1.5 py-0.5 font-mono text-xs text-coollabs-subtle hover:bg-black/5 hover:text-current dark:hover:bg-white/[0.06]">
+                                                class="cursor-pointer rounded-md px-1.5 py-0.5 font-mono text-xs text-dashy-subtle hover:bg-black/5 hover:text-current dark:hover:bg-white/[0.06]">
                                                 {{ $entry['perms'] ?: '-' }}
                                             </button>
                                         </x-slot:content>
                                         <form x-data="{ mode: @js($entry['perms']) }"
                                             @submit.prevent="run('Updating permissions...', () => $wire.chmodEntry(@js($entry['name']), mode)); $dispatch('close-modal')"
                                             class="flex flex-col gap-4">
-                                            <p class="text-sm text-coollabs-subtle">
+                                            <p class="text-sm text-dashy-subtle">
                                                 Set the octal permission mode for
                                                 <span class="font-medium">{{ $entry['name'] }}</span>.
                                             </p>
@@ -257,16 +257,16 @@
                                         </form>
                                     </x-modal-input>
                                 </div>
-                                <div class="min-w-0 truncate text-coollabs-subtle">
+                                <div class="min-w-0 truncate text-dashy-subtle">
                                     {{ $entry['owner'] ?: '-' }}
                                 </div>
-                                <div class="min-w-0 truncate text-coollabs-subtle">
+                                <div class="min-w-0 truncate text-dashy-subtle">
                                     {{ $entry['group'] ?: '-' }}
                                 </div>
-                                <div class="text-right text-coollabs-subtle tabular-nums">
+                                <div class="text-right text-dashy-subtle tabular-nums">
                                     {{ $entry['type'] === 'dir' ? '-' : formatBytes($entry['size']) }}
                                 </div>
-                                <div class="text-coollabs-subtle tabular-nums">
+                                <div class="text-dashy-subtle tabular-nums">
                                     {{ $entry['mtime'] ? \Illuminate\Support\Carbon::createFromTimestamp($entry['mtime'])->toDateTimeString() : '-' }}
                                 </div>
                                 {{-- The entry name lives in this row's x-data as a JS
@@ -306,7 +306,7 @@
                                                     <x-table.row-action>Delete</x-table.row-action>
                                                 </x-slot:content>
                                                 <div class="flex flex-col gap-4">
-                                                    <p class="text-sm text-coollabs-subtle">
+                                                    <p class="text-sm text-dashy-subtle">
                                                         This permanently deletes
                                                         <span class="font-medium">{{ $entry['name'] }}</span>
                                                         inside the container. This cannot be undone.
@@ -335,9 +335,9 @@
                 </x-slot:content>
                 <form @submit.prevent="run('Saving file...', () => $wire.saveEditor())" class="flex flex-col gap-4">
                     <div class="flex items-center justify-between gap-2">
-                        <p class="truncate font-mono text-xs text-coollabs-subtle">{{ $editingPath }}</p>
+                        <p class="truncate font-mono text-xs text-dashy-subtle">{{ $editingPath }}</p>
                         @if ($editorLanguage)
-                            <span class="shrink-0 rounded-md bg-coollabs/10 px-1.5 py-0.5 font-mono text-[11px] text-coollabs dark:bg-white/[0.08] dark:text-neutral-200">{{ $editorLanguage }}</span>
+                            <span class="shrink-0 rounded-md bg-dashy/10 px-1.5 py-0.5 font-mono text-[11px] text-dashy dark:bg-white/[0.08] dark:text-neutral-200">{{ $editorLanguage }}</span>
                         @endif
                     </div>
                     {{-- Monaco editor, kept mounted across opens (wire:ignore) and

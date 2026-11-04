@@ -8,7 +8,7 @@
             <p class="text-[11px] text-neutral-500 dark:text-fg-faint">
                 New to Vultr?
                 <a href="https://dashy.io/vultr" target="_blank"
-                    class="font-medium text-coollabs hover:underline dark:text-brand-light">Create an account</a>
+                    class="font-medium text-dashy hover:underline dark:text-brand-light">Create an account</a>
                 through Dashy's affiliate link.
             </p>
         </div>

@@ -11,14 +11,44 @@
 ])
 
 @php
-    $codeClass = $tone === 'danger'
-        ? 'error-code error-code-danger'
-        : 'error-code';
+    $eyebrows = [
+        '400' => 'Bad request',
+        '401' => 'Authentication required',
+        '402' => 'Payment required',
+        '403' => 'Access denied',
+        '404' => 'Page not found',
+        '419' => 'Session expired',
+        '429' => 'Too many requests',
+        '500' => 'Internal error',
+        '503' => 'Temporarily unavailable',
+    ];
+    $eyebrow = $eyebrows[(string) $code] ?? 'Unexpected response';
+    $host = parse_url((string) config('app.url'), PHP_URL_HOST) ?: 'self-hosted';
 @endphp
 
-<main {{ $attributes->merge(['class' => 'error-shell']) }}>
-    <div class="error-shell-content">
-        <p class="{{ $codeClass }}">{{ $code }}</p>
+<main {{ $attributes->merge(['class' => 'error-shell'.($tone === 'danger' ? ' error-shell-danger' : '')]) }}>
+    <div class="error-aurora" aria-hidden="true">
+        <span class="error-aurora-blob error-aurora-blob-a"></span>
+        <span class="error-aurora-blob error-aurora-blob-b"></span>
+        <span class="error-aurora-blob error-aurora-blob-c"></span>
+    </div>
+    <div class="error-grid" aria-hidden="true"></div>
+
+    <div class="error-card">
+        <div class="error-card-top">
+            <span class="error-pill">
+                <span class="error-pill-dot" aria-hidden="true"></span>
+                {{ $eyebrow }}
+            </span>
+            <span class="error-brand">Dashy</span>
+        </div>
+
+        <div class="error-code-row">
+            <p class="error-code">{{ $code }}</p>
+            <div class="error-signal" aria-hidden="true">
+                <span></span><span></span><span></span><span></span><span></span><span></span>
+            </div>
+        </div>
 
         <h1 class="error-title">{{ $title }}</h1>
 
@@ -62,6 +92,13 @@
                     </x-forms.button>
                 </a>
             @endif
+        </div>
+
+        <div class="error-footnote">
+            <span class="error-footnote-tag">Dashy</span>
+            <span class="error-footnote-sep" aria-hidden="true"></span>
+            <span class="error-footnote-host">{{ $host }}</span>
+            <span class="error-footnote-code">HTTP {{ $code }}</span>
         </div>
     </div>
 </main>

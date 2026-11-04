@@ -137,7 +137,7 @@ $appListboxOptions = array_merge(
         <x-application.settings-section id="analytics-overview-section" title="Overview"
             helper="Aggregate request volume for the selected filters and range.">
             <div class="grid grid-cols-2 gap-px overflow-hidden rounded-lg bg-neutral-200 sm:grid-cols-3 lg:grid-cols-5 dark:bg-white/[0.07]">
-                <div class="flex flex-col bg-[var(--coollabs-base)] px-4 py-3">
+                <div class="flex flex-col bg-[var(--dashy-base)] px-4 py-3">
                     <span class="text-[11px] font-medium tracking-wide text-neutral-500 uppercase dark:text-fg-dim">Requests</span>
                     <span class="mt-1 text-xl font-semibold text-black tabular-nums dark:text-fg" title="{{ number_format($overview['requests'] ?? 0) }} requests">{{ compactNumber($overview['requests'] ?? 0) }}</span>
                     <div class="mt-auto pt-3">
@@ -150,7 +150,7 @@ $appListboxOptions = array_merge(
                         ])
                     </div>
                 </div>
-                <div class="flex flex-col bg-[var(--coollabs-base)] px-4 py-3">
+                <div class="flex flex-col bg-[var(--dashy-base)] px-4 py-3">
                     <span class="flex items-center text-[11px] font-medium tracking-wide text-neutral-500 uppercase dark:text-fg-dim">
                         Unique visitors
                         @if ($uniquesApproximate)
@@ -168,7 +168,7 @@ $appListboxOptions = array_merge(
                         ])
                     </div>
                 </div>
-                <div class="flex flex-col bg-[var(--coollabs-base)] px-4 py-3">
+                <div class="flex flex-col bg-[var(--dashy-base)] px-4 py-3">
                     <span class="text-[11px] font-medium tracking-wide text-neutral-500 uppercase dark:text-fg-dim">Bandwidth</span>
                     <span class="mt-1 text-xl font-semibold text-black tabular-nums dark:text-fg">{{ formatBytes($this->bandwidthBytes()) }}</span>
                     <div class="mt-auto pt-3">
@@ -181,7 +181,7 @@ $appListboxOptions = array_merge(
                         ])
                     </div>
                 </div>
-                <div class="flex flex-col bg-[var(--coollabs-base)] px-4 py-3">
+                <div class="flex flex-col bg-[var(--dashy-base)] px-4 py-3">
                     <span class="text-[11px] font-medium tracking-wide text-neutral-500 uppercase dark:text-fg-dim">Error rate</span>
                     <span class="mt-1 text-xl font-semibold text-black tabular-nums dark:text-fg">{{ $this->errorRate() }}%</span>
                     <div class="mt-auto pt-3">
@@ -194,7 +194,7 @@ $appListboxOptions = array_merge(
                         ])
                     </div>
                 </div>
-                <div class="col-span-2 flex flex-col bg-[var(--coollabs-base)] px-4 py-3 sm:col-span-1">
+                <div class="col-span-2 flex flex-col bg-[var(--dashy-base)] px-4 py-3 sm:col-span-1">
                     <span class="flex items-center text-[11px] font-medium tracking-wide text-neutral-500 uppercase dark:text-fg-dim">
                         p95 latency
                         @if ($latencyApproximate)

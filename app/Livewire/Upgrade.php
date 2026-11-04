@@ -5,6 +5,7 @@ namespace App\Livewire;
 use App\Actions\Server\UpdateDashy;
 use App\Models\InstanceSettings;
 use App\Models\Server;
+use App\Services\DashySourceRelease;
 use App\Services\DashyUpgradeStatus;
 use Livewire\Component;
 
@@ -21,6 +22,9 @@ class Upgrade extends Component
     public bool $devMode = false;
 
     public bool $fullButton = false;
+
+    /** Render nothing when the instance is up to date (the dashboard uses this). */
+    public bool $quiet = false;
 
     protected $listeners = ['updateAvailable' => 'checkUpdate'];
 
@@ -46,6 +50,16 @@ class Upgrade extends Component
 
         if ($this->devMode) {
             $this->isUpgradeAvailable = true;
+
+            return;
+        }
+
+        // An instance installed by the one-line installer runs its own build of the
+        // source repository (version "local-<commit>"), which the CDN knows nothing about.
+        if (DashySourceRelease::isSourceBuild()) {
+            $latest = DashySourceRelease::latest();
+            $this->latestVersion = $latest !== null ? 'local-'.$latest['short'] : $this->currentVersion;
+            $this->isUpgradeAvailable = DashySourceRelease::updateAvailable();
 
             return;
         }

@@ -5,6 +5,7 @@ namespace App\Actions\Server;
 use App\Jobs\DatabaseBackupJob;
 use App\Models\Server;
 use App\Models\StandalonePostgresql;
+use App\Services\DashySourceRelease;
 use App\Services\DashyUpgradeStatus;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Sleep;
@@ -30,6 +31,15 @@ class UpdateDashy
 
             return;
         }
+
+        // Instances installed by the one-line installer run their own build of the source
+        // repository, so they update from the branch head and not from the image registry.
+        if (DashySourceRelease::isSourceBuild()) {
+            $this->updateFromSource($manual_update);
+
+            return;
+        }
+
         $settings = instanceSettings();
         $this->server = Server::find(0);
         if (! $this->server) {
@@ -128,6 +138,49 @@ class UpdateDashy
 
         $this->backupDatabase();
         $this->update();
+        $settings->new_version_available = false;
+        $settings->save();
+    }
+
+    /**
+     * Fetch the head of the source branch and rebuild the image on the host.
+     */
+    private function updateFromSource(bool $manual_update): void
+    {
+        $settings = instanceSettings();
+        $this->server = Server::find(0);
+        if (! $this->server) {
+            throw new \Exception('The localhost server is missing, so Dashy cannot rebuild its own image.');
+        }
+
+        $this->currentVersion = (string) config('constants.dashy.version');
+
+        $latest = DashySourceRelease::latest(fresh: true);
+        if ($latest === null) {
+            throw new \Exception('Could not read the latest Dashy commit from GitHub.');
+        }
+
+        $this->latestVersion = 'local-'.$latest['short'];
+        $this->upgradeScriptUrl = DashySourceRelease::updateScriptUrl();
+
+        if (! DashySourceRelease::updateAvailable()) {
+            Log::info('Dashy already runs the latest commit', ['version' => $this->currentVersion]);
+
+            return;
+        }
+
+        if (! $manual_update && ! $settings->is_auto_update_enabled) {
+            return;
+        }
+
+        $this->backupDatabase();
+        $this->ensureNoUpgradeIsRunning();
+
+        remote_process([
+            'curl -fsSL '.escapeshellarg($this->upgradeScriptUrl).' -o /data/dashy/source/update.sh',
+            'bash /data/dashy/source/update.sh '.escapeshellarg($latest['sha']),
+        ], $this->server);
+
         $settings->new_version_available = false;
         $settings->save();
     }

@@ -29,8 +29,8 @@
                 </div>
                 <p class="mt-2 text-xs text-neutral-500 dark:text-fg-dim">
                     Need a sample? Browse
-                    <a class="font-medium text-coollabs hover:underline dark:text-brand-light"
-                        href="https://github.com/coollabsio/coolify-helper/" target="_blank">
+                    <a class="font-medium text-dashy hover:underline dark:text-brand-light"
+                        href="https://github.com/limoonsdev/dashy/" target="_blank">
                         Dashy Examples
                     </a>.
                 </p>
