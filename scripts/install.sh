@@ -1346,6 +1346,18 @@ if [ "$HEALTH" != "healthy" ]; then
     echo " - Please check: docker logs dashy"
     exit 1
 fi
+
+# The healthcheck only proves that PHP and Reverb answer (/api/health does not touch the
+# database). When the seeder did not run, the instance has no settings row and every page,
+# the login form first, answers 404, so check the page the root account is created on.
+LOGIN_STATUS=$(curl -s -o /dev/null -w '%{http_code}' --max-time 10 "http://127.0.0.1:${APP_PORT:-8000}/login" || echo "000")
+if [ "$LOGIN_STATUS" = "404" ] || [ "$LOGIN_STATUS" = "000" ]; then
+    echo " - ERROR: /login answers $LOGIN_STATUS, the database was not seeded."
+    echo " - Recent container logs:"
+    docker logs dashy 2>&1 | tail -n 40 | sed 's/^/     /' | tee -a "$INSTALLATION_LOG_WITH_DATE"
+    exit 1
+fi
+log "Login page answered with HTTP $LOGIN_STATUS"
 step_done
 
 if [ "$CHANNEL" != "stable" ]; then

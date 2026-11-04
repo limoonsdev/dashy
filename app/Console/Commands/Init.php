@@ -14,6 +14,7 @@ use App\Models\ScheduledDatabaseBackupExecution;
 use App\Models\ScheduledTaskExecution;
 use App\Models\Server;
 use App\Models\StandalonePostgresql;
+use App\Models\Team;
 use App\Models\User;
 use App\Support\ResourceStartActivity;
 use App\Support\RootSetupWindow;
@@ -36,6 +37,15 @@ class Init extends Command
     {
         Artisan::call('optimize:clear');
         Artisan::call('optimize');
+
+        try {
+            if (InstanceSettings::query()->find(0) === null || Team::query()->find(0) === null) {
+                echo "Root data is missing, seeding the database again\n";
+                $this->call('db:seed', ['--class' => 'ProductionSeeder', '--force' => true]);
+            }
+        } catch (\Throwable $e) {
+            echo "Could not seed the missing root data: {$e->getMessage()}\n";
+        }
 
         try {
             RootSetupWindow::openIfNoUserExists();

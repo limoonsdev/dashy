@@ -32,14 +32,37 @@ class ProductionSeeder extends Seeder
             echo "  Running in self-hosted mode.\n";
         }
 
+        // Settings first: the rest of this seeder can fail (the host SSH key, the localhost
+        // server, external IP lookups) and the instance must still serve its login and
+        // registration pages, which all read this row.
+        if (InstanceSettings::find(0) === null) {
+            InstanceSettings::forceCreate([
+                'id' => 0,
+            ]);
+        }
+
         if (Team::find(0) === null) {
-            (new Team)->forceFill([
+            $rootTeam = (new Team)->forceFill([
                 'id' => 0,
                 'name' => 'Root Team',
                 'description' => 'The root team',
                 'personal_team' => true,
                 'show_boarding' => true,
-            ])->save();
+            ]);
+            try {
+                $rootTeam->save();
+            } catch (\Throwable $e) {
+                // Creating a team also creates its default notification settings. Keep the
+                // root team even when one of those rows cannot be written.
+                echo "  WARNING  Could not create the default notification settings of the root team: {$e->getMessage()}\n";
+                (new Team)->forceFill([
+                    'id' => 0,
+                    'name' => 'Root Team',
+                    'description' => 'The root team',
+                    'personal_team' => true,
+                    'show_boarding' => true,
+                ])->saveQuietly();
+            }
         }
 
         if (User::find(0) !== null && Team::find(0) !== null) {
@@ -52,12 +75,6 @@ class ProductionSeeder extends Seeder
                     'updated_at' => now(),
                 ]);
             }
-        }
-
-        if (InstanceSettings::find(0) == null) {
-            InstanceSettings::create([
-                'id' => 0,
-            ]);
         }
 
         if (GithubApp::find(0) == null) {

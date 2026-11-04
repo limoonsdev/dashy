@@ -227,7 +227,19 @@ class InstanceSettings extends Model
 
     public static function get()
     {
-        return once(fn () => InstanceSettings::findOrFail(0));
+        return once(function () {
+            $settings = InstanceSettings::query()->find(0);
+
+            // A database that was only migrated, or seeded before a failure, has no row 0.
+            // Every page that reads the instance settings (login and registration first)
+            // then fails with a 404, so create the defaults instead of locking the
+            // instance out of its own UI.
+            if ($settings === null) {
+                $settings = InstanceSettings::forceCreate(['id' => 0]);
+            }
+
+            return $settings;
+        });
     }
 
     // public function getRecipients($notification)
