@@ -18,6 +18,11 @@ else
 fi
 SKIP_BACKUP=${4:-false}
 STATUS_FILE="/data/dashy/source/.upgrade-status"
+# Images the installer built locally are on no registry, so they must not be pulled
+DASHY_LOCAL_IMAGE=${DASHY_LOCAL_IMAGE:-}
+if [ -z "$DASHY_LOCAL_IMAGE" ] && [ -f "$ENV_FILE" ]; then
+    DASHY_LOCAL_IMAGE=$(grep -m1 '^DASHY_LOCAL_IMAGE=' "$ENV_FILE" | cut -d '=' -f2- | tr -d '"')
+fi
 
 DATE=$(date +%Y-%m-%d-%H-%M-%S)
 LOGFILE="/data/dashy/source/upgrade-${DATE}.log"
@@ -84,12 +89,23 @@ ensure_dashy_network() {
 }
 
 # Pull an image. Retry with backoff, because the registry can rate limit many instances that pull at the same time.
+# A missing tag or an inaccessible repository fails the same way on every attempt, so it is not retried.
 pull_image() {
     local image="$1"
     local attempt=1
     local max_attempts=5
     local delay=15
-    until docker pull "$image" >>"$LOGFILE" 2>&1; do
+    local output
+    while :; do
+        if output=$(docker pull "$image" 2>&1); then
+            printf '%s\n' "$output" >>"$LOGFILE"
+            return 0
+        fi
+        printf '%s\n' "$output" >>"$LOGFILE"
+        if printf '%s' "$output" | grep -qiE 'manifest unknown|not found|denied|unauthorized|invalid reference format|no matching manifest'; then
+            log "Pull of $image failed without a retry: ${output}"
+            return 1
+        fi
         if [ "$attempt" -ge "$max_attempts" ]; then
             return 1
         fi
@@ -350,6 +366,11 @@ fi
 # Using a for loop to avoid subshell issues with exit
 for IMAGE in $IMAGES; do
     if [ -n "$IMAGE" ]; then
+        if [ "$DASHY_LOCAL_IMAGE" = "true" ] && docker image inspect "$IMAGE" >/dev/null 2>&1; then
+            log "Using the locally built image $IMAGE"
+            echo "     - Using the locally built $IMAGE"
+            continue
+        fi
         echo "     - Pulling $IMAGE..."
         log "Pulling image: $IMAGE"
         if pull_image "$IMAGE"; then
@@ -358,6 +379,9 @@ for IMAGE in $IMAGES; do
             log "ERROR: Failed to pull $IMAGE"
             write_status "error" "Failed to pull $IMAGE"
             echo "     ERROR: Failed to pull $IMAGE. Aborting upgrade."
+            if [ "$DASHY_LOCAL_IMAGE" = "true" ]; then
+                echo "     The image was built locally and is gone; run the installer again to rebuild it."
+            fi
             exit 1
         fi
     fi

@@ -95,6 +95,10 @@ UI_STEP_DETAIL=""
 UI_STEP_STARTED=0
 UI_SPINNER_PID=""
 UI_WARNINGS=()
+# Expected duration of every step in seconds. A completed run stores its measured
+# durations next to the installation log and reuses them, so the estimates fit the machine.
+UI_STEP_ETAS=(0 20 3 30 3 15 3 5 240 60)
+UI_STEP_ETA=0
 
 if [ -t 1 ] && [ "${TERM:-dumb}" != "dumb" ]; then
     UI_TTY=true
@@ -137,6 +141,110 @@ ui_duration() {
     else
         printf '%dm %ds' $((ms / 60000)) $((ms % 60000 / 1000))
     fi
+}
+
+# Short form of a second count for the live line: 42s, 4m 05s, 1h 02m
+ui_short_duration() {
+    local seconds=$1
+    if [ "$seconds" -lt 0 ]; then
+        seconds=0
+    fi
+    if [ "$seconds" -lt 60 ]; then
+        printf '%ds' "$seconds"
+    elif [ "$seconds" -lt 3600 ]; then
+        printf '%dm %02ds' $((seconds / 60)) $((seconds % 60))
+    else
+        printf '%dh %02dm' $((seconds / 3600)) $((seconds % 3600 / 60))
+    fi
+}
+
+# File with the measured step durations of earlier runs, kept next to the log
+ui_eta_profile() {
+    local dir
+    dir=$(dirname "${INSTALLATION_LOG_WITH_DATE:-}")
+    if [ -z "$dir" ] || [ ! -d "$dir" ]; then
+        return 0
+    fi
+    printf '%s/.install-eta' "$dir"
+}
+
+ui_eta_load() {
+    local profile index seconds
+    profile=$(ui_eta_profile)
+    if [ -z "$profile" ] || [ ! -f "$profile" ]; then
+        return 0
+    fi
+    while IFS='=' read -r index seconds; do
+        [[ $index =~ ^[0-9]+$ ]] || continue
+        [[ $seconds =~ ^[0-9]+$ ]] || continue
+        if [ "$index" -lt 1 ] || [ "$index" -gt "$TOTAL_STEPS" ]; then
+            continue
+        fi
+        UI_STEP_ETAS[$index]=$seconds
+    done <"$profile"
+}
+
+ui_eta_save() {
+    local index=$1 seconds=$2 profile tmp
+    profile=$(ui_eta_profile)
+    if [ -z "$profile" ]; then
+        return 0
+    fi
+    if [ "$seconds" -lt 1 ]; then
+        seconds=1
+    fi
+    tmp="${profile}.$$"
+    {
+        if [ -f "$profile" ]; then
+            grep -vE "^${index}=" "$profile" || true
+        fi
+        printf '%s=%s\n' "$index" "$seconds"
+    } >"$tmp" 2>/dev/null && mv -f "$tmp" "$profile" 2>/dev/null || rm -f "$tmp" 2>/dev/null
+}
+
+# Seconds the current step still needs, never negative
+ui_step_remaining_seconds() {
+    local elapsed=$1 remaining=$((UI_STEP_ETA - elapsed))
+    if [ "$remaining" -lt 0 ]; then
+        remaining=0
+    fi
+    printf '%d' "$remaining"
+}
+
+# Seconds every later step still needs
+ui_later_steps_seconds() {
+    local index=$((UI_STEP + 1)) total=0
+    while [ "$index" -le "$TOTAL_STEPS" ]; do
+        total=$((total + ${UI_STEP_ETAS[$index]:-0}))
+        index=$((index + 1))
+    done
+    printf '%d' "$total"
+}
+
+# Remaining time of the whole installation
+ui_remaining_seconds() {
+    local elapsed=$1
+    printf '%d' $(($(ui_step_remaining_seconds "$elapsed") + $(ui_later_steps_seconds)))
+}
+
+# Progress across all steps, weighted by their expected duration instead of their count
+ui_progress_percent() {
+    local elapsed=$1 index total=0 remaining percent
+    for ((index = 1; index <= TOTAL_STEPS; index++)); do
+        total=$((total + ${UI_STEP_ETAS[$index]:-0}))
+    done
+    if [ "$total" -lt 1 ]; then
+        total=1
+    fi
+    remaining=$(ui_remaining_seconds "$elapsed")
+    percent=$((100 - remaining * 100 / total))
+    if [ "$percent" -lt 0 ]; then
+        percent=0
+    fi
+    if [ "$percent" -gt 99 ]; then
+        percent=99
+    fi
+    printf '%d' "$percent"
 }
 
 ui_repeat() {
@@ -182,16 +290,32 @@ ui_bar() {
         "$C_BOLD" "$percent" "$C_RESET" "$C_DIM" "$label" "$C_RESET"
 }
 
-# Runs in the background and animates the current step line and the progress bar below it
+# Runs in the background and animates the current step line, its live remaining time
+# and the progress bar below it
 ui_spinner() {
     set +x
     local frames=(◜ ◠ ◝ ◞ ◡ ◟) i=0 stop=false
-    local line bar
+    local elapsed right extra max_right percent
     trap 'stop=true' TERM
-    line=$(ui_render_step "")
-    bar=$(ui_bar $(((UI_STEP - 1) * 100 / TOTAL_STEPS)) "${UI_STEP_TITLE,,}…")
     while [ "$stop" = false ]; do
-        printf '\r\033[2K%s%s%s%s\n\033[2K%s\033[1A\r' "$line" "$C_PURPLE" "${frames[i]}" "$C_RESET" "$bar" >&3
+        elapsed=$((($(ui_now) - UI_STEP_STARTED) / 1000))
+        right=$(ui_duration $((elapsed * 1000)))
+        extra=""
+        if [ "$UI_STEP_ETA" -gt 0 ]; then
+            extra=" · ~$(ui_short_duration "$(ui_remaining_seconds "$elapsed")") left"
+        fi
+        # The line has to stay within the terminal width, otherwise the spinner wraps
+        max_right=$((UI_WIDTH - 11 - ${#UI_STEP_TITLE}))
+        if [ -n "$UI_STEP_DETAIL" ]; then
+            max_right=$((max_right - 2 - ${#UI_STEP_DETAIL}))
+        fi
+        if [ $((${#right} + ${#extra})) -le "$max_right" ]; then
+            right="${right}${extra}"
+        fi
+        percent=$(ui_progress_percent "$elapsed")
+        printf '\r\033[2K%s%s%s%s\n\033[2K%s\033[1A\r' \
+            "$(ui_render_step "$right")" "$C_PURPLE" "${frames[i]}" "$C_RESET" \
+            "$(ui_bar "$percent" "${UI_STEP_TITLE,,}…")" >&3
         i=$(((i + 1) % ${#frames[@]}))
         sleep 0.12
     done
@@ -219,11 +343,16 @@ ui_flush_warnings() {
     UI_WARNINGS=()
 }
 
+# Usage: step_start <title> [detail] [expected seconds]
 step_start() {
     UI_STEP=$((UI_STEP + 1))
     UI_STEP_TITLE="$1"
     UI_STEP_DETAIL="${2:-}"
     UI_STEP_STARTED=$(ui_now)
+    if [ "$UI_STEP" -eq 1 ] && [ "$UI_TTY" = true ]; then
+        ui_eta_load
+    fi
+    UI_STEP_ETA=${3:-${UI_STEP_ETAS[$UI_STEP]:-0}}
     log_section "Step ${UI_STEP}/${TOTAL_STEPS}: $1"
     if [ "$UI_TTY" = true ]; then
         ui_spinner &
@@ -237,10 +366,12 @@ step_done() {
         UI_STEP_DETAIL="$1"
     fi
     ui_stop_spinner
-    local elapsed
-    elapsed=$(ui_duration $(($(ui_now) - UI_STEP_STARTED)))
+    local elapsed elapsed_ms
+    elapsed_ms=$(($(ui_now) - UI_STEP_STARTED))
+    elapsed=$(ui_duration "$elapsed_ms")
     log "Step ${UI_STEP}/${TOTAL_STEPS} completed in ${elapsed}"
     if [ "$UI_TTY" = true ]; then
+        ui_eta_save "$UI_STEP" $((elapsed_ms / 1000))
         printf '\r\033[2K' >&3
     fi
     printf '%s%s✓%s\n' "$(ui_render_step "$elapsed")" "$C_GREEN" "$C_RESET" >&3
@@ -584,7 +715,7 @@ echo "| Registry URL      | $REGISTRY_URL"
 echo "---------------------------------------------"
 
 ui_flush_warnings
-step_start "Installing required packages" "curl wget git jq openssl"
+step_start "Installing required packages" "curl wget git jq openssl" "$(all_packages_installed && echo 3 || echo 90)"
 
 # Track if apt-get update was run to avoid redundant calls later
 APT_UPDATED=false
@@ -634,7 +765,7 @@ else
 fi
 step_done
 
-step_start "Checking OpenSSH server configuration"
+step_start "Checking OpenSSH server configuration" "" 3
 
 # Detect OpenSSH server
 SSH_DETECTED=false
@@ -777,7 +908,7 @@ install_docker_from_rhel_repo() {
 step_done
 
 if ! [ -x "$(command -v docker)" ]; then
-    step_start "Installing Docker Engine"
+    step_start "Installing Docker Engine" "" 300
     echo " - Docker is not installed. Installing Docker. It may take a while."
     case "$OS_TYPE" in
     "alpine" | "postmarketos")
@@ -848,7 +979,7 @@ if ! [ -x "$(command -v docker)" ]; then
     esac
     echo " - Docker installed successfully."
 else
-    step_start "Checking Docker Engine"
+    step_start "Checking Docker Engine" "" 5
     echo " - Docker is installed."
 fi
 
@@ -868,7 +999,7 @@ fi
 DOCKER_SERVER_VERSION=$(docker version --format '{{.Server.Version}}' 2>/dev/null || true)
 step_done "${DOCKER_SERVER_VERSION:+v$DOCKER_SERVER_VERSION}"
 
-step_start "Configuring Docker daemon" "log rotation · address pools"
+step_start "Configuring Docker daemon" "log rotation · address pools" 5
 
 # Changing daemon.json needs a Docker restart, which stops every running container.
 # Dashy sets log rotation and the network pool only when no pool is configured or DOCKER_POOL_FORCE_OVERRIDE=true,
@@ -907,7 +1038,7 @@ fi
 
 step_done
 
-step_start "Fetching Dashy from Git" "$DASHY_REF"
+step_start "Fetching Dashy from Git" "$DASHY_REF" 20
 log "Repository: $DASHY_REPO_URL (ref: $DASHY_REF)"
 
 # The source tree belongs to the dashy container user (UID 9999), so Git refuses to
@@ -944,7 +1075,7 @@ chmod +x /data/dashy/source/upgrade.sh /data/dashy/source/upgrade-postgres.sh 2>
 log "Source checked out at $(git -C /data/dashy/source rev-parse --short HEAD)"
 step_done
 
-step_start "Setting up environment variables"
+step_start "Setting up environment variables" "" 5
 
 if [ -f "$ENV_FILE" ]; then
     # If .env exists, create backup
@@ -974,6 +1105,20 @@ update_env_var() {
     elif ! grep -q "^${key}=" "$ENV_FILE"; then
         printf '%s=%s\n' "$key" "$value" >>"$ENV_FILE"
         echo " - Added ${key} and its value as the variable was missing"
+    fi
+}
+
+# Overwrite a variable that the installer owns, such as DASHY_LOCAL_IMAGE
+set_env_var() {
+    local key="$1"
+    local value="$2"
+
+    if grep -q "^${key}=" "$ENV_FILE"; then
+        KEY="$key" VALUE="$value" awk '!done && index($0, ENVIRON["KEY"] "=") == 1 { $0 = ENVIRON["KEY"] "=" ENVIRON["VALUE"]; done = 1 } { print }' "$ENV_FILE" >"$ENV_FILE.tmp" && mv "$ENV_FILE.tmp" "$ENV_FILE"
+        echo " - Updated ${key}"
+    else
+        printf '%s=%s\n' "$key" "$value" >>"$ENV_FILE"
+        echo " - Added ${key}"
     fi
 }
 
@@ -1045,7 +1190,7 @@ fi
 log "Environment variables check completed"
 step_done
 
-step_start "Checking SSH key for localhost access"
+step_start "Checking SSH key for localhost access" "" 5
 SSH_KEY_DETAIL="existing key"
 create_dashy_directories
 if [ ! -f ~/.ssh/authorized_keys ]; then
@@ -1076,16 +1221,54 @@ set_dashy_directory_permissions
 log "SSH key check completed"
 step_done "$SSH_KEY_DETAIL"
 
-step_start "Pulling images" "dashy · postgres · redis · helper"
+step_start "Preparing images" "dashy · postgres · redis · helper"
+LATEST_IMAGE="${LATEST_VERSION:-latest}"
+
+# No Dashy image is published: dashyapp/dashy exists neither on Docker Hub nor on
+# ghcr.io, and the CDN that served versions.json answers with a web page now, so the
+# tag falls back to "latest" and there is nothing to pull. Build the image from the
+# fetched source in that case, so the instance runs exactly this checkout.
+image_available() {
+    docker manifest inspect "$1" >/dev/null 2>&1 && return 0
+    DOCKER_CLI_EXPERIMENTAL=enabled docker manifest inspect "$1" >/dev/null 2>&1 && return 0
+    docker buildx imagetools inspect "$1" >/dev/null 2>&1
+}
+
+DASHY_IMAGE_REF="${REGISTRY_URL}/dashyapp/dashy:${LATEST_IMAGE}"
+if image_available "$DASHY_IMAGE_REF"; then
+    DASHY_LOCAL_IMAGE=false
+    log "Using the published image $DASHY_IMAGE_REF"
+else
+    LATEST_IMAGE="local-$(git -C /data/dashy/source rev-parse --short HEAD)"
+    DASHY_IMAGE_REF="${REGISTRY_URL}/dashyapp/dashy:${LATEST_IMAGE}"
+    DASHY_LOCAL_IMAGE=true
+    UI_STEP_DETAIL="building dashy locally"
+    UI_STEP_ETA=600
+    echo " - No published image ${REGISTRY_URL}/dashyapp/dashy:${LATEST_VERSION}."
+    echo " - Building $DASHY_IMAGE_REF from the fetched source. This takes several minutes on the first run."
+    log "Building $DASHY_IMAGE_REF from /data/dashy/source"
+    if ! DOCKER_BUILDKIT=1 docker build --progress=plain \
+        --build-arg "DASHY_VERSION=${LATEST_VERSION}" \
+        -f /data/dashy/source/docker/production/Dockerfile \
+        -t "$DASHY_IMAGE_REF" \
+        /data/dashy/source; then
+        echo " - ERROR: Could not build the Dashy image. The build output is in $INSTALLATION_LOG_WITH_DATE"
+        exit 1
+    fi
+    log "Built $DASHY_IMAGE_REF"
+fi
+set_env_var "DASHY_LOCAL_IMAGE" "$DASHY_LOCAL_IMAGE"
+export DASHY_LOCAL_IMAGE
+
 # fd 3 is closed so the detached container restart in upgrade.sh does not hold the terminal open
 if [[ $- == *x* ]]; then
-    bash -x /data/dashy/source/upgrade.sh "${LATEST_VERSION:-latest}" "${LATEST_HELPER_VERSION:-latest}" "${REGISTRY_URL:-docker.io}" "true" 3>&-
+    bash -x /data/dashy/source/upgrade.sh "$LATEST_IMAGE" "${LATEST_HELPER_VERSION:-latest}" "${REGISTRY_URL:-docker.io}" "true" 3>&-
 else
-    bash /data/dashy/source/upgrade.sh "${LATEST_VERSION:-latest}" "${LATEST_HELPER_VERSION:-latest}" "${REGISTRY_URL:-docker.io}" "true" 3>&-
+    bash /data/dashy/source/upgrade.sh "$LATEST_IMAGE" "${LATEST_HELPER_VERSION:-latest}" "${REGISTRY_URL:-docker.io}" "true" 3>&-
 fi
 step_done
 
-step_start "Starting Dashy" "v${LATEST_VERSION}"
+step_start "Starting Dashy" "v${LATEST_IMAGE}"
 echo " - Waiting for Dashy to be ready..."
 
 # Wait for upgrade.sh background process to complete
