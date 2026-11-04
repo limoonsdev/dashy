@@ -1,5 +1,7 @@
 #!/bin/bash
 ## Do not modify this file. You will lose the ability to install and auto-update!
+## One-line install:
+## curl -fsSL https://raw.githubusercontent.com/limoonsdev/dashy/main/scripts/install.sh | sudo bash
 
 ## Environment variables that can be set:
 ## ROOT_USERNAME - Predefined root username
@@ -23,7 +25,7 @@ set -o pipefail # Cause a pipeline to return the status of the last command that
 
 # When the installer lives inside the checkout it is about to update, run a
 # temporary copy. `git checkout` must never overwrite the running script.
-if [ "${DASHY_INSTALLER_RELOCATED:-0}" != "1" ] && [ -d "$(dirname "$0")/../.git" ]; then
+if [ "${DASHY_INSTALLER_RELOCATED:-0}" != "1" ] && [ -f "$0" ] && [ -d "$(dirname "$0")/../.git" ]; then
     RELOCATED="$(mktemp /tmp/dashy-install.XXXXXX)"
     cp "$0" "$RELOCATED"
     chmod +x "$RELOCATED"
@@ -288,7 +290,7 @@ UI_INSTALL_STARTED=$(ui_now)
 echo "=========================================="
 echo "   Dashy Installation - ${DATE}"
 echo "=========================================="
-echo "Source code: https://github.com/dashyapp/dashy/blob/v4.x/scripts/install.sh"
+echo "Source code: https://github.com/limoonsdev/dashy/blob/main/scripts/install.sh"
 
 # Predefined root user
 ROOT_USERNAME=${ROOT_USERNAME:-}
@@ -544,13 +546,17 @@ if [ "$OS_TYPE" = 'amzn' ]; then
 fi
 
 # Fetch versions.json once and parse all values from it
-VERSIONS_JSON=$(curl -L --silent https://cdn.coollabs.io/dashy/versions.json)
+VERSIONS_JSON=$(curl -L --silent --fail https://cdn.coollabs.io/dashy/versions.json || true)
 CHANNEL_VERSIONS=$(echo "$VERSIONS_JSON" | sed -n "/^    \"$CHANNEL\": {/,/^    }/p")
 LATEST_VERSION=$(echo "$CHANNEL_VERSIONS" | sed -n '/"dashy"/,/}/s/.*"version": *"\([^"]*\)".*/\1/p' | head -n 1)
 LATEST_HELPER_VERSION=$(echo "$CHANNEL_VERSIONS" | sed -n '/"helper"/,/}/s/.*"version": *"\([^"]*\)".*/\1/p' | head -n 1)
 
 if [ -z "$LATEST_HELPER_VERSION" ]; then
     LATEST_HELPER_VERSION=latest
+fi
+
+if [ -z "$LATEST_VERSION" ]; then
+    LATEST_VERSION=latest
 fi
 
 case "$OS_TYPE" in

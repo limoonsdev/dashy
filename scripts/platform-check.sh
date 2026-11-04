@@ -4,6 +4,8 @@ set -u
 
 have() { command -v "$1" >/dev/null 2>&1; }
 
+INSTALL_URL='https://raw.githubusercontent.com/limoonsdev/dashy/main/scripts/install.sh'
+
 os="$(uname -s 2>/dev/null || echo unknown)"
 arch="$(uname -m 2>/dev/null || echo unknown)"
 platform="$os"
@@ -66,15 +68,16 @@ printf '\nNext step:\n'
 case "$platform" in
     Linux)
         if [ "$pkg" = "apt-get" ] || [ "$pkg" = "dnf" ] || [ "$pkg" = "yum" ] || [ "$pkg" = "pacman" ] || [ "$pkg" = "zypper" ] || [ "$pkg" = "apk" ]; then
-            printf '  Native install: sudo ./scripts/install.sh\n'
+            printf '  Native install: curl -fsSL %s | sudo bash\n' "$INSTALL_URL"
         else
-            printf '  Install Docker Engine + Compose, then: sudo ./scripts/install.sh\n'
+            printf '  Install Docker Engine + Compose, then: curl -fsSL %s | sudo bash\n' "$INSTALL_URL"
             printf '  See docs/compatibility.md#other-distributions\n'
         fi
         ;;
     WSL2)
         printf '  Run .\\scripts\\install.ps1 from an elevated PowerShell on Windows.\n'
-        printf '  Or run: sudo ./scripts/install.sh inside this WSL distribution.\n'
+        printf '  Or run the one-line installer inside this WSL distribution:\n'
+        printf '    curl -fsSL %s | sudo bash\n' "$INSTALL_URL"
         ;;
     Windows)
         printf '  Run .\\scripts\\install.ps1 from an elevated PowerShell.\n'

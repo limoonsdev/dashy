@@ -2,13 +2,15 @@
 
 Dashy is a control plane for Linux containers. The dashboard itself runs on Linux, natively or inside WSL2 / a Linux VM. The servers it manages only need SSH, so they can run Linux, Windows or BSD.
 
-Run the local check first:
+From a checkout, run the local check first:
 
 ```bash
 ./scripts/platform-check.sh
 ```
 
 It reports the OS, package manager, Docker, Compose and init system, then prints the next step. It does not change anything.
+
+Every Linux installation below can use the one-line installer. If you already cloned the repository, run `sudo ./scripts/install.sh` instead.
 
 ## Linux
 
@@ -25,9 +27,7 @@ The installer detects the package manager and installs `curl`, `wget`, `git`, `j
 | Alpine | Alpine, postmarketOS | `apk` |
 
 ```bash
-git clone https://github.com/limoonsdev/dashy.git
-cd dashy
-sudo ./scripts/install.sh
+curl -fsSL https://raw.githubusercontent.com/limoonsdev/dashy/main/scripts/install.sh | sudo bash
 ```
 
 ### Other distributions
@@ -37,9 +37,7 @@ Gentoo, Void, NixOS, Slackware, Clear Linux and derivatives work when Docker Eng
 ```bash
 docker --version
 docker compose version
-git clone https://github.com/limoonsdev/dashy.git
-cd dashy
-sudo ./scripts/install.sh
+curl -fsSL https://raw.githubusercontent.com/limoonsdev/dashy/main/scripts/install.sh | sudo bash
 ```
 
 If the installer cannot install a package on an unusual distribution, install the five prerequisites manually (`curl`, `wget`, `git`, `jq`, `openssl`), install Docker, and rerun it as root.
@@ -96,11 +94,7 @@ multipass shell dashy
 Inside the VM:
 
 ```bash
-sudo apt-get update
-sudo apt-get install -y git
-git clone https://github.com/limoonsdev/dashy.git
-cd dashy
-sudo ./scripts/install.sh
+curl -fsSL https://raw.githubusercontent.com/limoonsdev/dashy/main/scripts/install.sh | sudo bash
 ```
 
 Find the VM address with `multipass info dashy` and open `http://<vm-ip>:8000`.

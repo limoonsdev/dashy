@@ -44,15 +44,21 @@ This fork is deliberately narrower than a general-purpose PaaS. It focuses on a 
 
 ## Quick start
 
-Install on a Linux host with Git and root access:
+One command on a Linux host with `curl` and root access:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/limoonsdev/dashy/main/scripts/install.sh | sudo bash
+```
+
+The installer detects the distribution, installs Docker when it is missing, creates `/data/dashy`, fetches the source from Git, prepares the environment and starts the stack. It is the same script as [`scripts/install.sh`](scripts/install.sh) — read it before running it as root.
+
+Prefer to inspect the checkout first:
 
 ```bash
 git clone https://github.com/limoonsdev/dashy.git
 cd dashy
 sudo ./scripts/install.sh
 ```
-
-The installer detects the distribution, installs Docker when it is missing, creates `/data/dashy`, fetches the source from Git, prepares the environment and starts the stack.
 
 Open `http://SERVER_IP:8000` and create the first account within 10 minutes. Put the instance behind a reverse proxy before exposing it to the internet.
 
@@ -69,6 +75,12 @@ Open `http://SERVER_IP:8000` and create the first account within 10 minutes. Put
 Ports: `22` (managed servers), `80` and `443` (proxy), `8000` (dashboard), `6001` and `6002` (realtime).
 
 ### Install from a specific ref
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/limoonsdev/dashy/main/scripts/install.sh | sudo env DASHY_REF=main bash
+```
+
+From a checkout, the equivalent is:
 
 ```bash
 sudo DASHY_REF=main ./scripts/install.sh
@@ -99,6 +111,8 @@ Dashy orchestrates **Linux containers**. The control plane therefore runs on Lin
 | macOS 13+ | Linux VM | Multipass, OrbStack or UTM, then the Linux installer |
 | FreeBSD, OpenBSD, NetBSD | Linux VM | bhyve / vmm Linux VM, then the Linux installer |
 | ARM64 (Raspberry Pi, Ampere, Apple silicon VM) | Native with Docker | Use an image with an arm64 manifest |
+
+On native Linux, the one-line installer above is the shortest path; `sudo ./scripts/install.sh` is the equivalent from a checkout.
 
 Any Linux distribution that can run Docker Engine and Compose can run Dashy. The installer automates the package managers above; distributions outside that list use the manual Docker path. Windows, macOS and BSD do not run the control plane natively — they host it in WSL2 or a Linux VM. See [docs/compatibility.md](docs/compatibility.md) for the exact commands and caveats.
 
