@@ -1350,7 +1350,8 @@ fi
 # The healthcheck only proves that PHP and Reverb answer (/api/health does not touch the
 # database). When the seeder did not run, the instance has no settings row and every page,
 # the login form first, answers 404, so check the page the root account is created on.
-LOGIN_STATUS=$(curl -s -o /dev/null -w '%{http_code}' --max-time 10 "http://127.0.0.1:${APP_PORT:-8000}/login" || echo "000")
+DASHY_HTTP_PORT=$(sed -n 's/^APP_PORT=//p' "$ENV_FILE" 2>/dev/null | tail -n 1)
+LOGIN_STATUS=$(curl -s -o /dev/null -w '%{http_code}' --max-time 10 "http://127.0.0.1:${DASHY_HTTP_PORT:-8000}/login" || echo "000")
 if [ "$LOGIN_STATUS" = "404" ] || [ "$LOGIN_STATUS" = "000" ]; then
     echo " - ERROR: /login answers $LOGIN_STATUS, the database was not seeded."
     echo " - Recent container logs:"

@@ -235,7 +235,12 @@ class InstanceSettings extends Model
             // then fails with a 404, so create the defaults instead of locking the
             // instance out of its own UI.
             if ($settings === null) {
-                $settings = InstanceSettings::forceCreate(['id' => 0]);
+                try {
+                    $settings = InstanceSettings::forceCreate(['id' => 0]);
+                } catch (\Throwable $e) {
+                    // Another request created the row between the lookup and the insert.
+                    $settings = InstanceSettings::query()->find(0) ?? throw $e;
+                }
             }
 
             return $settings;
