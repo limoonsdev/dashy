@@ -11,7 +11,7 @@
                         <pre class="mt-1 overflow-auto rounded-lg border border-neutral-200 p-2 text-[11px] leading-5 dark:border-white/[0.08] dark:bg-white/[0.02]">{{ $install }}</pre>
                         <p class="mt-1 text-[11px] text-neutral-500 dark:text-fg-dim">
                             Windows (PowerShell):
-                            <code>irm https://raw.githubusercontent.com/limoonsdev/dashy/main/cli/install.ps1 | iex</code>
+                            <code>irm https://raw.githubusercontent.com/limoonsdev/dashy/main/InstallCLI.ps1 | iex</code>
                         </p>
                     </div>
                     <div>
@@ -21,6 +21,14 @@
                             <option value="read">Read only — status, servers, logs</option>
                             <option value="write">Manage — deploy and change resources</option>
                             <option value="deploy">Full operator — deploy, delete and act</option>
+                        </select>
+                        <p class="mt-2 text-[12px] font-medium">Keep this terminal signed in for</p>
+                        <select wire:model="access"
+                            class="mt-1 w-full rounded-lg border border-neutral-200 p-2 text-[13px] dark:border-white/[0.08] dark:bg-white/[0.02]">
+                            <option value="14">14 days — recommended</option>
+                            <option value="30">30 days</option>
+                            <option value="90">90 days</option>
+                            <option value="never">Until I revoke it (no expiry)</option>
                         </select>
                         <p class="mt-1 text-[11px] text-neutral-500 dark:text-fg-dim">
                             The code is single use, bound to your account and this team, and expires in
@@ -49,7 +57,7 @@
                         </div>
                         <p class="mt-2 text-[11px] text-neutral-500 dark:text-fg-dim">
                             Expires {{ \Illuminate\Support\Carbon::parse($expiresAt)->diffForHumans() }}. The terminal
-                            receives a 30-day token and never asks for your password.
+                            receives a token with the duration you chose and never asks for your password.
                         </p>
                     </div>
                 @endif

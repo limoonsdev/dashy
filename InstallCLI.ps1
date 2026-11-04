@@ -87,8 +87,8 @@ if (-not $NodeExe) {
 
 # ── CLI ────────────────────────────────────────────────────────────────────────
 $CliPath = Join-Path $BinDir 'dashy.mjs'
-$LocalBuild = Join-Path $PSScriptRoot 'dist/cli.js'
-$LocalPortable = Join-Path $PSScriptRoot 'dashy.js'
+$LocalBuild = Join-Path $PSScriptRoot 'cli/dist/cli.js'
+$LocalPortable = Join-Path $PSScriptRoot 'cli/dashy.js'
 
 if (Test-Path $LocalBuild) {
     Copy-Item $LocalBuild $CliPath -Force

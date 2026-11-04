@@ -1,6 +1,6 @@
 {
   "name": "dashy-cli",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "Dashy CLI — a full-screen terminal console for self-hosted Dashy instances.",
   "private": true,
   "type": "module",

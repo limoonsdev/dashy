@@ -1,9 +1,9 @@
 import { h } from './ui/jsx.js';
 import { render } from './ui/render.js';
-import { Screen } from './views.js';
-import { ApiError, fetchMe, pairWithCode, triggerUpgrade } from './api.js';
-import { clearConfig, loadConfig, normalizeApi, saveConfig } from './config.js';
-import type { AppState, Flash } from './types.js';
+import { Screen } from './views/index.js';
+import { ApiError, fetchMe, pairWithCode, triggerUpgrade } from './lib/api.js';
+import { clearConfig, loadConfig, normalizeApi, saveConfig } from './lib/config.js';
+import type { AppState, Flash } from './lib/state.js';
 import readline from 'node:readline';
 
 const COMPACT_WIDTH = 76;

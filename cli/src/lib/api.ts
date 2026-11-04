@@ -19,6 +19,8 @@ export type Me = {
         latest: string;
         checked_at: string | null;
         error: string | null;
+        notes: string | null;
+        url: string | null;
     };
     abilities: string[];
 };

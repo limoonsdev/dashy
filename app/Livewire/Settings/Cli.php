@@ -17,6 +17,9 @@ class Cli extends Component
 
     public string $ability = 'deploy';
 
+    /** "14", "30", "90" or "never". Infinite access is a deliberate choice. */
+    public string $access = '14';
+
     /** @var array<int, array<string, mixed>> */
     public array $tokens = [];
 
@@ -39,7 +42,8 @@ class Cli extends Component
 
         $abilities = CliPairing::ABILITIES[$this->ability] ?? ['read'];
 
-        $issued = CliPairing::issue(auth()->user(), currentTeam(), $abilities);
+        $accessDays = $this->access === 'never' ? null : (int) $this->access;
+        $issued = CliPairing::issue(auth()->user(), currentTeam(), $abilities, CliPairing::MINUTES, $accessDays);
 
         $this->code = $issued['code'];
         $this->expiresAt = $issued['expires_at'];
@@ -86,7 +90,7 @@ class Cli extends Component
     public function render()
     {
         return view('livewire.settings.cli', [
-            'install' => 'curl -fsSL https://raw.githubusercontent.com/limoonsdev/dashy/main/cli/install.sh | bash',
+            'install' => 'curl -fsSL https://raw.githubusercontent.com/limoonsdev/dashy/main/InstallCLI.sh | bash',
         ]);
     }
 

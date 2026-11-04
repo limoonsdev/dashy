@@ -47,10 +47,15 @@ class CliController
         $team = $payload['team_id'] !== null ? Team::find($payload['team_id']) : $user->currentTeam();
         $name = 'Dashy CLI · '.($data['name'] ?: 'terminal');
 
+        // A terminal asks for 14 days by default; "never" is an explicit choice
+        // made in Settings → CLI, never something the client can invent.
+        $accessDays = $payload['access_days'] ?? 14;
+        $expiresAt = $accessDays === null ? null : now()->addDays((int) $accessDays);
+
         $token = $user->createToken(
             $name,
             $payload['abilities'],
-            now()->addDays(30),
+            $expiresAt,
             $team?->id,
         );
 
@@ -63,7 +68,7 @@ class CliController
         return response()->json([
             'token' => $token->plainTextToken,
             'abilities' => $payload['abilities'],
-            'expires_at' => now()->addDays(30)->toIso8601String(),
+            'expires_at' => $expiresAt?->toIso8601String(),
             'user' => [
                 'id' => $user->id,
                 'name' => $user->name,
@@ -125,6 +130,8 @@ class CliController
                 'latest' => $check['latest'],
                 'checked_at' => $check['checked_at'],
                 'error' => $check['error'],
+                'notes' => $check['notes'],
+                'url' => $check['url'],
             ],
             'abilities' => $token?->abilities ?? ['read'],
         ]);

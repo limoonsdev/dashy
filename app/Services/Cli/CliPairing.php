@@ -40,7 +40,7 @@ class CliPairing
      * @param  array<int, string>  $abilities
      * @return array{code: string, expires_at: string, abilities: array<int, string>}
      */
-    public static function issue(User $user, ?Team $team, array $abilities, int $minutes = self::MINUTES): array
+    public static function issue(User $user, ?Team $team, array $abilities, int $minutes = self::MINUTES, ?int $accessDays = 14): array
     {
         $abilities = array_values(array_intersect($abilities, ['read', 'write', 'deploy', 'root']));
         if ($abilities === []) {
@@ -53,6 +53,7 @@ class CliPairing
             'user_id' => $user->id,
             'team_id' => $team?->id,
             'abilities' => $abilities,
+            'access_days' => $accessDays,
             'created_at' => now()->toIso8601String(),
         ], now()->addMinutes($minutes));
 
@@ -76,7 +77,7 @@ class CliPairing
     /**
      * Reads and removes the code in one step, so two terminals cannot share it.
      *
-     * @return array{user_id: int, team_id: int|null, abilities: array<int, string>, created_at: string}|null
+     * @return array{user_id: int, team_id: int|null, abilities: array<int, string>, access_days: int|null, created_at: string}|null
      */
     public static function redeem(string $code): ?array
     {

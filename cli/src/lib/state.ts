@@ -1,5 +1,33 @@
-export const TABS = ['Overview', 'Servers', 'Updates', 'Help'];
-export function demoState() {
+import type { Me } from './api.js';
+
+export const TABS = ['Overview', 'Servers', 'Updates', 'Help'] as const;
+
+export type TabIndex = 0 | 1 | 2 | 3;
+
+export type Flash = { text: string; tone: 'ok' | 'warn' | 'err' };
+
+export type PairState = {
+    api: string;
+    code: string;
+    field: 'api' | 'code';
+    error: string | null;
+    busy: boolean;
+};
+
+export type AppState = {
+    phase: 'boot' | 'pair' | 'main';
+    bootFrame: number;
+    tab: TabIndex;
+    me: Me | null;
+    error: string | null;
+    loading: boolean;
+    flash: Flash | null;
+    confirmUpgrade: boolean;
+    pair: PairState;
+    clock: Date;
+};
+
+export function demoState(): AppState {
     return {
         phase: 'main',
         bootFrame: 12,
@@ -25,6 +53,14 @@ export function demoState() {
                 latest: '4.7.1',
                 checked_at: new Date().toISOString(),
                 error: null,
+                notes: [
+                    '## Added',
+                    '+ Live metrics now share the Metrics page',
+                    '+ CLI tokens can stay valid without an expiry',
+                    '## Removed',
+                    '- The separate Live metrics menu entry',
+                ].join('\n'),
+                url: 'https://github.com/limoonsdev/dashy/releases',
             },
             abilities: ['read', 'write', 'deploy'],
         },

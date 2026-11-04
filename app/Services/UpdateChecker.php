@@ -85,6 +85,7 @@ class UpdateChecker
                     'name' => (string) ($releaseResponse->json('name') ?: $releaseTag),
                     'url' => (string) $releaseResponse->json('html_url'),
                     'published_at' => $releaseResponse->json('published_at'),
+                    'notes' => (string) $releaseResponse->json('body'),
                 ];
             } elseif ($releaseResponse->status() === 404) {
                 // The repository has no release yet: fall back to the newest tag.
@@ -163,6 +164,8 @@ class UpdateChecker
             'latest_tag' => $tag,
             'latest_commit' => $commit,
             'release' => $release,
+            'notes' => $release['notes'] ?? null,
+            'url' => $release['url'] ?? null,
             'available' => $available,
             'source' => $source,
             'checked_at' => now()->toIso8601String(),

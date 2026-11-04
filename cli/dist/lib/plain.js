@@ -1,7 +1,7 @@
-import { h } from './ui/jsx.js';
-import { render } from './ui/render.js';
-import { Box, Text } from './ui/index.js';
-import { dim, dot, painted, palette } from './theme.js';
+import { h } from '../ui/jsx.js';
+import { render } from '../ui/render.js';
+import { Box, Text } from '../ui/index.js';
+import { dim, dot, painted, palette } from '../ui/theme.js';
 const PANEL_WIDTH = 88;
 function panel(title, lines, borderColor = palette.line) {
     const element = h(Box, { border: true, title: title, borderColor: borderColor, paddingX: 1 }, lines);

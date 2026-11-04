@@ -19,13 +19,13 @@ action is checked against that token's abilities.
 **Linux and macOS** (Intel and Apple Silicon):
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/limoonsdev/dashy/main/cli/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/limoonsdev/dashy/main/InstallCLI.sh | bash
 ```
 
 **Windows** (PowerShell, x64 and ARM64):
 
 ```powershell
-irm https://raw.githubusercontent.com/limoonsdev/dashy/main/cli/install.ps1 | iex
+irm https://raw.githubusercontent.com/limoonsdev/dashy/main/InstallCLI.ps1 | iex
 ```
 
 Both installers need no administrator rights. If `node` 18 or newer is missing,

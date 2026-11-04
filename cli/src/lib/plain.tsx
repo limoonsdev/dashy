@@ -1,7 +1,7 @@
-import { h, type Element } from './ui/jsx.js';
-import { render } from './ui/render.js';
-import { Box, Text } from './ui/index.js';
-import { dim, dot, painted, palette } from './theme.js';
+import { h, type Element } from '../ui/jsx.js';
+import { render } from '../ui/render.js';
+import { Box, Text } from '../ui/index.js';
+import { dim, dot, painted, palette } from '../ui/theme.js';
 import type { Me } from './api.js';
 
 const PANEL_WIDTH = 88;

@@ -101,13 +101,13 @@ install_cli() {
   local source_dir
   source_dir="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" 2>/dev/null && pwd)" || source_dir=""
 
-  if [ -n "$source_dir" ] && [ -f "$source_dir/dist/cli.js" ]; then
-    cp "$source_dir/dist/cli.js" "$target"
-    ok "CLI copied from $source_dir/dist/cli.js"
-  elif [ -n "$source_dir" ] && [ -f "$source_dir/dashy.js" ]; then
+  if [ -n "$source_dir" ] && [ -f "$source_dir/cli/dist/cli.js" ]; then
+    cp "$source_dir/cli/dist/cli.js" "$target"
+    ok "CLI copied from $source_dir/cli/dist/cli.js"
+  elif [ -n "$source_dir" ] && [ -f "$source_dir/cli/dashy.js" ]; then
     target="$BIN_DIR/dashy.cjs"
-    cp "$source_dir/dashy.js" "$target"
-    ok "Portable CLI copied from $source_dir/dashy.js"
+    cp "$source_dir/cli/dashy.js" "$target"
+    ok "Portable CLI copied from $source_dir/cli/dashy.js"
   else
     step "Downloading the CLI"
     if ! curl -fsSL "$CLI_URL" -o "$target"; then
