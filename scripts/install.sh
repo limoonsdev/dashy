@@ -143,18 +143,18 @@ ui_duration() {
     fi
 }
 
-# Short form of a second count for the live line: 42s, 4m 05s, 1h 02m
-ui_short_duration() {
+# Compact remaining time for the live line: ~42s, ~4m, ~1h 02m
+ui_eta_short() {
     local seconds=$1
     if [ "$seconds" -lt 0 ]; then
         seconds=0
     fi
     if [ "$seconds" -lt 60 ]; then
-        printf '%ds' "$seconds"
+        printf '~%ds' "$seconds"
     elif [ "$seconds" -lt 3600 ]; then
-        printf '%dm %02ds' $((seconds / 60)) $((seconds % 60))
+        printf '~%dm' $((seconds / 60))
     else
-        printf '%dh %02dm' $((seconds / 3600)) $((seconds % 3600 / 60))
+        printf '~%dh %02dm' $((seconds / 3600)) $((seconds % 3600 / 60))
     fi
 }
 
@@ -302,13 +302,11 @@ ui_spinner() {
         right=$(ui_duration $((elapsed * 1000)))
         extra=""
         if [ "$UI_STEP_ETA" -gt 0 ]; then
-            extra=" · ~$(ui_short_duration "$(ui_remaining_seconds "$elapsed")") left"
+            extra=" · $(ui_eta_short "$(ui_remaining_seconds "$elapsed")") left"
         fi
-        # The line has to stay within the terminal width, otherwise the spinner wraps
+        # The line has to stay within the terminal width, otherwise the spinner wraps.
+        # The detail text gives way first, so the remaining time stays visible.
         max_right=$((UI_WIDTH - 11 - ${#UI_STEP_TITLE}))
-        if [ -n "$UI_STEP_DETAIL" ]; then
-            max_right=$((max_right - 2 - ${#UI_STEP_DETAIL}))
-        fi
         if [ $((${#right} + ${#extra})) -le "$max_right" ]; then
             right="${right}${extra}"
         fi
