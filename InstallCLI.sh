@@ -2,11 +2,17 @@
 #
 # Dashy CLI installer — Linux and macOS (Intel and Apple Silicon).
 #
-#   curl -fsSL https://raw.githubusercontent.com/limoonsdev/dashy/main/cli/install.sh | bash
+#   curl -fsSL https://raw.githubusercontent.com/limoonsdev/dashy/main/InstallCLI.sh | bash
 #
-# It installs a private Node runtime when the machine has none, then puts the
-# `dashy` command in ~/.dashy/bin. Nothing runs as root and nothing is written
-# outside your home directory.
+# Installs the complete CLI (all modules, not just the entry file), a private
+# Node runtime when needed, and the `dashy` command in ~/.dashy/bin. Nothing
+# runs as root and nothing is written outside your home directory.
+#
+# Environment overrides:
+#   DASHY_INSTALL_DIR   install location (default: ~/.dashy)
+#   DASHY_NODE_VERSION  Node version to download (default: v22.11.0)
+#   DASHY_BRANCH        repository branch (default: main)
+#   DASHY_RAW_URL       raw CLI base URL (advanced)
 
 set -euo pipefail
 
@@ -14,9 +20,11 @@ NODE_VERSION="${DASHY_NODE_VERSION:-v22.11.0}"
 INSTALL_DIR="${DASHY_INSTALL_DIR:-$HOME/.dashy}"
 BIN_DIR="$INSTALL_DIR/bin"
 NODE_DIR="$INSTALL_DIR/node"
-RAW_URL="${DASHY_RAW_URL:-https://raw.githubusercontent.com/limoonsdev/dashy/main/cli}"
-CLI_URL="$RAW_URL/dist/cli.js"
-FALLBACK_URL="$RAW_URL/dashy.js"
+CLI_DIR="$INSTALL_DIR/cli"
+BRANCH="${DASHY_BRANCH:-main}"
+RAW_BASE="${DASHY_RAW_URL:-https://raw.githubusercontent.com/limoonsdev/dashy/$BRANCH/cli}"
+RAW_BASE="${RAW_BASE%/}"
+FALLBACK_URL="$RAW_BASE/dashy.js"
 
 BRAND='\033[38;2;139;92;246m'
 ACCENT='\033[38;2;34;211;238m'
@@ -87,7 +95,7 @@ install_node() {
     fail "Could not download Node from nodejs.org. Install Node 18+ yourself and run this again."
   fi
 
-  step "Extracting"
+  step "Extracting Node"
   tar -xf "$INSTALL_DIR/node.${extension}" -C "$NODE_DIR" --strip-components=1
   rm -f "$INSTALL_DIR/node.${extension}"
 
@@ -96,33 +104,67 @@ install_node() {
 }
 
 install_cli() {
-  mkdir -p "$BIN_DIR"
-  local target="$BIN_DIR/dashy.mjs"
+  mkdir -p "$CLI_DIR"
+  local entry="$CLI_DIR/dist/cli.js"
   local source_dir
   source_dir="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" 2>/dev/null && pwd)" || source_dir=""
 
   if [ -n "$source_dir" ] && [ -f "$source_dir/cli/dist/cli.js" ]; then
-    cp "$source_dir/cli/dist/cli.js" "$target"
-    ok "CLI copied from $source_dir/cli/dist/cli.js"
-  elif [ -n "$source_dir" ] && [ -f "$source_dir/cli/dashy.js" ]; then
-    target="$BIN_DIR/dashy.cjs"
-    cp "$source_dir/cli/dashy.js" "$target"
-    ok "Portable CLI copied from $source_dir/cli/dashy.js"
+    rm -rf "$CLI_DIR/dist"
+    cp -R "$source_dir/cli/dist" "$CLI_DIR/dist"
+    ok "CLI copied from $source_dir/cli/dist"
   else
-    step "Downloading the CLI"
-    if ! curl -fsSL "$CLI_URL" -o "$target"; then
-      warn "The full-screen build is unavailable, using the portable CLI"
-      target="$BIN_DIR/dashy.cjs"
-      if ! curl -fsSL "$FALLBACK_URL" -o "$target"; then
+    step "Downloading the CLI modules"
+    local tmp manifest file target
+    tmp="$(mktemp -d)"
+
+    if curl -fsSL "$RAW_BASE/dist/manifest.txt" -o "$tmp/manifest.txt"; then
+      while IFS= read -r file; do
+        file="$(printf '%s' "$file" | tr -d '\r' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')"
+        [ -z "$file" ] && continue
+
+        case "$file" in
+          /* | *..*) fail "Unsafe path in the CLI manifest: $file" ;;
+        esac
+
+        target="$CLI_DIR/dist/$file"
+        mkdir -p "$(dirname "$target")"
+
+        if ! curl -fsSL "$RAW_BASE/dist/$file" -o "$target"; then
+          rm -rf "$tmp" "$CLI_DIR/dist"
+          fail "Could not download CLI module $file."
+        fi
+      done < "$tmp/manifest.txt"
+
+      rm -rf "$tmp"
+
+      if [ ! -f "$entry" ]; then
+        fail "The CLI entry point is missing after download."
+      fi
+
+      ok "CLI installed in $CLI_DIR/dist"
+    else
+      rm -rf "$tmp"
+      rm -rf "$CLI_DIR/dist"
+      warn "The full CLI manifest is unavailable, using the portable CLI"
+      entry="$CLI_DIR/dashy.js"
+
+      if [ -n "$source_dir" ] && [ -f "$source_dir/cli/dashy.js" ]; then
+        cp "$source_dir/cli/dashy.js" "$entry"
+        ok "Portable CLI copied from $source_dir/cli/dashy.js"
+      elif ! curl -fsSL "$FALLBACK_URL" -o "$entry"; then
         fail "Could not download the CLI from $FALLBACK_URL"
+      else
+        ok "Portable CLI downloaded"
       fi
     fi
-    ok "CLI downloaded"
   fi
+
+  CLI_ENTRY="$entry"
 
   cat > "$BIN_DIR/dashy" <<EOF
 #!/usr/bin/env bash
-exec "$NODE" "$target" "\$@"
+exec "$NODE" "$CLI_ENTRY" "\$@"
 EOF
   chmod +x "$BIN_DIR/dashy"
 }
@@ -162,13 +204,19 @@ main() {
     ok "Using Node $(node -v) from $NODE"
   elif [ -x "$NODE_DIR/bin/node" ] && [ "$(node_major "$NODE_DIR/bin/node")" -ge 18 ]; then
     NODE="$NODE_DIR/bin/node"
-    ok "Using the private Node $(node -v 2>/dev/null || "$NODE" -v)"
+    ok "Using the private Node in $NODE_DIR"
   else
     install_node
   fi
 
   install_cli
   wire_path
+
+  if [ -n "${CLI_ENTRY:-}" ] && "$NODE" "$CLI_ENTRY" --version >/dev/null 2>&1; then
+    ok "Installed: $("$NODE" "$CLI_ENTRY" --version)"
+  else
+    warn "Installed, but the CLI did not report its version."
+  fi
 
   printf "\n"
   printf "  ${GREEN}${BOLD}Installed.${RESET}\n"

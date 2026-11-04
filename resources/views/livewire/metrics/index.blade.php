@@ -5,7 +5,8 @@
         <div class="min-w-0">
             <h1 class="min-w-0 text-[24px]! leading-7! font-semibold! tracking-tight!">Metrics</h1>
             <p class="mt-1 text-[13px] text-neutral-500 dark:text-fg-dim">
-                Resource usage across every server — history, and what is happening right now.
+                History is kept by Sentinel. Live readings come straight from each server.
+                Pick a view; both cover the same servers and the same metrics.
             </p>
         </div>
 
@@ -26,8 +27,10 @@
                     'text-neutral-500 hover:text-black dark:text-fg-faint dark:hover:text-fg' => $tab !== 'live',
                 ])>
                 <x-reicon name="refresh3" class="size-3.5" />
-                Live
-                <span class="ml-0.5 inline-flex size-1.5 animate-pulse rounded-full bg-emerald-500"></span>
+                Live now
+                @if ($tab === 'live')
+                    <span class="ml-0.5 inline-flex size-1.5 animate-pulse rounded-full bg-emerald-500"></span>
+                @endif
             </button>
         </div>
     </div>

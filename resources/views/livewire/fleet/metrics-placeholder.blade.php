@@ -4,7 +4,7 @@
         <div class="min-w-0">
             <h1 class="min-w-0 text-[24px]! leading-7! font-semibold! tracking-tight!">Metrics</h1>
             <p class="mt-1 text-[13px] text-neutral-500 dark:text-fg-dim">
-                Resource usage across every server, reported by Sentinel.
+                CPU, memory, disk and network across every server, kept by Sentinel.
             </p>
         </div>
 
