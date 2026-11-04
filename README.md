@@ -188,4 +188,4 @@ Translated guides: [Français](./docs/i18n/README.fr.md) · [Español](./docs/i1
 
 ## License
 
-Apache-2.0. Dashy is an independent fork of the Coolify project; the upstream attribution is kept in [LICENSE](./LICENSE) and [NOTICE](./NOTICE) where required by the license.
+Apache-2.0. Dashy is an independent fork of the Coolify project; the upstream attribution is kept in [LICENSE](./LICENSE).
