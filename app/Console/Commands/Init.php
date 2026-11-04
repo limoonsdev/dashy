@@ -22,6 +22,7 @@ use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Schema;
 
 class Init extends Command
 {
@@ -37,6 +38,8 @@ class Init extends Command
     {
         Artisan::call('optimize:clear');
         Artisan::call('optimize');
+
+        $this->ensureSchema();
 
         try {
             if (InstanceSettings::query()->find(0) === null || Team::query()->find(0) === null) {
@@ -178,6 +181,31 @@ class Init extends Command
                 echo "Disabling auto-update\n";
                 $this->settings->update(['is_auto_update_enabled' => false]);
             }
+        }
+    }
+
+    /**
+     * A migration that failed before the database was reachable, or that was skipped while
+     * the oneshot could still exit successfully, leaves the schema incomplete: every page
+     * that reads a missing table fails (oauth_settings on the login screen). Run the
+     * migrations again at boot so an already broken instance heals on its next start.
+     */
+    private function ensureSchema(): void
+    {
+        try {
+            if (Schema::hasTable('migrations') && Schema::hasTable('oauth_settings') && Schema::hasTable('instance_settings')) {
+                return;
+            }
+
+            echo "The database schema is incomplete, running the migrations\n";
+            $status = Artisan::call('migrate', ['--force' => true]);
+            echo Artisan::output();
+
+            if ($status !== 0) {
+                echo "The migrations did not complete, the instance may not work correctly\n";
+            }
+        } catch (\Throwable $e) {
+            echo "Could not check the database schema: {$e->getMessage()}\n";
         }
     }
 
