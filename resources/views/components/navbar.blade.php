@@ -137,6 +137,8 @@
                             ['label' => 'Destinations', 'icon' => 'destinations', 'href' => route('destination.index'), 'active' => request()->is('destinations', 'destination/*')],
                             ['label' => 'Registries', 'icon' => 'layers', 'href' => route('registries.index'), 'active' => request()->is('registries'), 'visible' => auth()->user()?->isAdmin()],
                             ['label' => 'S3 Storage', 'icon' => 'storages', 'href' => route('storage.index'), 'active' => request()->is('storages', 'storages/*')],
+                            ['label' => 'Chat bot', 'icon' => 'link', 'href' => route('settings.bot'), 'active' => request()->is('settings/bot')],
+                            ['label' => 'AI assistant', 'icon' => 'admin', 'href' => route('settings.ai'), 'active' => request()->is('settings/ai')],
                         ]],
                         ['label' => 'Shared Variables', 'icon' => 'variables', 'children' => [
                             ['label' => 'Overview', 'icon' => 'dashboard', 'href' => route('shared-variables.index'), 'active' => request()->is('shared-variables'), 'visible' => $teamWide],
