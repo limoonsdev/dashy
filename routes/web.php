@@ -305,6 +305,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/settings/bot', SettingsBot::class)->name('settings.bot');
         Route::get('/settings/ai', SettingsAi::class)->name('settings.ai');
         Route::get('/settings/smtp', SettingsSmtp::class)->name('settings.smtp');
+        Route::get('/settings/cli', \App\Livewire\Settings\Cli::class)->name('settings.cli');
         Route::get('/settings/oauth/{provider}', SettingsOauth::class)
             ->where('provider', '[A-Za-z0-9_-]+')
             ->name('settings.oauth.provider');

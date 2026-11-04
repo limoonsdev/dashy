@@ -484,6 +484,12 @@ Route::group([
     Route::post('/sentinel/push', [SentinelController::class, 'push']);
 });
 
+// CLI pairing: the terminal has no token yet, so the code is the credential.
+Route::post('/cli/pair', [\App\Http\Controllers\Api\CliController::class, 'pair'])
+    ->middleware('throttle:10,1');
+Route::get('/cli/me', [\App\Http\Controllers\Api\CliController::class, 'me'])
+    ->middleware(['auth:sanctum', 'throttle:60,1']);
+
 Route::any('/{any}', function () {
     return response()->json(['message' => 'Not found.', 'docs' => 'https://dashy.io/docs'], 404);
 })->where('any', '.*');

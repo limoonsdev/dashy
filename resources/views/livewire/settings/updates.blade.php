@@ -17,6 +17,54 @@
                         Check now
                     </x-forms.button>
                 </x-slot:actions>
+
+                @if ($check !== [])
+                    <div class="mb-4 rounded-lg border border-neutral-200 p-3 dark:border-white/[0.08]">
+                        <div class="flex flex-wrap items-center justify-between gap-2">
+                            <p class="text-[12px] font-semibold">Latest check</p>
+                            <span class="inline-flex items-center gap-1.5 text-[11px] font-medium {{ $check['available'] ? 'text-warning' : 'text-success' }}">
+                                <span class="size-1.5 rounded-full {{ $check['available'] ? 'bg-warning' : 'bg-success' }}"></span>
+                                {{ $check['available'] ? 'Update available' : 'Up to date' }}
+                            </span>
+                        </div>
+                        <dl class="mt-2 grid gap-2 text-[12px] sm:grid-cols-2 lg:grid-cols-4">
+                            <div>
+                                <dt class="text-[11px] text-neutral-500 dark:text-fg-faint">Running</dt>
+                                <dd class="font-mono">{{ $check['current'] }}</dd>
+                            </div>
+                            <div>
+                                <dt class="text-[11px] text-neutral-500 dark:text-fg-faint">Latest</dt>
+                                <dd class="font-mono">{{ $check['latest'] !== '' ? $check['latest'] : '—' }}</dd>
+                            </div>
+                            <div>
+                                <dt class="text-[11px] text-neutral-500 dark:text-fg-faint">Channel</dt>
+                                <dd>{{ $check['channel'] }}</dd>
+                            </div>
+                            <div>
+                                <dt class="text-[11px] text-neutral-500 dark:text-fg-faint">Checked</dt>
+                                <dd>{{ \Illuminate\Support\Carbon::parse($check['checked_at'])->diffForHumans() }}</dd>
+                            </div>
+                        </dl>
+                        @if ($check['latest_commit'])
+                            <p class="mt-2 text-[11px] text-neutral-500 dark:text-fg-dim">
+                                {{ $check['branch'] }} head:
+                                <a href="{{ $check['latest_commit']['url'] }}" target="_blank" rel="noopener noreferrer" class="underline">{{ $check['latest_commit']['short'] }}</a>
+                                — {{ $check['latest_commit']['message'] }}
+                            </p>
+                        @endif
+                        @if ($check['release'])
+                            <p class="mt-1 text-[11px]">
+                                <a href="{{ $check['release']['url'] }}" target="_blank" rel="noopener noreferrer" class="underline">
+                                    Release {{ $check['release']['tag'] }}{{ $check['release']['name'] !== $check['release']['tag'] ? ' — '.$check['release']['name'] : '' }}
+                                </a>
+                            </p>
+                        @endif
+                        @if ($check['error'])
+                            <p class="mt-2 text-[11px] text-warning">Last error: {{ $check['error'] }}</p>
+                        @endif
+                    </div>
+                @endif
+
                 <div class="grid gap-4 lg:grid-cols-2">
                     {{-- Not live: a live update clears the dirty state, so the unsaved bar never opened for a channel change. --}}
                     <x-forms.listbox id="update_channel" label="Channel" :options="[

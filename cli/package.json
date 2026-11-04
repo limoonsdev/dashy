@@ -1,0 +1,10 @@
+{
+    "name": "dashy-cli",
+    "version": "1.0.0",
+    "private": true,
+    "description": "Terminal client for Dashy",
+    "type": "commonjs",
+    "bin": {
+        "dashy": "./dashy.js"
+    }
+}

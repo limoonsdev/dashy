@@ -5,6 +5,7 @@ namespace App\Livewire\Settings;
 use App\Jobs\CheckForUpdatesJob;
 use App\Models\InstanceSettings;
 use App\Models\Server;
+use App\Services\UpdateChecker;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
@@ -37,6 +38,9 @@ class Updates extends Component
     #[Validate('nullable|required_if:update_channel,custom|string|max:128|regex:/^[A-Za-z0-9_][A-Za-z0-9_.-]*$/')]
     public ?string $update_custom_tag = null;
 
+    /** @var array<string, mixed> */
+    public array $check = [];
+
     public function mount()
     {
         if (! isInstanceAdmin()) {
@@ -53,6 +57,7 @@ class Updates extends Component
         $this->docker_registry_url = $this->settings->docker_registry_url ?: 'docker.io';
         $this->update_channel = $this->settings->update_channel;
         $this->update_custom_tag = $this->settings->update_custom_tag;
+        $this->check = UpdateChecker::run();
     }
 
     public function instantSave()
@@ -176,18 +181,27 @@ class Updates extends Component
 
     public function checkManually()
     {
-        $this->authorize('update', $this->settings);
-        $checked = (new CheckForUpdatesJob(cdnTries: 1))->handle();
-        $this->dispatch('updateAvailable');
-        if (! $checked) {
-            $this->dispatch('error', 'Could not check for updates. Try again later.');
+        try {
+            $this->authorize('update', $this->settings);
 
-            return;
-        }
-        if (instanceSettings()->new_version_available) {
-            $this->dispatch('success', 'New version available!');
-        } else {
-            $this->dispatch('success', 'No new version available.');
+            // GitHub is the source of truth for this fork: the CDN that published
+            // versions.json no longer answers, so a CDN-only check always failed here.
+            $this->check = UpdateChecker::run(fresh: true);
+            $this->dispatch('updateAvailable');
+
+            $reachable = $this->check['latest_tag'] !== null || $this->check['latest_commit'] !== null;
+
+            if (! $reachable) {
+                $this->dispatch('error', 'Could not reach GitHub. '.($this->check['error'] ?? 'Try again in a moment.'));
+
+                return;
+            }
+
+            $this->dispatch('success', $this->check['available']
+                ? 'Update available: '.$this->check['latest']
+                : 'This instance is up to date ('.$this->check['current'].').');
+        } catch (\Throwable $e) {
+            return handleError($e, $this);
         }
     }
 

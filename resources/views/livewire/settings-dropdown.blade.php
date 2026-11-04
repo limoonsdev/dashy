@@ -179,7 +179,7 @@
                                     <div class="mb-4 flex items-start gap-4">
                                         <div class="min-w-0 flex-1">
                                             <div class="flex flex-wrap items-center gap-x-2 gap-y-1">
-                                                <a :href="`https://github.com/dashyapp/dashy/releases/tag/${entry.tag_name}`"
+                                                <a :href="`https://github.com/limoonsdev/dashy/releases/tag/${entry.tag_name}`"
                                                     target="_blank" rel="noopener noreferrer"
                                                     class="inline-flex min-w-0 items-center gap-1.5 text-sm font-semibold text-black hover:text-accent dark:text-fg"
                                                     x-show="entry.title">

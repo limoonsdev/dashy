@@ -12,6 +12,7 @@
             ['label' => 'Chat bot', 'route' => 'settings.bot', 'icon' => 'link'],
             ['label' => 'AI assistant', 'route' => 'settings.ai', 'icon' => 'admin'],
             ['label' => 'Mail (SMTP)', 'route' => 'settings.smtp', 'icon' => 'mail'],
+            ['label' => 'CLI', 'route' => 'settings.cli', 'icon' => 'terminal'],
             ['label' => 'Blocked addresses', 'route' => 'security.ips', 'icon' => 'keys'],
         ],
     ];

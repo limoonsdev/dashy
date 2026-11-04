@@ -423,6 +423,7 @@
 @section('body')
 
 <body class="dark:text-inherit text-black">
+    <x-boot-screen />
     <x-toast />
     <x-icon-tooltip />
     @auth
