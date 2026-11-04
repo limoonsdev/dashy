@@ -7,6 +7,7 @@ use App\Models\InstanceSettings;
 use App\Models\Server;
 use App\Services\DashySourceRelease;
 use App\Services\DashyUpgradeStatus;
+use Illuminate\Support\Facades\Cache;
 use Livewire\Component;
 
 class Upgrade extends Component
@@ -94,6 +95,8 @@ class Upgrade extends Component
                 return;
             }
             $this->updateInProgress = true;
+            $this->writeStartingStatus();
+            Cache::forget('dashy:upgrade:status');
             dispatch(function () {
                 try {
                     UpdateDashy::run(manual_update: true);
@@ -127,22 +130,50 @@ class Upgrade extends Component
 
         $statusFile = DashyUpgradeStatus::FILE;
 
+        // The progress view polls every couple of seconds; one SSH round trip per poll
+        // made the page feel stuck. Cache the read for a moment and cap the wait.
         try {
-            $content = instant_remote_process(
-                ["cat {$statusFile} 2>/dev/null || echo ''"],
-                $server,
-                false
-            );
-            $content = trim($content ?? '');
+            $content = Cache::remember('dashy:upgrade:status', now()->addSeconds(2), function () use ($server, $statusFile) {
+                return trim((string) instant_remote_process(
+                    ["cat {$statusFile} 2>/dev/null || echo ''"],
+                    $server,
+                    false,
+                    false,
+                    10,
+                ));
+            });
         } catch (\Throwable $e) {
             return ['status' => 'none'];
         }
 
         return DashyUpgradeStatus::fromFile(
-            content: $content,
+            content: (string) $content,
             // The version of the container that answers, not $currentVersion: after the restart, that is still the old version of the page.
             runningVersion: (string) config('constants.dashy.version'),
             targetVersion: $this->latestVersion !== '' ? $this->latestVersion : get_latest_version_of_dashy(),
         );
+    }
+
+    /**
+     * Writes the first progress line before the update script starts, so the UI
+     * shows "preparing" immediately instead of waiting for the remote script.
+     */
+    private function writeStartingStatus(): void
+    {
+        $server = Server::find(0);
+
+        if (! $server) {
+            return;
+        }
+
+        $line = '1|Preparing the update|'.now()->toIso8601String();
+
+        try {
+            instant_remote_process([
+                'printf %s '.escapeshellarg($line).' > '.DashyUpgradeStatus::FILE.' 2>/dev/null || true',
+            ], $server, false, false, 10);
+        } catch (\Throwable) {
+            // A missing status file only costs the first progress line.
+        }
     }
 }

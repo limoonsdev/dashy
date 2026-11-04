@@ -545,31 +545,39 @@
         @auth
             window.Pusher = Pusher;
             const EchoConstructor = typeof Echo === 'function' ? Echo : Echo.default;
+            const configuredHost = @json(config('constants.pusher.host'));
+            const configuredPort = Number(@json(config('constants.pusher.port'))) || null;
+            const securePage = window.location.protocol === 'https:';
+            const pagePort = Number(window.location.port) || (securePage ? 443 : 80);
+            // A websocket on 6001 only reaches the browser when that port is published.
+            // Behind a reverse proxy the socket has to share the page origin instead, so
+            // an unset or default PUSHER_PORT resolves to the page port (443 on https).
+            const explicitlyPublished = configuredPort !== null && configuredPort !== 6001;
+            const wsPort = explicitlyPublished ? configuredPort : (securePage ? 443 : (configuredPort ?? 6001));
+            const internalHosts = ['localhost', '127.0.0.1', 'dashy-realtime', 'realtime'];
+            const wsHost = (!configuredHost || internalHosts.includes(configuredHost))
+                ? window.location.hostname
+                : configuredHost;
+            window.DashyRealtime = { host: wsHost, port: wsPort, secure: securePage, pagePort };
             window.Echo = new EchoConstructor({
                 broadcaster: 'reverb',
                 key: "{{ config('constants.pusher.app_key') }}" || 'dashy',
-                wsHost: "{{ config('constants.pusher.host') }}" || window.location.hostname,
-                wsPort: "{{ getRealtime() }}",
-                wssPort: "{{ getRealtime() }}",
-                forceTLS: window.location.protocol === 'https:',
+                wsHost,
+                wsPort,
+                wssPort: wsPort,
+                forceTLS: securePage,
                 encrypted: true,
-                enableStats: false,
-                enableLogging: true,
-                enabledTransports: ['ws', 'wss'],
+                enableLogging: false,
                 disableStats: true,
-                // Add auto reconnection settings
                 enabledTransports: ['ws', 'wss'],
                 disabledTransports: ['sockjs', 'xhr_streaming', 'xhr_polling'],
-                // Attempt to reconnect on connection lost
+                // Exponential backoff: a burst of one-second retries keeps the UI in a
+                // permanent "reconnecting" state and hides a wrong host or port.
                 autoReconnect: true,
-                // Wait 1 second before first reconnect attempt
                 reconnectionDelay: 1000,
-                // Maximum delay between reconnection attempts
-                maxReconnectionDelay: 1000,
-                // Multiply delay by this number for each reconnection attempt
-                reconnectionDelayGrowth: 1,
-                // Maximum number of reconnection attempts
-                maxAttempts: 15
+                maxReconnectionDelay: 10000,
+                reconnectionDelayGrowth: 1.6,
+                maxAttempts: 10,
             });
         @endauth
         let checkHealthInterval = null;

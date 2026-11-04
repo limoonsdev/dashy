@@ -9,6 +9,7 @@
         notification: { compact: false },
     },
     reminderCollapseAfter: 10000,
+    realtimeInfo: '',
     isDevelopment: {{ isDev() ? 'true' : 'false' }},
     init() {
         this.popups.sponsorship = !this.isDevelopment && this.shouldShowMonthlyPopup('popupSponsorship');
@@ -23,28 +24,51 @@
             this.scheduleReminderCollapse('notification');
         }
 
-        let checkNumber = 1;
+        // Probe once a second for six seconds, then report the resolved endpoint so a
+        // wrong host or port is obvious instead of an endless "reconnecting".
+        let checks = 0;
         let checkPusherInterval = null;
-        let checkReconnectInterval = null;
+        const checkPusher = () => {
+            const state = window.Echo?.connector?.pusher?.connection?.state;
+
+            if (state === 'connected') {
+                this.popups.realtime = false;
+                this.realtimeInfo = '';
+                clearInterval(checkPusherInterval);
+                return;
+            }
+
+            checks++;
+
+            if (checks >= 6) {
+                this.popups.realtime = true;
+                this.realtimeInfo = window.DashyRealtime
+                    ? `${window.DashyRealtime.host}:${window.DashyRealtime.port} — ${state ?? 'client not initialised'}`
+                    : 'the realtime client did not load';
+                clearInterval(checkPusherInterval);
+                console.error('Dashy could not reach its real-time service at', this.realtimeInfo);
+            }
+        };
 
         if (!this.popups.realtime) {
-            checkPusherInterval = setInterval(() => {
-                if (window.Echo) {
-                    if (window.Echo.connector.pusher.connection.state === 'connected') {
-                        this.popups.realtime = false;
-                    } else {
-                        checkNumber++;
-                        if (checkNumber > 5) {
-                            this.popups.realtime = true;
-                            console.error(
-                                'Dashy could not connect to its real-time service. This will cause unusual problems on the UI if not fixed! Please check the related documentation (https://dashy.io/docs/knowledge-base/cloudflare/tunnels/overview) or get help on Discord (https://dashy.io/docs).)'
-                            );
-                        }
-
-                    }
-                }
-            }, 2000);
+            checkPusherInterval = setInterval(checkPusher, 1000);
+            checkPusher();
         }
+    },
+    retryRealtime() {
+        this.popups.realtime = false;
+        this.realtimeInfo = '';
+        window.Echo?.connector?.pusher?.connect();
+
+        let attempts = 0;
+        const timer = setInterval(() => {
+            attempts++;
+
+            if (window.Echo?.connector?.pusher?.connection?.state === 'connected' || attempts >= 10) {
+                clearInterval(timer);
+                this.popups.realtime = window.Echo?.connector?.pusher?.connection?.state !== 'connected';
+            }
+        }, 1000);
     },
     scheduleReminderCollapse(reminder) {
         setTimeout(() => {
@@ -119,10 +143,18 @@
                                             href="https://dashy.io/docs" target="_blank"
                                             rel="noopener noreferrer">Discord</a>.
                                     </p>
+                                    <p x-show="realtimeInfo" x-cloak x-text="realtimeInfo"
+                                        class="mt-2 rounded-md bg-red-50 px-2 py-1 font-mono text-[11px] text-red-700 dark:bg-red-500/10 dark:text-red-300"></p>
+                                    <p class="mt-2 text-[11px] leading-5 text-neutral-400 dark:text-fg-faint">
+                                        Behind a proxy the socket must share the page origin (443 on https).
+                                    </p>
                                 </div>
                             </div>
 
                             <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-end">
+                                <button type="button" class="button h-9 justify-center sm:min-w-28" @click="retryRealtime()">
+                                    Retry
+                                </button>
                                 <a target="_blank" rel="noopener noreferrer"
                                     href="https://dashy.io/docs/knowledge-base/server/firewall"
                                     class="button h-9 justify-center sm:min-w-28">
