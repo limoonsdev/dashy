@@ -90,6 +90,10 @@
             { name: 'GitHub Light', theme: { sidebar: '#f6f8fa', selected: '#dde4ec', accent: '#0969da', background: '#ffffff' } },
             { name: 'Paper', theme: { sidebar: '#ebe6da', selected: '#d9d1bf', accent: '#c2410c', background: '#f7f4ec' } },
             { name: 'Blossom', theme: { sidebar: '#fde8f1', selected: '#f9c4dc', accent: '#d61f69', background: '#fff7fa' } },
+            { name: 'Tokyo Night', theme: { sidebar: '#1a1b26', selected: '#2f3549', accent: '#7aa2f7', background: '#16161e' } },
+            { name: 'Catppuccin', theme: { sidebar: '#181825', selected: '#313244', accent: '#cba6f7', background: '#1e1e2e' } },
+            { name: 'Rose Pine', theme: { sidebar: '#191724', selected: '#26233a', accent: '#ebbcba', background: '#1f1d2e' } },
+            { name: 'Solarized Light', theme: { sidebar: '#eee8d5', selected: '#d9d2c0', accent: '#b58900', background: '#fdf6e3' } },
         ];
         // Sets the variables that app.css derives the custom theme from. The sidebar gets its own
         // light/dark scheme (data-sidebar-scheme) when it differs from the page.
@@ -226,6 +230,16 @@
                 this.theme = type;
                 localStorage.setItem('theme', type);
                 window.applyStoredTheme();
+            },
+            applyPreset(preset) {
+                if (preset.theme === null) {
+                    this.setTheme('dark');
+                    return;
+                }
+                this.customTheme = { ...preset.theme };
+                localStorage.setItem('customTheme', window.serializeCustomTheme(this.customTheme));
+                localStorage.setItem('themeColor', this.customTheme.accent);
+                this.setTheme('custom');
             },
             openCustomDialog() {
                 this.setDraft(this.theme === 'custom' ? { ...this.customTheme } : null);

@@ -73,8 +73,10 @@ class Dashboard extends Component
 
     public function render()
     {
-        $dashboardProjects = $this->sortedProjects()->take(self::ITEM_LIMIT);
-        $dashboardServers = $this->sortedServers()->take(self::ITEM_LIMIT);
+        $projects = $this->sortedProjects();
+        $servers = $this->sortedServers();
+        $dashboardProjects = $projects->take(self::ITEM_LIMIT);
+        $dashboardServers = $servers->take(self::ITEM_LIMIT);
 
         return view('livewire.dashboard', [
             'pendingInvitations' => $this->pendingInvitations(),
@@ -82,6 +84,8 @@ class Dashboard extends Component
             'dashboardServers' => $dashboardServers,
             'projectResourceCounts' => $dashboardProjects->mapWithKeys(fn (Project $project) => [$project->id => $this->projectResourceCount($project)]),
             'serverStatuses' => $dashboardServers->mapWithKeys(fn (Server $server) => [$server->id => $this->serverStatus($server)]),
+            'projectCount' => $projects->count(),
+            'serverCount' => $servers->count(),
         ]);
     }
 

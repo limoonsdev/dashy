@@ -19,6 +19,18 @@
     @endphp
 
     <div class="flex min-w-0 flex-col gap-8">
+        <div class="flex flex-wrap items-end justify-between gap-4">
+            <div class="min-w-0">
+                <p class="text-[10px] font-semibold uppercase tracking-[0.18em] text-neutral-400 dark:text-fg-faint">Workspace</p>
+                <h1 class="mt-1 text-[22px] font-semibold leading-7 tracking-tight text-black dark:text-fg">Dashboard</h1>
+                <p class="mt-1 text-[12px] text-neutral-500 dark:text-fg-dim">Projects, servers and deployments at a glance.</p>
+            </div>
+            <div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px] text-neutral-500 dark:text-fg-dim">
+                <span><b class="font-semibold text-black dark:text-fg">{{ $projectCount }}</b> projects</span>
+                <span><b class="font-semibold text-black dark:text-fg">{{ $serverCount }}</b> servers</span>
+            </div>
+        </div>
+
         @if ($pendingInvitations->isNotEmpty())
             <div class="flex min-w-0 flex-col gap-2">
                 @foreach ($pendingInvitations as $invitation)

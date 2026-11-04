@@ -10,6 +10,8 @@
 ## DOCKER_POOL_FORCE_OVERRIDE - Force override Docker address pool configuration, also when Docker must restart with running containers (default: false)
 ## AUTOUPDATE - Set to "false" to disable auto-updates
 ## REGISTRY_URL - Custom registry URL for Docker images (default: docker.io)
+## DASHY_REPO_URL - Git repository to install from (default: https://github.com/limoonsdev/dashy.git)
+## DASHY_REF - Git branch or tag to install (default: main)
 
 ## Arguments that can be passed:
 ## --preview or --nightly - Install the newest version of the preview or nightly channel and switch the instance to that update channel
@@ -18,7 +20,20 @@ set -e # Exit immediately if a command exits with a non-zero status
 ## $1 could be empty, so we need to disable this check
 #set -u # Treat unset variables as an error and exit
 set -o pipefail # Cause a pipeline to return the status of the last command that exited with a non-zero status
+
+# When the installer lives inside the checkout it is about to update, run a
+# temporary copy. `git checkout` must never overwrite the running script.
+if [ "${DASHY_INSTALLER_RELOCATED:-0}" != "1" ] && [ -d "$(dirname "$0")/../.git" ]; then
+    RELOCATED="$(mktemp /tmp/dashy-install.XXXXXX)"
+    cp "$0" "$RELOCATED"
+    chmod +x "$RELOCATED"
+    export DASHY_INSTALLER_RELOCATED=1
+    exec "$RELOCATED" "$@"
+fi
+
 CDN="https://cdn.coollabs.io/dashy"
+DASHY_REPO_URL=${DASHY_REPO_URL:-https://github.com/limoonsdev/dashy.git}
+DASHY_REF=${DASHY_REF:-main}
 CHANNEL="stable"
 case "$1" in
 --preview | --nightly)
@@ -886,36 +901,32 @@ fi
 
 step_done
 
-step_start "Downloading required files from CDN"
-log "Downloading configuration files in parallel..."
+step_start "Fetching Dashy from Git" "$DASHY_REF"
+log "Repository: $DASHY_REPO_URL (ref: $DASHY_REF)"
 
-# Download files in parallel for faster installation
-curl -fsSL -L $CDN/docker-compose.yml -o /data/dashy/source/docker-compose.yml &
-PID1=$!
-curl -fsSL -L $CDN/docker-compose.prod.yml -o /data/dashy/source/docker-compose.prod.yml &
-PID2=$!
-curl -fsSL -L $CDN/.env.production -o /data/dashy/source/.env.production &
-PID3=$!
-curl -fsSL -L $CDN/upgrade.sh -o /data/dashy/source/upgrade.sh &
-PID4=$!
-curl -fsSL -L $CDN/upgrade-postgres.sh -o /data/dashy/source/upgrade-postgres.sh &
-PID5=$!
+# The source tree is a Git checkout. Fetching into the existing directory keeps
+# .env, the installation log and the data directories untouched.
+if [ ! -d /data/dashy/source/.git ]; then
+    git -C /data/dashy/source init -q
+    git -C /data/dashy/source remote add origin "$DASHY_REPO_URL" 2>/dev/null || git -C /data/dashy/source remote set-url origin "$DASHY_REPO_URL"
+fi
 
-# Wait for all downloads to complete and check for errors
-DOWNLOAD_FAILED=false
-for PID in $PID1 $PID2 $PID3 $PID4 $PID5; do
-    if ! wait $PID; then
-        DOWNLOAD_FAILED=true
-    fi
-done
-
-if [ "$DOWNLOAD_FAILED" = true ]; then
-    echo " - ERROR: One or more downloads failed. Please check your network connection."
+if ! git -C /data/dashy/source fetch --depth=1 origin "$DASHY_REF"; then
+    echo " - ERROR: Could not fetch $DASHY_REF from $DASHY_REPO_URL. Check the repository URL and the branch name."
     exit 1
 fi
 
-chmod +x /data/dashy/source/upgrade.sh /data/dashy/source/upgrade-postgres.sh
-log "All configuration files downloaded successfully"
+git -C /data/dashy/source checkout -q -f -B "$DASHY_REF" FETCH_HEAD
+
+# The repository keeps the upgrade helpers in scripts/. The installer and the
+# running instance expect them at the source root, so keep root copies in sync.
+for helper in upgrade.sh upgrade-postgres.sh; do
+    if [ -f "/data/dashy/source/scripts/$helper" ]; then
+        cp -f "/data/dashy/source/scripts/$helper" "/data/dashy/source/$helper"
+    fi
+done
+chmod +x /data/dashy/source/upgrade.sh /data/dashy/source/upgrade-postgres.sh 2>/dev/null || true
+log "Source checked out at $(git -C /data/dashy/source rev-parse --short HEAD)"
 step_done
 
 step_start "Setting up environment variables"

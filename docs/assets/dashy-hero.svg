@@ -1,0 +1,91 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="360" viewBox="0 0 1200 360" role="img" aria-labelledby="title desc">
+  <title id="title">Dashy</title>
+  <desc id="desc">Dashy, the self-hosted control plane for applications, databases, servers and virtual machines.</desc>
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="42%" r="75%">
+      <stop offset="0" stop-color="#191125"/>
+      <stop offset="0.55" stop-color="#0b0812"/>
+      <stop offset="1" stop-color="#050507"/>
+    </radialGradient>
+    <radialGradient id="fade" cx="50%" cy="45%" r="62%">
+      <stop offset="0" stop-color="#fff"/>
+      <stop offset="0.7" stop-color="#666"/>
+      <stop offset="1" stop-color="#000"/>
+    </radialGradient>
+    <pattern id="grid" width="32" height="32" patternUnits="userSpaceOnUse">
+      <path d="M32 0H0V32" fill="none" stroke="#2a2238" stroke-width="1"/>
+    </pattern>
+    <mask id="gridmask"><rect width="1200" height="360" fill="url(#fade)"/></mask>
+    <linearGradient id="scan" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#8b5cf6" stop-opacity="0"/>
+      <stop offset="0.5" stop-color="#8b5cf6" stop-opacity="0.32"/>
+      <stop offset="1" stop-color="#8b5cf6" stop-opacity="0"/>
+    </linearGradient>
+    <filter id="glow" x="-30%" y="-60%" width="160%" height="220%">
+      <feGaussianBlur stdDeviation="12" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <rect width="1200" height="360" fill="url(#bg)"/>
+  <rect width="1200" height="360" fill="url(#grid)" mask="url(#gridmask)" opacity="0.55"/>
+  <rect x="0" y="-60" width="1200" height="60" fill="url(#scan)" opacity="0.5">
+    <animate attributeName="y" from="-60" to="360" dur="9s" repeatCount="indefinite"/>
+  </rect>
+  <g stroke="#6b16ed" stroke-width="2" fill="none" opacity="0.8">
+    <path d="M36 76V36h40"/><path d="M1124 36h40v40"/>
+    <path d="M36 284v40h40"/><path d="M1124 324h40v-40"/>
+  </g>
+  <g fill="#6b16ed">
+    <rect x="56" y="56" width="6" height="6"/><rect x="68" y="56" width="6" height="6"/>
+    <rect x="56" y="68" width="6" height="6"/><rect x="80" y="68" width="6" height="6"/>
+  </g>
+  <g filter="url(#glow)">
+<g fill="#6b16ed" opacity="0.55">
+<path d="M61 -11V638H365V552H452.5274725274725V467H542V160H453V74.02762430939227H365V-11ZM188 125H326V211H414V416H326V501H188Z" transform="translate(370.38 215.00) scale(0.15000 -0.15000)"/>
+<path d="M61 -11V467H149V552.0276243093923H237V638H365V552H452.5274725274725V467H542V-11H414V160H188V-11ZM188 297H414V416H326V501H276V416H188Z" transform="translate(466.07 215.00) scale(0.15000 -0.15000)"/>
+<path d="M149 -11V74H61V211H188V125H414V246H149V331H61V552H149V638H453V552H542V416H414V501H188V381H453V297H542V74H453V-11Z" transform="translate(561.77 215.00) scale(0.15000 -0.15000)"/>
+<path d="M61 -11V638H188V381H237V467H365V381H414V638H542V-11H414V246H188V-11Z" transform="translate(657.48 215.00) scale(0.15000 -0.15000)"/>
+<path d="M237 -11V331H149.48618784530387V416H61V638H188V466.98161764705884H276V381H326V467H414V638H542V416H452.5274725274725V330.9778761061947H365V-11Z" transform="translate(753.18 215.00) scale(0.15000 -0.15000)"/>
+</g>
+<g fill="#f5f3ff" opacity="1">
+<path d="M61 -11V638H365V552H452.5274725274725V467H542V160H453V74.02762430939227H365V-11ZM188 125H326V211H414V416H326V501H188Z" transform="translate(363.38 208.00) scale(0.15000 -0.15000)"/>
+<path d="M61 -11V467H149V552.0276243093923H237V638H365V552H452.5274725274725V467H542V-11H414V160H188V-11ZM188 297H414V416H326V501H276V416H188Z" transform="translate(459.07 208.00) scale(0.15000 -0.15000)"/>
+<path d="M149 -11V74H61V211H188V125H414V246H149V331H61V552H149V638H453V552H542V416H414V501H188V381H453V297H542V74H453V-11Z" transform="translate(554.77 208.00) scale(0.15000 -0.15000)"/>
+<path d="M61 -11V638H188V381H237V467H365V381H414V638H542V-11H414V246H188V-11Z" transform="translate(650.48 208.00) scale(0.15000 -0.15000)"/>
+<path d="M237 -11V331H149.48618784530387V416H61V638H188V466.98161764705884H276V381H326V467H414V638H542V416H452.5274725274725V330.9778761061947H365V-11Z" transform="translate(746.18 208.00) scale(0.15000 -0.15000)"/>
+</g>
+  </g>
+<g fill="#a1a1aa" opacity="1">
+<path d="M149 -11V74H61V211H188V125H414V246H149V331H61V552H149V638H453V552H542V416H414V501H188V381H453V297H542V74H453V-11Z" transform="translate(402.07 268.00) scale(0.02000 -0.02000)"/>
+<path d="M149 -11V74H61V552H149V638H453V552H542V416H414V501H188V381H365V246H188V125H414V211H542V74H453V-11Z" transform="translate(418.93 268.00) scale(0.02000 -0.02000)"/>
+<path d="M149 -11V74H61V638H188V125H414V211H542V74H453V-11Z" transform="translate(435.79 268.00) scale(0.02000 -0.02000)"/>
+<path d="M61 -11V638H453V552H542V416H414V501H188V381H365V246H188V-11Z" transform="translate(452.65 268.00) scale(0.02000 -0.02000)"/>
+<path d="M28 182V319H332V182Z" transform="translate(469.51 268.00) scale(0.02000 -0.02000)"/>
+<path d="M61 -11V638H188V381H237V467H365V381H414V638H542V-11H414V246H188V-11Z" transform="translate(481.65 268.00) scale(0.02000 -0.02000)"/>
+<path d="M149 -11V74H61V552H149V638H453V552H542V74H453V-11ZM188 125H414V501H188Z" transform="translate(498.51 268.00) scale(0.02000 -0.02000)"/>
+<path d="M149 -11V74H61V211H188V125H414V246H149V331H61V552H149V638H453V552H542V416H414V501H188V381H453V297H542V74H453V-11Z" transform="translate(515.37 268.00) scale(0.02000 -0.02000)"/>
+<path d="M237 -11V501H188V416H61V552H149V638H453V552H542V416H414V501H365V-11Z" transform="translate(532.23 268.00) scale(0.02000 -0.02000)"/>
+<path d="M149 -11V74H61V552H149V638H453V552H542V416H414V501H188V381H365V246H188V125H414V211H542V74H453V-11Z" transform="translate(549.09 268.00) scale(0.02000 -0.02000)"/>
+<path d="M61 -11V638H365V552H452.5274725274725V467H542V160H453V74.02762430939227H365V-11ZM188 125H326V211H414V416H326V501H188Z" transform="translate(565.95 268.00) scale(0.02000 -0.02000)"/>
+<path d="M149 -11V74H61V552H149V638H453V552H542V331H414V501H188V125H414V297H542V74H453V-11Z" transform="translate(591.61 268.00) scale(0.02000 -0.02000)"/>
+<path d="M149 -11V74H61V552H149V638H453V552H542V74H453V-11ZM188 125H414V501H188Z" transform="translate(608.47 268.00) scale(0.02000 -0.02000)"/>
+<path d="M61 -11V638H188V552H275.5274725274725V466.9861495844875H365V211H414V638H542V-11H414V74H326.4725274725275V159.97237569060775H237V416H188V-11Z" transform="translate(625.33 268.00) scale(0.02000 -0.02000)"/>
+<path d="M237 -11V501H188V416H61V552H149V638H453V552H542V416H414V501H365V-11Z" transform="translate(642.19 268.00) scale(0.02000 -0.02000)"/>
+<path d="M61 -11V552H149V638H453V552H542V246H452.70588235294116V160H410V125H497V-11H371V74.02762430939227H281V160H188V-11ZM188 297H414V501H188Z" transform="translate(659.05 268.00) scale(0.02000 -0.02000)"/>
+<path d="M149 -11V74H61V552H149V638H453V552H542V74H453V-11ZM188 125H414V501H188Z" transform="translate(675.91 268.00) scale(0.02000 -0.02000)"/>
+<path d="M149 -11V74H61V638H188V125H414V211H542V74H453V-11Z" transform="translate(692.77 268.00) scale(0.02000 -0.02000)"/>
+<path d="M61 -11V552H149V638H453V552H542V246H452.5274725274725V160.0183823529412H188V-11ZM188 297H414V501H188Z" transform="translate(718.43 268.00) scale(0.02000 -0.02000)"/>
+<path d="M149 -11V74H61V638H188V125H414V211H542V74H453V-11Z" transform="translate(735.29 268.00) scale(0.02000 -0.02000)"/>
+<path d="M61 -11V467H149V552.0276243093923H237V638H365V552H452.5274725274725V467H542V-11H414V160H188V-11ZM188 297H414V416H326V501H276V416H188Z" transform="translate(752.15 268.00) scale(0.02000 -0.02000)"/>
+<path d="M61 -11V638H188V552H275.5274725274725V466.9861495844875H365V211H414V638H542V-11H414V74H326.4725274725275V159.97237569060775H237V416H188V-11Z" transform="translate(769.01 268.00) scale(0.02000 -0.02000)"/>
+<path d="M149 -11V74H61V552H149V638H453V552H542V416H414V501H188V381H365V246H188V125H414V211H542V74H453V-11Z" transform="translate(785.87 268.00) scale(0.02000 -0.02000)"/>
+</g>
+  <g font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" fill="#71717a" font-size="12" letter-spacing="2.4">
+    <text x="600" y="314" text-anchor="middle">LINUX / DOCKER / WINDOWS WSL2 / MACOS</text>
+  </g>
+  <g fill="#8b5cf6">
+    <circle cx="600" cy="36" r="3"><animate attributeName="opacity" values="0.25;1;0.25" dur="3s" repeatCount="indefinite"/></circle>
+    <rect x="580" y="33" width="14" height="6" opacity="0.25"/>
+    <rect x="606" y="33" width="14" height="6" opacity="0.25"/>
+  </g>
+</svg>

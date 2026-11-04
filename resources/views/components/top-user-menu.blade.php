@@ -82,6 +82,27 @@
             </span>
         </a>
 
+        <div class="px-2 pb-2" x-data="themeControls()">
+            <div class="mb-1.5 flex items-center justify-between">
+                <span class="text-[10px] font-semibold uppercase tracking-[0.14em] text-neutral-400 dark:text-fg-faint">Theme</span>
+                <a href="{{ route('profile.appearance') }}" {{ wireNavigate() }}
+                    class="text-[10px] font-medium text-neutral-400 hover:text-black dark:text-fg-faint dark:hover:text-fg">Edit</a>
+            </div>
+            <div class="grid grid-cols-6 gap-1.5">
+                <template x-for="preset in presets" :key="preset.name">
+                    <button type="button" @click="applyPreset(preset)" :title="preset.name"
+                        :aria-label="`Use ${preset.name} theme`"
+                        class="group relative aspect-square overflow-hidden rounded-md border border-black/10 transition-transform hover:scale-105 focus:outline-none focus-visible:ring-2 focus-visible:ring-coollabs dark:border-white/10"
+                        :style="`background: ${preset.theme ? preset.theme.background : '#0a0a0a'}`">
+                        <span class="absolute inset-y-0 left-0 w-[36%]"
+                            :style="`background: ${preset.theme ? preset.theme.sidebar : '#1a0f2d'}`"></span>
+                        <span class="absolute right-1 top-1 size-1.5 rounded-full"
+                            :style="`background: ${preset.theme ? preset.theme.accent : '#6b16ed'}`"></span>
+                    </button>
+                </template>
+            </div>
+        </div>
+
         <div class="my-1 h-px bg-neutral-200 dark:bg-white/[0.07]"></div>
 
         <livewire:settings-dropdown trigger="account-menu" />
