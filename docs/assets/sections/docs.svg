@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" role="img" aria-labelledby="t">
+  <title id="t">Documentation</title>
+  <rect x="1" y="1" width="46" height="46" rx="13" fill="#150f24" stroke="#6b16ed" stroke-opacity="0.55"/>
+  <g fill="none" stroke="#c4b5fd" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M24 15c-2.5-1.8-5.4-2.4-9-2.4v20c3.6 0 6.5.6 9 2.4"/>
+    <path d="M24 15c2.5-1.8 5.4-2.4 9-2.4v20c-3.6 0-6.5.6-9 2.4"/>
+    <path d="M24 15v20"/>
+  </g>
+</svg>

@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" role="img" aria-labelledby="t">
+  <title id="t">Databases</title>
+  <rect x="1" y="1" width="46" height="46" rx="13" fill="#150f24" stroke="#6b16ed" stroke-opacity="0.55"/>
+  <g fill="none" stroke="#c4b5fd" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <ellipse cx="24" cy="15" rx="9" ry="4"/>
+    <path d="M15 15v9c0 2.2 4 4 9 4s9-1.8 9-4v-9"/>
+    <path d="M15 24v9c0 2.2 4 4 9 4s9-1.8 9-4v-9"/>
+  </g>
+</svg>

@@ -1237,7 +1237,12 @@ if image_available "$DASHY_IMAGE_REF"; then
     DASHY_LOCAL_IMAGE=false
     log "Using the published image $DASHY_IMAGE_REF"
 else
-    LATEST_IMAGE="local-$(git -C /data/dashy/source rev-parse --short HEAD)"
+    DASHY_SOURCE_SHA="$(git -C /data/dashy/source rev-parse --short HEAD)"
+    DASHY_RELEASE_VERSION="$(sed -n '/"stable"/,/}/s/.*"dashy": *"\([^"]*\)".*/\1/p' /data/dashy/source/release.json 2>/dev/null | head -n 1)"
+    DASHY_RELEASE_VERSION="${DASHY_RELEASE_VERSION:-0.0.0}"
+    # The version the UI reports: release plus the commit that was built.
+    DASHY_BUILD_VERSION="${DASHY_RELEASE_VERSION}-${DASHY_SOURCE_SHA}"
+    LATEST_IMAGE="local-${DASHY_SOURCE_SHA}"
     DASHY_IMAGE_REF="${REGISTRY_URL}/dashyapp/dashy:${LATEST_IMAGE}"
     DASHY_LOCAL_IMAGE=true
     UI_STEP_DETAIL="building dashy locally"
@@ -1246,7 +1251,7 @@ else
     echo " - Building $DASHY_IMAGE_REF from the fetched source. This takes several minutes on the first run."
     log "Building $DASHY_IMAGE_REF from /data/dashy/source"
     if ! DOCKER_BUILDKIT=1 docker build --progress=plain \
-        --build-arg "DASHY_VERSION=${LATEST_IMAGE}" \
+        --build-arg "DASHY_VERSION=${DASHY_BUILD_VERSION}" \
         -f /data/dashy/source/docker/production/Dockerfile \
         -t "$DASHY_IMAGE_REF" \
         /data/dashy/source; then

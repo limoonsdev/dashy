@@ -12,7 +12,7 @@
         </header>
 
         <div class="flex flex-wrap gap-2" role="tablist" aria-label="Toolkit sections">
-            @foreach (['domains' => 'Domains', 'import' => 'Import', 'database' => 'Database', 'hardening' => 'Hardening'] as $key => $label)
+            @foreach (['domains' => 'Domains', 'import' => 'Import', 'database' => 'Database', 'hardening' => 'Hardening', 'security' => 'Security', 'mods' => 'Mods', 'vm' => 'VM toolkit'] as $key => $label)
                 <button type="button" wire:click="setTab('{{ $key }}')" role="tab"
                     aria-selected="{{ $tab === $key ? 'true' : 'false' }}"
                     class="button h-8! px-3! text-[12px]! {{ $tab === $key ? 'button-highlighted' : '' }}">
@@ -314,6 +314,184 @@
                                 x-on:click="navigator.clipboard.writeText($refs.hardening.textContent)">Copy</button>
                         </div>
                         <pre x-ref="hardening" class="mt-2 max-h-[32rem] overflow-auto rounded-lg border border-neutral-200 p-3 text-[12px] leading-5 dark:border-white/[0.08] dark:bg-white/[0.02]">{{ $hardeningScript }}</pre>
+                    </div>
+                @endif
+            </x-application.settings-section>
+        @endif
+
+        @if ($tab === 'security')
+            <x-application.settings-section title="Security toolkit">
+                <p class="text-[13px] text-neutral-500 dark:text-fg-dim">
+                    Pick the tools, fill in the values, then read the generated script. Dashy never runs it:
+                    every command stays visible before it touches a server.
+                </p>
+
+                <div class="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                    @foreach (\App\Services\Toolkit\SecurityToolkit::TOOLS as $key => $tool)
+                        <label class="flex gap-3 rounded-lg border border-neutral-200 p-3 text-[12px] dark:border-white/[0.08]">
+                            <input type="checkbox" wire:model="securityTools" value="{{ $key }}"
+                                class="mt-0.5 rounded border-neutral-300 dark:border-white/20">
+                            <span class="min-w-0">
+                                <span class="font-semibold">{{ $tool['label'] }}</span>
+                                <span class="ml-1 text-[10px] uppercase tracking-wide text-neutral-500 dark:text-fg-faint">{{ $tool['category'] }}</span>
+                                <span class="mt-1 block text-neutral-500 dark:text-fg-dim">{{ $tool['description'] }}</span>
+                            </span>
+                        </label>
+                    @endforeach
+                </div>
+
+                <div class="mt-4 grid gap-4 lg:grid-cols-3">
+                    <x-forms.input id="hashfile" label="Hash file" placeholder="hashes.txt" />
+                    <x-forms.input id="hashmode" label="hashcat mode" placeholder="0" helper="0 MD5, 1000 NTLM, 1800 sha512crypt." />
+                    <x-forms.input id="wordlist" label="Wordlist" placeholder="/usr/share/wordlists/rockyou.txt" />
+                    <x-forms.input id="userlist" label="User list" placeholder="users.txt" />
+                    <x-forms.input id="target" label="Target host" placeholder="192.0.2.10" />
+                    <x-forms.input id="scanPath" label="Path to scan" placeholder="/var/www" />
+                </div>
+
+                <div class="mt-4 grid items-end gap-4 lg:grid-cols-3">
+                    <div class="lg:col-span-2">
+                        <x-forms.input id="hashInput" label="Hash to identify" placeholder="$2b$12$..." />
+                    </div>
+                    <div class="flex flex-wrap gap-2">
+                        <x-forms.button type="button" wire:click="identifyHash">Identify hash</x-forms.button>
+                        <x-forms.button type="button" wire:click="generateSecurity">Generate script</x-forms.button>
+                    </div>
+                </div>
+
+                @if (! empty($hashGuesses))
+                    <div class="mt-4 grid gap-2 sm:grid-cols-2">
+                        @foreach ($hashGuesses as $guess)
+                            <div class="rounded-lg border border-neutral-200 p-3 text-[12px] dark:border-white/[0.08]">
+                                <p class="font-semibold">{{ $guess['format'] }}</p>
+                                <p class="mt-1 text-neutral-500 dark:text-fg-dim">{{ $guess['detail'] }}</p>
+                                <p class="mt-2 font-mono text-[11px]">
+                                    john: {{ $guess['john'] ?? 'n/a' }} · hashcat: {{ $guess['hashcat'] ?? 'n/a' }}
+                                </p>
+                            </div>
+                        @endforeach
+                    </div>
+                @endif
+
+                @if ($securityScript)
+                    <div class="mt-4">
+                        <div class="flex items-center justify-between gap-3">
+                            <span class="text-[11px] text-neutral-500 dark:text-fg-faint">dashy-security.sh</span>
+                            <button type="button" class="button h-8! px-2.5! text-[12px]!"
+                                x-on:click="navigator.clipboard.writeText($refs.security.textContent)">Copy</button>
+                        </div>
+                        <pre x-ref="security" class="mt-2 max-h-[32rem] overflow-auto rounded-lg border border-neutral-200 p-3 text-[12px] leading-5 dark:border-white/[0.08] dark:bg-white/[0.02]">{{ $securityScript }}</pre>
+                    </div>
+                @endif
+            </x-application.settings-section>
+        @endif
+
+        @if ($tab === 'mods')
+            <x-application.settings-section title="Minecraft mods, plugins and datapacks">
+                <p class="text-[13px] text-neutral-500 dark:text-fg-dim">
+                    Search the public Modrinth catalogue, then generate the download commands for the
+                    mods/ or plugins/ folder of a Minecraft server. No API key needed.
+                </p>
+
+                <div class="mt-4 grid items-end gap-4 lg:grid-cols-4">
+                    <div class="lg:col-span-2">
+                        <x-forms.input id="modQuery" label="Search" placeholder="performance, lithium, worldedit" />
+                    </div>
+                    <div>
+                        <label class="text-[12px] text-neutral-500 dark:text-fg-faint">Loader</label>
+                        <select wire:model="modLoader" class="mt-1 w-full rounded-lg border border-neutral-200 p-2 text-[13px] dark:border-white/[0.08] dark:bg-white/[0.02]">
+                            @foreach (\App\Services\Toolkit\ModrinthClient::LOADERS as $key => $label)
+                                <option value="{{ $key }}">{{ $label }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div>
+                        <x-forms.input id="modVersion" label="Game version" placeholder="1.21.4" />
+                    </div>
+                </div>
+
+                <div class="mt-4 flex flex-wrap gap-2">
+                    <x-forms.button type="button" wire:click="searchMods">Search Modrinth</x-forms.button>
+                    <x-forms.button type="button" wire:click="planMods">Build install commands</x-forms.button>
+                </div>
+
+                @if ($modError)
+                    <p class="mt-4 text-[12px] text-warning">{{ $modError }}</p>
+                @endif
+
+                @if (! empty($modResults))
+                    <div class="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                        @foreach ($modResults as $project)
+                            <label class="flex gap-3 rounded-lg border border-neutral-200 p-3 text-[12px] dark:border-white/[0.08]">
+                                <input type="checkbox" wire:model="modSelection" value="{{ $project['id'] }}"
+                                    class="mt-1 rounded border-neutral-300 dark:border-white/20">
+                                <span class="min-w-0">
+                                    <span class="font-semibold">{{ $project['title'] }}</span>
+                                    <span class="mt-0.5 block text-neutral-500 dark:text-fg-dim">{{ \Illuminate\Support\Str::limit($project['description'], 120) }}</span>
+                                    <span class="mt-1 block text-[11px] text-neutral-500 dark:text-fg-faint">
+                                        {{ number_format($project['downloads']) }} downloads
+                                    </span>
+                                </span>
+                            </label>
+                        @endforeach
+                    </div>
+                @endif
+
+                @if (! empty($modPlan))
+                    <div class="mt-4">
+                        <span class="text-[11px] text-neutral-500 dark:text-fg-faint">install-mods.sh</span>
+                        <pre class="mt-2 max-h-[28rem] overflow-auto rounded-lg border border-neutral-200 p-3 text-[12px] leading-5 dark:border-white/[0.08] dark:bg-white/[0.02]">#!/usr/bin/env bash
+# Run inside the Minecraft server directory (the folder that contains mods/ or plugins/).
+set -euo pipefail
+@foreach ($modPlan as $item)
+{{ $item['command'] ?? '# '.$item['title'].': no matching file for this loader and version' }}
+@endforeach</pre>
+                    </div>
+                @endif
+            </x-application.settings-section>
+        @endif
+
+        @if ($tab === 'vm')
+            <x-application.settings-section title="DashyVMToolkit">
+                <p class="text-[13px] text-neutral-500 dark:text-fg-dim">
+                    The guest-side setup a virtual machine needs to behave like a real host: guest agent,
+                    VirtIO scheduler, discards, serial console. Run it once inside the VM after the first boot.
+                </p>
+
+                <div class="mt-4 grid gap-4 lg:grid-cols-4">
+                    <div>
+                        <label class="text-[12px] text-neutral-500 dark:text-fg-faint">Distribution family</label>
+                        <select wire:model="vmFamily" class="mt-1 w-full rounded-lg border border-neutral-200 p-2 text-[13px] dark:border-white/[0.08] dark:bg-white/[0.02]">
+                            @foreach (\App\Services\Toolkit\VmToolkitScript::FAMILIES as $key => $label)
+                                <option value="{{ $key }}">{{ $label }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="lg:col-span-3">
+                        <span class="text-[12px] text-neutral-500 dark:text-fg-faint">Include</span>
+                        <div class="mt-2 grid gap-2 sm:grid-cols-2">
+                            @foreach (\App\Services\Toolkit\VmToolkitScript::OPTIONS as $key => $label)
+                                <label class="flex items-start gap-2 text-[12px]">
+                                    <input type="checkbox" wire:model="vmOptions" value="{{ $key }}" class="mt-0.5 rounded border-neutral-300 dark:border-white/20">
+                                    {{ $label }}
+                                </label>
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-4">
+                    <x-forms.button type="button" wire:click="generateVmToolkit">Generate script</x-forms.button>
+                </div>
+
+                @if ($vmScript)
+                    <div class="mt-4">
+                        <div class="flex items-center justify-between gap-3">
+                            <span class="text-[11px] text-neutral-500 dark:text-fg-faint">dashy-vm-toolkit.sh</span>
+                            <button type="button" class="button h-8! px-2.5! text-[12px]!"
+                                x-on:click="navigator.clipboard.writeText($refs.vmtoolkit.textContent)">Copy</button>
+                        </div>
+                        <pre x-ref="vmtoolkit" class="mt-2 max-h-[32rem] overflow-auto rounded-lg border border-neutral-200 p-3 text-[12px] leading-5 dark:border-white/[0.08] dark:bg-white/[0.02]">{{ $vmScript }}</pre>
                     </div>
                 @endif
             </x-application.settings-section>

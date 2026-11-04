@@ -18,6 +18,8 @@ class DashySourceRelease
 {
     public const CACHE_KEY = 'dashy:source-release';
 
+    public const TAG_CACHE_KEY = 'dashy:source-release-tag';
+
     public const CACHE_SECONDS = 600;
 
     public static function isSourceBuild(): bool
@@ -32,9 +34,12 @@ class DashySourceRelease
     {
         // config() reads .env; the image also bakes DASHY_VERSION as an environment
         // variable, which covers an instance whose config cache predates it.
+        // Accepted forms: "local-<sha>" and "<release>-<sha>" (4.7.0-abc1234).
         foreach ([(string) config('constants.dashy.version'), (string) env('DASHY_VERSION')] as $version) {
-            if (preg_match('/^local-([0-9a-f]{7,40})$/', $version, $matches)) {
-                return $matches[1];
+            $candidate = preg_replace('/^(?:local-|[0-9]+(?:\.[0-9]+)+-)/', '', trim($version));
+
+            if (is_string($candidate) && preg_match('/^[0-9a-f]{7,40}$/', $candidate)) {
+                return $candidate;
             }
         }
 
@@ -95,6 +100,48 @@ class DashySourceRelease
                 ];
             } catch (\Throwable $e) {
                 Log::warning('Could not read the latest Dashy commit', ['error' => $e->getMessage()]);
+
+                return null;
+            }
+        });
+    }
+
+    /**
+     * The newest published release tag of this repository, without the leading "v".
+     * The CDN is not reliable for this fork, so the update check reads GitHub directly.
+     */
+    public static function latestTag(bool $fresh = false): ?string
+    {
+        if ($fresh) {
+            Cache::forget(self::TAG_CACHE_KEY);
+        }
+
+        return Cache::remember(self::TAG_CACHE_KEY, self::CACHE_SECONDS, function () {
+            try {
+                $headers = [
+                    'Accept' => 'application/vnd.github+json',
+                    'User-Agent' => 'Dashy',
+                ];
+                $token = (string) env('GITHUB_TOKEN', '');
+                if ($token !== '') {
+                    $headers['Authorization'] = 'Bearer '.$token;
+                }
+
+                $release = Http::timeout(8)->connectTimeout(5)->withHeaders($headers)
+                    ->get('https://api.github.com/repos/'.self::repository().'/releases/latest');
+                $tag = (string) $release->json('tag_name');
+
+                if ($release->successful() && $tag !== '') {
+                    return ltrim($tag, 'v');
+                }
+
+                $tags = Http::timeout(8)->connectTimeout(5)->withHeaders($headers)
+                    ->get('https://api.github.com/repos/'.self::repository().'/tags', ['per_page' => 1]);
+                $tag = (string) $tags->json('0.name');
+
+                return $tag !== '' ? ltrim($tag, 'v') : null;
+            } catch (\Throwable $e) {
+                Log::warning('Could not read the latest Dashy release tag', ['error' => $e->getMessage()]);
 
                 return null;
             }

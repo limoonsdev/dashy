@@ -121,7 +121,10 @@ class StartSentinel
         $endpoint = $server->settings->ensureSentinelUrl();
         $debug = data_get($server, 'settings.is_sentinel_debug_enabled');
         $mountDir = devHostDockerPath($server, base_configuration_dir().'/sentinel');
-        $image = dashyRegistryUrl().'/coollabsio/coolify-helper:'.$version;
+        // Sentinel ships inside the helper image, so the tag is the helper version. Using
+        // the Sentinel version asked for an image that is never published
+        // ("coollabsio/coolify-helper:1.1.3": not found) and every server start failed.
+        $image = dashyHelperImage().':'.getHelperVersion();
         $environments = [
             'TOKEN' => $token,
             'DEBUG' => $debug ? 'true' : 'false',

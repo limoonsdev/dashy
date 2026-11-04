@@ -718,16 +718,26 @@ function get_latest_sentinel_version(): string
     // Read the local versions.json, which CheckForUpdatesJob refreshes every hour. Do not ask the CDN for each server.
     return data_get(get_versions_data(), 'sentinel.version') ?? '0.0.0';
 }
-function get_latest_version_of_dashy(): string
+function get_latest_version_of_dashy(bool $fresh = false): string
 {
     try {
-        $versions = get_versions_data();
-
-        return data_get($versions, 'dashy.version', '0.0.0');
+        $version = (string) data_get(get_versions_data(), 'dashy.version', '0.0.0');
     } catch (Throwable $e) {
-
-        return '0.0.0';
+        $version = '0.0.0';
     }
+
+    // The CDN that published versions.json no longer answers, and the copy baked into
+    // the image only knows the version it was built with, so the update check always
+    // concluded "up to date". Fall back to the newest release tag of this repository.
+    if ($version === '0.0.0' || $version === (string) config('constants.dashy.version')) {
+        $tag = \App\Services\DashySourceRelease::latestTag($fresh);
+
+        if ($tag !== null && version_compare($tag, $version, '>')) {
+            return $tag;
+        }
+    }
+
+    return $version;
 }
 
 function generate_random_name(?string $cuid = null): string
@@ -1606,10 +1616,7 @@ function data_get_str($data, $key, $default = null): Stringable
 
 function generateUrl(Server $server, string $random, bool $forceHttps = false): string
 {
-    $wildcard = data_get($server, 'settings.wildcard_domain');
-    if (is_null($wildcard) || $wildcard === '') {
-        $wildcard = sslip($server);
-    }
+    $wildcard = dashyWildcardDomain($server) ?? sslip($server);
     $url = Url::fromString($wildcard);
     $host = $url->getHost();
     $path = $url->getPath() === '/' ? '' : $url->getPath();
@@ -1623,10 +1630,7 @@ function generateUrl(Server $server, string $random, bool $forceHttps = false): 
 function generateFqdn(Server $server, string $random, bool $forceHttps = false, int $parserVersion = 5): string
 {
 
-    $wildcard = data_get($server, 'settings.wildcard_domain');
-    if (is_null($wildcard) || $wildcard === '') {
-        $wildcard = sslip($server);
-    }
+    $wildcard = dashyWildcardDomain($server) ?? sslip($server);
     $url = Url::fromString($wildcard);
     $host = $url->getHost();
     $path = $url->getPath() === '/' ? '' : $url->getPath();
@@ -1641,6 +1645,28 @@ function generateFqdn(Server $server, string $random, bool $forceHttps = false, 
 
     return "$scheme://{$random}.$host$path";
 }
+/**
+ * The wildcard domain generated hostnames are built on. A server setting wins, then the
+ * instance-wide DASHY_WILDCARD_DOMAIN. Both keep the server address out of the hostname,
+ * unlike sslip.io, which encodes the IP in the name itself.
+ */
+function dashyWildcardDomain(Server $server): ?string
+{
+    $wildcard = data_get($server, 'settings.wildcard_domain');
+
+    if (filled($wildcard)) {
+        return (string) $wildcard;
+    }
+
+    $configured = trim((string) config('toolkit.wildcard_domain'));
+
+    if ($configured === '') {
+        return null;
+    }
+
+    return str_contains($configured, '://') ? $configured : 'https://'.$configured;
+}
+
 function sslip(Server $server)
 {
     if (isDev() && $server->id === 0) {

@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" role="img" aria-labelledby="t">
+  <title id="t">Applications</title>
+  <rect x="1" y="1" width="46" height="46" rx="13" fill="#150f24" stroke="#6b16ed" stroke-opacity="0.55"/>
+  <g fill="none" stroke="#c4b5fd" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M24 34V16"/>
+    <path d="M17 22l7-7 7 7"/>
+    <path d="M15 34h18"/>
+  </g>
+</svg>

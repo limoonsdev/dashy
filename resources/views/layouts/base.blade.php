@@ -94,6 +94,18 @@
             { name: 'Catppuccin', theme: { sidebar: '#181825', selected: '#313244', accent: '#cba6f7', background: '#1e1e2e' } },
             { name: 'Rose Pine', theme: { sidebar: '#191724', selected: '#26233a', accent: '#ebbcba', background: '#1f1d2e' } },
             { name: 'Solarized Light', theme: { sidebar: '#eee8d5', selected: '#d9d2c0', accent: '#b58900', background: '#fdf6e3' } },
+            { name: 'Kanagawa', theme: { sidebar: '#1f1f28', selected: '#2a2a37', accent: '#7e9cd8', background: '#16161d' } },
+            { name: 'Everforest', theme: { sidebar: '#2d353b', selected: '#475258', accent: '#a7c080', background: '#232a2e' } },
+            { name: 'Gruvbox', theme: { sidebar: '#282828', selected: '#3c3836', accent: '#fabd2f', background: '#1d2021' } },
+            { name: 'Monokai', theme: { sidebar: '#272822', selected: '#3e3d32', accent: '#a6e22e', background: '#1e1f1c' } },
+            { name: 'One Dark', theme: { sidebar: '#21252b', selected: '#2c313a', accent: '#61afef', background: '#282c34' } },
+            { name: 'Synthwave', theme: { sidebar: '#1a1035', selected: '#2b1b4d', accent: '#ff2e97', background: '#120a24' } },
+            { name: 'Ocean', theme: { sidebar: '#0b2545', selected: '#134074', accent: '#4cc9f0', background: '#08192e' } },
+            { name: 'Sakura', theme: { sidebar: '#2a1a22', selected: '#4a2735', accent: '#ff8fab', background: '#1d1218' } },
+            { name: 'Coffee', theme: { sidebar: '#3b2f2a', selected: '#5a4740', accent: '#d9a066', background: '#2a211d' } },
+            { name: 'Mint', theme: { sidebar: '#e8f5ef', selected: '#c8e6d9', accent: '#0f9d58', background: '#f5fbf8' } },
+            { name: 'Blueprint', theme: { sidebar: '#1e3a5f', selected: '#2f5787', accent: '#64b5f6', background: '#10243d' } },
+            { name: 'Cyberpunk', theme: { sidebar: '#191033', selected: '#2d1b5e', accent: '#fcee0a', background: '#0f0820' } },
         ];
         // Sets the variables that app.css derives the custom theme from. The sidebar gets its own
         // light/dark scheme (data-sidebar-scheme) when it differs from the page.

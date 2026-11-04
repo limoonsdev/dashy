@@ -7,6 +7,9 @@ use App\Services\Toolkit\ArchiveImporter;
 use App\Services\Toolkit\DatabaseUrl;
 use App\Services\Toolkit\DnsLookup;
 use App\Services\Toolkit\DomainLookup;
+use App\Services\Toolkit\ModrinthClient;
+use App\Services\Toolkit\SecurityToolkit;
+use App\Services\Toolkit\VmToolkitScript;
 use App\Services\Security\MalwareScanner;
 use App\Services\Toolkit\HardeningScript;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
@@ -78,6 +81,58 @@ class Index extends Component
 
     public ?string $hardeningScript = null;
 
+    /* Security ------------------------------------------------------------ */
+
+    /** @var array<int, string> */
+    public array $securityTools = ['john', 'hash-identify'];
+
+    public string $hashfile = 'hashes.txt';
+
+    public string $hashmode = '0';
+
+    public string $wordlist = '/usr/share/wordlists/rockyou.txt';
+
+    public string $userlist = 'users.txt';
+
+    public string $target = '';
+
+    public string $scanPath = '/var/www';
+
+    public string $hashInput = '';
+
+    public ?string $securityScript = null;
+
+    /** @var array<int, array<string, string|null>> */
+    public array $hashGuesses = [];
+
+    /* Mods ---------------------------------------------------------------- */
+
+    public string $modQuery = 'performance';
+
+    public string $modLoader = 'fabric';
+
+    public string $modVersion = '';
+
+    /** @var array<int, string> */
+    public array $modSelection = [];
+
+    /** @var array<int, array<string, mixed>> */
+    public array $modResults = [];
+
+    /** @var array<int, array{title: string, command: string|null}> */
+    public array $modPlan = [];
+
+    public ?string $modError = null;
+
+    /* VM toolkit ---------------------------------------------------------- */
+
+    public string $vmFamily = 'debian';
+
+    /** @var array<int, string> */
+    public array $vmOptions = ['guest_agent', 'tuning', 'trim'];
+
+    public ?string $vmScript = null;
+
     public function mount(): void
     {
         $this->wildcardDomain = config('toolkit.wildcard_domain');
@@ -97,7 +152,7 @@ class Index extends Component
 
     public function setTab(string $tab): void
     {
-        if (in_array($tab, ['domains', 'import', 'database', 'hardening'], true)) {
+        if (in_array($tab, ['domains', 'import', 'database', 'hardening', 'security', 'mods', 'vm'], true)) {
             $this->tab = $tab;
         }
     }
@@ -233,6 +288,58 @@ class Index extends Component
     public function generateHardening(HardeningScript $hardening): void
     {
         $this->hardeningScript = $hardening->render($this->hardeningSections, $this->sshPort);
+    }
+
+    public function identifyHash(SecurityToolkit $toolkit): void
+    {
+        $this->hashGuesses = $toolkit->identifyHash($this->hashInput);
+    }
+
+    public function generateSecurity(SecurityToolkit $toolkit): void
+    {
+        $this->securityScript = $toolkit->render($this->securityTools, [
+            'hashfile' => $this->hashfile,
+            'hashmode' => $this->hashmode,
+            'wordlist' => $this->wordlist,
+            'userlist' => $this->userlist,
+            'target' => $this->target,
+            'path' => $this->scanPath,
+        ]);
+    }
+
+    public function searchMods(ModrinthClient $modrinth): void
+    {
+        $this->modError = null;
+        $this->modPlan = [];
+        $this->modSelection = [];
+
+        $this->validate([
+            'modQuery' => ['required', 'string', 'min:2', 'max:64'],
+            'modLoader' => ['required', 'string', 'in:'.implode(',', array_keys(ModrinthClient::LOADERS))],
+            'modVersion' => ['nullable', 'string', 'max:16', 'regex:/^[0-9][0-9.]*$/'],
+        ]);
+
+        $this->modResults = $modrinth->search($this->modQuery, $this->modLoader, (string) $this->modVersion);
+
+        if ($this->modResults === []) {
+            $this->modError = 'No project matched. Modrinth may be unreachable, or the filters are too narrow.';
+        }
+    }
+
+    public function planMods(ModrinthClient $modrinth): void
+    {
+        if ($this->modSelection === []) {
+            $this->modError = 'Select at least one project first.';
+
+            return;
+        }
+
+        $this->modPlan = $modrinth->installCommands($this->modSelection, $this->modLoader, (string) $this->modVersion);
+    }
+
+    public function generateVmToolkit(VmToolkitScript $script): void
+    {
+        $this->vmScript = $script->render($this->vmOptions, $this->vmFamily);
     }
 
     public function render()

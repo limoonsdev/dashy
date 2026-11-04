@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" role="img" aria-labelledby="t">
+  <title id="t">Toolkit</title>
+  <rect x="1" y="1" width="46" height="46" rx="13" fill="#150f24" stroke="#6b16ed" stroke-opacity="0.55"/>
+  <g fill="none" stroke="#c4b5fd" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M27 15a6 6 0 0 0 8 8l-12 12a4.2 4.2 0 0 1-6-6z"/>
+    <path d="M33 15l-4 4"/>
+    <path d="M15 33l4-4"/>
+  </g>
+</svg>

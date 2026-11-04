@@ -54,12 +54,16 @@ git -C "$SOURCE_DIR" checkout -q -f -B "$BRANCH" FETCH_HEAD >> "$LOGFILE" 2>&1 |
 }
 
 SHA=$(git -C "$SOURCE_DIR" rev-parse --short HEAD)
+# Visible version: the release in release.json plus the commit being deployed (4.7.0-abc1234).
+RELEASE_VERSION=$(sed -n '/"stable"/,/}/s/.*"dashy": *"\([^"]*\)".*/\1/p' "$SOURCE_DIR/release.json" 2>/dev/null | head -n 1)
+RELEASE_VERSION=${RELEASE_VERSION:-0.0.0}
+DASHY_BUILD_VERSION="${RELEASE_VERSION}-${SHA}"
 for helper in upgrade.sh upgrade-postgres.sh; do
     if [ -f "$SOURCE_DIR/scripts/$helper" ]; then
         cp -f "$SOURCE_DIR/scripts/$helper" "$SOURCE_DIR/$helper"
     fi
 done
-log "Updating to $SHA"
+log "Updating to $DASHY_BUILD_VERSION"
 
 REGISTRY="${REGISTRY_URL:-docker.io}"
 IMAGE="$REGISTRY/dashyapp/dashy:local-$SHA"
@@ -67,7 +71,7 @@ IMAGE="$REGISTRY/dashyapp/dashy:local-$SHA"
 write_status 2 "Building the Dashy image for $SHA"
 log "Building $IMAGE"
 if ! DOCKER_BUILDKIT=1 docker build --progress=plain \
-    --build-arg "DASHY_VERSION=local-$SHA" \
+    --build-arg "DASHY_VERSION=$DASHY_BUILD_VERSION" \
     -f "$SOURCE_DIR/docker/production/Dockerfile" \
     -t "$IMAGE" \
     "$SOURCE_DIR" >> "$LOGFILE" 2>&1; then

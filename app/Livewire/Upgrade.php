@@ -36,16 +36,16 @@ class Upgrade extends Component
     public function checkUpdate()
     {
         try {
-            $this->refreshUpgradeState();
+            $this->refreshUpgradeState(fresh: true);
         } catch (\Throwable $e) {
             return handleError($e, $this);
         }
     }
 
-    protected function refreshUpgradeState(): void
+    protected function refreshUpgradeState(bool $fresh = false): void
     {
         $this->currentVersion = config('constants.dashy.version');
-        $this->latestVersion = get_latest_version_of_dashy();
+        $this->latestVersion = get_latest_version_of_dashy($fresh);
         $this->devMode = isDev();
 
         if ($this->devMode) {
@@ -57,9 +57,9 @@ class Upgrade extends Component
         // An instance installed by the one-line installer runs its own build of the
         // source repository (version "local-<commit>"), which the CDN knows nothing about.
         if (DashySourceRelease::isSourceBuild()) {
-            $latest = DashySourceRelease::latest();
+            $latest = DashySourceRelease::latest($fresh);
             $this->latestVersion = $latest !== null ? 'local-'.$latest['short'] : $this->currentVersion;
-            $this->isUpgradeAvailable = DashySourceRelease::updateAvailable();
+            $this->isUpgradeAvailable = DashySourceRelease::updateAvailable($fresh);
 
             return;
         }
@@ -77,10 +77,11 @@ class Upgrade extends Component
 
         if ($settings && $newVersionAvailable && ! $hasNewerVersion) {
             $settings->update(['new_version_available' => false]);
-            $newVersionAvailable = false;
         }
 
-        $this->isUpgradeAvailable = $hasNewerVersion && $newVersionAvailable;
+        // A newer release is enough: new_version_available is only written by the CDN
+        // check job, which cannot answer for this fork, and gating on it hid every update.
+        $this->isUpgradeAvailable = $hasNewerVersion;
     }
 
     public function upgrade()

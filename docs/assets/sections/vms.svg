@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" role="img" aria-labelledby="t">
+  <title id="t">Virtual machines</title>
+  <rect x="1" y="1" width="46" height="46" rx="13" fill="#150f24" stroke="#6b16ed" stroke-opacity="0.55"/>
+  <g fill="none" stroke="#c4b5fd" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="11" y="14" width="26" height="17" rx="2.5"/>
+    <path d="M18 37h12M24 31v6"/>
+    <path d="M18 20h4M18 25h8"/>
+    <rect x="28" y="20" width="6" height="5" rx="1"/>
+  </g>
+</svg>

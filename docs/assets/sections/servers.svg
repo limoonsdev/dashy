@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" role="img" aria-labelledby="t">
+  <title id="t">Servers</title>
+  <rect x="1" y="1" width="46" height="46" rx="13" fill="#150f24" stroke="#6b16ed" stroke-opacity="0.55"/>
+  <g fill="none" stroke="#c4b5fd" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="13" y="12" width="22" height="10" rx="2.5"/>
+    <rect x="13" y="26" width="22" height="10" rx="2.5"/>
+    <path d="M17 17h.01M17 31h.01"/>
+    <path d="M29 17h3M29 31h3"/>
+  </g>
+</svg>
