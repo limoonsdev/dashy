@@ -2,7 +2,9 @@
 
 namespace App\Livewire\Settings;
 
+use App\Services\Cli\CliBinaryBuilder;
 use App\Services\Cli\CliPairing;
+use Illuminate\Support\Facades\URL;
 use Livewire\Component;
 
 /**
@@ -19,6 +21,17 @@ class Cli extends Component
 
     /** "14", "30", "90" or "never". Infinite access is a deliberate choice. */
     public string $access = '14';
+
+    /** "binary" downloads an executable; "command" shows the install one-liner. */
+    public string $delivery = 'binary';
+
+    public string $platform = 'linux-x64';
+
+    public ?string $downloadUrl = null;
+
+    public ?string $downloadExpiresAt = null;
+
+    public ?string $buildError = null;
 
     /** @var array<int, array<string, mixed>> */
     public array $tokens = [];
@@ -57,6 +70,41 @@ class Cli extends Component
         $this->dispatch('success', 'Code ready. It works once and expires in '.CliPairing::MINUTES.' minutes.');
     }
 
+    /**
+     * Build the requested platform (Bun cross-compiles it) and hand back a URL
+     * that is signed for two hours. The binary stays cached for the same window.
+     */
+    public function prepareDownload(): void
+    {
+        $this->downloadUrl = $this->downloadExpiresAt = $this->buildError = null;
+
+        if ($this->delivery !== 'binary') {
+            return;
+        }
+
+        $this->validate([
+            'platform' => ['required', 'string', 'in:'.implode(',', array_keys(CliBinaryBuilder::PLATFORMS))],
+        ]);
+
+        try {
+            app(CliBinaryBuilder::class)->ensure($this->platform);
+
+            $expires = now()->addHours(CliBinaryBuilder::TTL_HOURS);
+            $this->downloadUrl = URL::temporarySignedRoute('cli.download', $expires, ['platform' => $this->platform]);
+            $this->downloadExpiresAt = $expires->toIso8601String();
+
+            auditLog('ui.settings.cli.binary_built', [
+                'team_id' => currentTeam()->id,
+                'resource' => 'cli',
+                'platform' => $this->platform,
+            ]);
+
+            $this->dispatch('success', 'Binary ready. The download link expires in two hours.');
+        } catch (\Throwable $e) {
+            $this->buildError = $e->getMessage();
+        }
+    }
+
     public function cancel(): void
     {
         if ($this->code !== null) {
@@ -91,6 +139,8 @@ class Cli extends Component
     {
         return view('livewire.settings.cli', [
             'install' => 'curl -fsSL https://raw.githubusercontent.com/limoonsdev/dashy/main/InstallCLI.sh | bash',
+            'platforms' => CliBinaryBuilder::PLATFORMS,
+            'ttlHours' => CliBinaryBuilder::TTL_HOURS,
         ]);
     }
 

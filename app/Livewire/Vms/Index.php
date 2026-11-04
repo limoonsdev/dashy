@@ -50,6 +50,8 @@ class Index extends Component
 
     public ?string $notice = null;
 
+    public ?string $lastLoadedAt = null;
+
     public ?string $error = null;
 
     public bool $wizardOpen = false;
@@ -107,7 +109,7 @@ class Index extends Component
         $this->provider = $provider;
         $this->answers['provider'] = $provider;
         $this->vms = [];
-        $this->error = null;
+        $this->error = $this->notice = null;
         $this->refreshStatus();
     }
 
@@ -123,6 +125,19 @@ class Index extends Component
         $this->disk = max($this->disk, (int) ($os['disk'] ?? 20));
     }
 
+    /** Wizard inputs are nested, so Livewire calls a different hook for them. */
+    public function updatedAnswersOs(): void
+    {
+        $os = VmCatalog::fromConfig()->all()[$this->answers['os']] ?? null;
+
+        if (! is_array($os)) {
+            return;
+        }
+
+        $this->answers['memory'] = max((int) $this->answers['memory'], (int) ($os['memory'] ?? 2048));
+        $this->answers['disk'] = max((int) $this->answers['disk'], (int) ($os['disk'] ?? 20));
+    }
+
     public function loadVms(): void
     {
         $this->error = null;
@@ -133,6 +148,7 @@ class Index extends Component
 
         try {
             $this->vms = $this->provider === 'incus' ? $this->incusVms() : $this->proxmoxVms();
+            $this->lastLoadedAt = now()->toIso8601String();
         } catch (\Throwable $e) {
             $this->vms = [];
             $this->error = $e->getMessage();
@@ -143,8 +159,13 @@ class Index extends Component
     {
         $this->wizardOpen = true;
         $this->wizardStep = 1;
+        // If the current provider has no credentials, start on one that does.
+        $provider = (bool) ($this->providers[$this->provider] ?? false)
+            ? $this->provider
+            : (array_key_first(array_filter($this->providers)) ?: $this->provider);
+
         $this->answers = [
-            'provider' => $this->provider,
+            'provider' => $provider,
             'name' => $this->name !== '' ? $this->name : 'dashy-vm-'.random_int(100, 999),
             'os' => $this->os,
             'cores' => $this->cores,
@@ -183,7 +204,9 @@ class Index extends Component
             $this->error = $this->provider === 'incus'
                 ? 'Incus is not configured. Set INCUS_URL and INCUS_TOKEN in the environment.'
                 : 'Proxmox is not configured. Set PROXMOX_URL and the API token.';
-            $this->wizardOpen = false;
+
+            // Keep the wizard open so another provider can be chosen.
+            $this->wizardStep = 1;
 
             return;
         }
@@ -194,21 +217,7 @@ class Index extends Component
 
     public function provision(): void
     {
-        $this->validate([
-            'provider' => ['required', 'in:proxmox,incus'],
-            'name' => ['required', 'string', 'max:63', 'regex:/^[A-Za-z0-9]([A-Za-z0-9-]{0,61}[A-Za-z0-9])?$/'],
-            'cores' => ['required', 'integer', 'between:1,16'],
-            'memory' => ['required', 'integer', 'between:256,65536'],
-            'disk' => ['required', 'integer', 'between:2,500'],
-            'node' => ['required', 'string', 'max:100'],
-            'storage' => ['required', 'string', 'max:100'],
-            'bridge' => ['required', 'string', 'max:100'],
-            'isoStorage' => ['required', 'string', 'max:100'],
-            'os' => ['required', 'string', 'max:64'],
-            'sshKeys' => ['nullable', 'string', 'max:16384'],
-            'password' => ['nullable', 'string', 'max:255'],
-            'vmid' => ['nullable', 'string', 'max:64'],
-        ]);
+        $this->validate($this->provisionRules());
 
         $this->notice = $this->error = null;
 
@@ -284,6 +293,8 @@ class Index extends Component
             'catalog' => VmCatalog::fromConfig()->all(),
             'selected' => VmCatalog::fromConfig()->all()[$this->os] ?? null,
             'providerLabels' => ['proxmox' => 'Proxmox VE', 'incus' => 'Incus / LXD'],
+            'runningCount' => count(array_filter($this->vms, fn (array $vm) => ($vm['status'] ?? '') === 'running')),
+            'stoppedCount' => count($this->vms) - count(array_filter($this->vms, fn (array $vm) => ($vm['status'] ?? '') === 'running')),
         ]);
     }
 
@@ -375,6 +386,38 @@ class Index extends Component
         } catch (\Throwable $e) {
             $this->error = $e->getMessage();
         }
+    }
+
+    /**
+     * Incus does not use Proxmox node, storage or bridge fields; validating them
+     * for both providers made an otherwise valid Incus request fail.
+     *
+     * @return array<string, array<int, mixed>>
+     */
+    private function provisionRules(): array
+    {
+        $rules = [
+            'provider' => ['required', 'in:proxmox,incus'],
+            'name' => ['required', 'string', 'max:63', 'regex:/^[A-Za-z0-9]([A-Za-z0-9-]{0,61}[A-Za-z0-9])?$/'],
+            'cores' => ['required', 'integer', 'between:1,16'],
+            'memory' => ['required', 'integer', 'between:256,65536'],
+            'disk' => ['required', 'integer', 'between:2,500'],
+            'os' => ['required', 'string', 'max:64'],
+            'sshKeys' => ['nullable', 'string', 'max:16384'],
+            'password' => ['nullable', 'string', 'max:255'],
+            'vmid' => ['nullable', 'string', 'max:64'],
+        ];
+
+        if ($this->provider === 'proxmox') {
+            $rules += [
+                'node' => ['required', 'string', 'max:100'],
+                'storage' => ['required', 'string', 'max:100'],
+                'bridge' => ['required', 'string', 'max:100'],
+                'isoStorage' => ['required', 'string', 'max:100'],
+            ];
+        }
+
+        return $rules;
     }
 
     private function validateWizardStep(): void

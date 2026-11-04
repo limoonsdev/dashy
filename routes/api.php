@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\ApplicationPreviewsController;
 use App\Http\Controllers\Api\ApplicationsController;
 use App\Http\Controllers\Api\AuditEventsController;
+use App\Http\Controllers\Api\CliController;
 use App\Http\Controllers\Api\CloudInitScriptsController;
 use App\Http\Controllers\Api\CloudProviderTokensController;
 use App\Http\Controllers\Api\DatabasesController;
@@ -41,7 +42,9 @@ use App\Http\Controllers\Api\TagsController;
 use App\Http\Controllers\Api\TeamController;
 use App\Http\Controllers\Api\VolumeBackupsController;
 use App\Http\Controllers\Api\VultrController;
+use App\Http\Controllers\CliDownloadController;
 use App\Http\Middleware\ApiAllowed;
+use Illuminate\Routing\Middleware\ThrottleRequests;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/health', [OtherController::class, 'healthcheck']);
@@ -484,10 +487,19 @@ Route::group([
     Route::post('/sentinel/push', [SentinelController::class, 'push']);
 });
 
+// CLI binary downloads use a temporary signature instead of a session. The
+// link is valid for two hours and only unlocks one platform's executable.
+Route::get('/cli/download/{platform}', CliDownloadController::class)
+    ->middleware('signed')
+    // The signature already limits access; do not make a download depend on
+    // the API rate limiter's cache store.
+    ->withoutMiddleware(ThrottleRequests::class)
+    ->name('cli.download');
+
 // CLI pairing: the terminal has no token yet, so the code is the credential.
-Route::post('/cli/pair', [\App\Http\Controllers\Api\CliController::class, 'pair'])
+Route::post('/cli/pair', [CliController::class, 'pair'])
     ->middleware('throttle:10,1');
-Route::get('/cli/me', [\App\Http\Controllers\Api\CliController::class, 'me'])
+Route::get('/cli/me', [CliController::class, 'me'])
     ->middleware(['auth:sanctum', 'throttle:60,1']);
 
 Route::any('/{any}', function () {

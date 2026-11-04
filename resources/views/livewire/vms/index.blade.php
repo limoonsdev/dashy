@@ -9,6 +9,18 @@
                     One page, two providers. Pick Proxmox VE or Incus, or let Auto Config ask four questions
                     and fill every setting for you.
                 </p>
+                <p class="mt-2 flex flex-wrap items-center gap-3 text-[11px] text-neutral-500 dark:text-fg-dim">
+                    <span class="inline-flex items-center gap-1.5">
+                        <span class="size-1.5 rounded-full bg-success"></span>{{ $runningCount }} running
+                    </span>
+                    <span class="inline-flex items-center gap-1.5">
+                        <span class="size-1.5 rounded-full bg-neutral-400"></span>{{ $stoppedCount }} stopped
+                    </span>
+                    <span>{{ count($vms) }} total</span>
+                    @if ($lastLoadedAt)
+                        <span>· refreshed {{ \Illuminate\Support\Carbon::parse($lastLoadedAt)->diffForHumans() }}</span>
+                    @endif
+                </p>
             </div>
             <button type="button" wire:click="openWizard"
                 class="button h-9! gap-1.5! px-3! text-[12px]!">
@@ -220,18 +232,22 @@
             @endif
 
             <div class="mt-4 flex items-center gap-3">
-                <x-forms.button type="button" wire:click="provision" wire:loading.attr="disabled" wire:target="provision">
-                    <span wire:loading.remove wire:target="provision">Create VM</span>
-                    <span wire:loading wire:target="provision">Provisioning…</span>
-                </x-forms.button>
-                <span class="text-[12px] text-neutral-500 dark:text-fg-dim">Importing an image can take a few minutes.</span>
+                @if ($configured)
+                    <x-forms.button type="button" wire:click="provision" wire:loading.attr="disabled" wire:target="provision">
+                        <span wire:loading.remove wire:target="provision">Create VM</span>
+                        <span wire:loading wire:target="provision">Provisioning…</span>
+                    </x-forms.button>
+                    <span class="text-[12px] text-neutral-500 dark:text-fg-dim">Importing an image can take a few minutes.</span>
+                @else
+                    <span class="text-[12px] text-warning">Connect a provider above to create a machine.</span>
+                @endif
             </div>
         </x-application.settings-section>
 
         <x-application.settings-section title="Machines on {{ $provider === 'incus' ? 'Incus' : $node }}">
             <div class="mb-3 flex items-center justify-between">
                 <p class="text-[12px] text-neutral-500 dark:text-fg-dim">
-                    {{ count($vms) }} machine(s) · refreshed every 15 s
+                    {{ count($vms) }} machine(s) on {{ $provider === 'incus' ? 'Incus' : $node }} · refreshed every 15 s
                 </p>
                 <x-forms.button type="button" wire:click="loadVms">Refresh</x-forms.button>
             </div>

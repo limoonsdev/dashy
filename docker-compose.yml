@@ -25,6 +25,19 @@ services:
         restart: always
         networks:
             - dashy
+    # Optional chat bot. Enable with: docker compose --profile bot up -d
+    bot:
+        profiles: ["bot"]
+        build: ./bot
+        container_name: dashy-bot
+        restart: unless-stopped
+        env_file:
+            - ./bot/.env
+        ports:
+            - "${BOT_PORT:-8787}:8787"
+        networks:
+            - dashy
+        mem_limit: ${BOT_MEMORY:-128m}
 networks:
     dashy:
         name: dashy

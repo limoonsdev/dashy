@@ -63,6 +63,81 @@
                 @endif
             </x-application.settings-section>
 
+            <x-application.settings-section title="Download a binary"
+                helper="Dashy compiles the CLI on this instance. The link is signed and expires after {{ $ttlHours }} hours.">
+                <div class="grid gap-5 lg:grid-cols-2">
+                    <div>
+                        <p class="text-[12px] font-medium">What should the page give you?</p>
+                        <div class="mt-2 flex flex-wrap gap-4 text-[12px]">
+                            <label class="flex items-center gap-1.5">
+                                <input type="radio" value="binary" wire:model.live="delivery">
+                                Standalone binary
+                            </label>
+                            <label class="flex items-center gap-1.5">
+                                <input type="radio" value="command" wire:model.live="delivery">
+                                Install command
+                            </label>
+                        </div>
+
+                        @if ($delivery === 'binary')
+                            <p class="mt-3 text-[12px] font-medium">Platform</p>
+                            <select wire:model="platform"
+                                class="mt-1 w-full rounded-lg border border-neutral-200 p-2 text-[13px] dark:border-white/[0.08] dark:bg-white/[0.02]">
+                                @foreach ($platforms as $key => $entry)
+                                    <option value="{{ $key }}">{{ $entry['label'] }} — {{ $entry['note'] }}</option>
+                                @endforeach
+                            </select>
+                            <x-forms.button type="button" wire:click="prepareDownload"
+                                wire:loading.attr="disabled" wire:target="prepareDownload" class="mt-3">
+                                <x-reicon name="download" class="size-3.5" />
+                                <span wire:loading.remove wire:target="prepareDownload">Prepare download</span>
+                                <span wire:loading wire:target="prepareDownload">Compiling…</span>
+                            </x-forms.button>
+                            <p class="mt-1 text-[11px] text-neutral-500 dark:text-fg-dim">
+                                The first build takes a few seconds. Nothing but the executable is kept.
+                            </p>
+
+                            @if ($downloadUrl)
+                                <div class="mt-3 rounded-lg border border-success/40 bg-success/10 p-3">
+                                    <a href="{{ $downloadUrl }}" class="text-[12px] font-semibold underline">
+                                        Download Dashy for {{ $platforms[$platform]['label'] }}
+                                    </a>
+                                    <p class="mt-1 text-[11px] text-neutral-500 dark:text-fg-dim">
+                                        Link expires {{ \Illuminate\Support\Carbon::parse($downloadExpiresAt)->diffForHumans() }}.
+                                    </p>
+                                </div>
+                            @endif
+
+                            @if ($buildError)
+                                <div class="mt-3 rounded-lg border border-error/40 bg-error/10 p-3 text-[12px] break-words">
+                                    {{ $buildError }}
+                                </div>
+                            @endif
+                        @else
+                            <p class="mt-3 text-[11px] text-neutral-500 dark:text-fg-dim">
+                                The script installs Node if needed, copies the CLI to <code>~/.dashy</code> and adds
+                                <code>dashy</code> to your PATH.
+                            </p>
+                        @endif
+                    </div>
+
+                    <div class="space-y-3">
+                        <div>
+                            <p class="text-[12px] font-medium">Linux, macOS and WSL</p>
+                            <pre class="mt-1 overflow-auto rounded-lg border border-neutral-200 p-2 text-[11px] leading-5 dark:border-white/[0.08] dark:bg-white/[0.02]">{{ $install }}</pre>
+                        </div>
+                        <div>
+                            <p class="text-[12px] font-medium">Windows (PowerShell)</p>
+                            <pre class="mt-1 overflow-auto rounded-lg border border-neutral-200 p-2 text-[11px] leading-5 dark:border-white/[0.08] dark:bg-white/[0.02]">irm https://raw.githubusercontent.com/limoonsdev/dashy/main/InstallCLI.ps1 | iex</pre>
+                        </div>
+                        <p class="text-[11px] text-neutral-500 dark:text-fg-dim">
+                            Binaries are self-contained; the install scripts only need Node when you ask for them
+                            to manage it for you.
+                        </p>
+                    </div>
+                </div>
+            </x-application.settings-section>
+
             <x-application.settings-section title="Paired terminals"
                 helper="Tokens this page created. Revoking one signs that terminal out immediately.">
                 @if ($tokens === [])
