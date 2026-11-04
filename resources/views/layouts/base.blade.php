@@ -423,7 +423,9 @@
 @section('body')
 
 <body class="dark:text-inherit text-black">
-    <x-boot-screen />
+    @if (instanceSettings()->is_boot_screen_enabled ?? true)
+        <x-boot-screen />
+    @endif
     <x-toast />
     <x-icon-tooltip />
     @auth

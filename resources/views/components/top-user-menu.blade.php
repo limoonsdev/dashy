@@ -75,6 +75,12 @@
                 Profile
             </span>
         </a>
+        <a href="{{ route('profile.manager') }}" {{ wireNavigate() }} class="listbox-option">
+            <span class="flex items-center gap-2">
+                <x-reicon name="keys" class="size-4 opacity-80" />
+                Profile manager
+            </span>
+        </a>
         <a href="{{ route('profile.appearance') }}" {{ wireNavigate() }} class="listbox-option">
             <span class="flex items-center gap-2">
                 <x-reicon name="settings" class="size-4 opacity-80" />

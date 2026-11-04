@@ -1,10 +1,26 @@
 {
-    "name": "dashy-cli",
-    "version": "1.0.0",
-    "private": true,
-    "description": "Terminal client for Dashy",
-    "type": "commonjs",
-    "bin": {
-        "dashy": "./dashy.js"
-    }
+  "name": "dashy-cli",
+  "version": "2.0.0",
+  "description": "Dashy CLI — a full-screen terminal console for self-hosted Dashy instances.",
+  "private": true,
+  "type": "module",
+  "bin": {
+    "dashy": "dist/cli.js"
+  },
+  "files": [
+    "dist",
+    "dashy.js"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "start": "node dist/cli.js"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "typescript": "^5.7.2"
+  }
 }

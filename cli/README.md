@@ -1,8 +1,9 @@
 # Dashy CLI
 
-A single-file terminal client for Dashy. No dependencies, no daemon, no stored
-password: a pairing code generated in **Settings → CLI** becomes a scoped API
-token, and every action is checked against that token's abilities.
+A full-screen terminal console for Dashy, written in TypeScript with a custom
+TSX renderer. No runtime dependencies, no daemon, no stored password: a pairing
+code generated in **Settings → CLI** becomes a scoped API token, and every
+action is checked against that token's abilities.
 
 ```
  ██████╗  █████╗ ███████╗██╗  ██╗██╗   ██╗
@@ -31,6 +32,10 @@ Both installers need no administrator rights. If `node` 18 or newer is missing,
 they download a private Node runtime into `~/.dashy` (`%LOCALAPPDATA%\Dashy` on
 Windows) instead of touching a system package manager.
 
+The installers fetch the compiled console (`dist/cli.js`) and fall back to the
+portable single-file CLI if that build is unavailable. Nothing is installed
+with `npm`: the terminal only needs `node`.
+
 ## Pair a terminal
 
 1. Open **Settings → CLI** in Dashy.
@@ -50,7 +55,7 @@ minutes. The terminal stores a 30-day token in `~/.dashy/config.json` with mode
 
 | Command | What it does |
 | --- | --- |
-| `dashy` | Full-screen console (arrow keys, `enter`, `q`) |
+| `dashy` | Full-screen console (arrow keys, `r`, `c`, `u`, `q`) |
 | `dashy connect <code>` | Pair this terminal |
 | `dashy status` | Instance, user, team, servers, update state |
 | `dashy servers` | Servers and reachability |
@@ -61,8 +66,24 @@ minutes. The terminal stores a 30-day token in `~/.dashy/config.json` with mode
 | `dashy doctor` | Configuration and token diagnostics |
 | `dashy signout` | Forget the token on this machine |
 
-Options: `--api <url>` overrides the instance for one call, `--version` prints
-the CLI version, `NO_COLOR=1` disables colour.
+Options: `--api <url>` overrides the instance for one call, `--json` prints raw
+API responses, `--demo` renders the console with sample data, `--version`
+prints the CLI version.
+
+## Build from source
+
+The console is plain TypeScript with a small TSX renderer (`src/ui`). It builds
+with `tsc` only — no bundler binary, no React.
+
+```bash
+cd cli
+npm install
+npm run build      # writes dist/cli.js
+node dist/cli.js --demo
+```
+
+`dashy.js` remains the portable, single-file fallback used when the compiled
+build cannot be downloaded.
 
 ## Environment
 

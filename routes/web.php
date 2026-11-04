@@ -227,7 +227,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::middleware('access.team-wide')->group(function () {
         Route::get('/dashboard/canvas', DashboardCanvas::class)->name('dashboard.canvas');
         Route::get('/analytics', Analytics::class)->name('analytics');
-        Route::get('/metrics', FleetMetrics::class)->name('metrics');
+        Route::get('/metrics', \App\Livewire\Metrics\Index::class)->name('metrics');
         Route::get('/canvas', DeployCanvas::class)->name('deploy-canvas');
         Route::get('/canvas/tags', TagsCanvas::class)->name('tags.canvas');
     });
@@ -298,6 +298,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/settings', SettingsIndex::class)->name('settings.index');
         Route::get('/settings/advanced', SettingsAdvanced::class)->name('settings.advanced');
         Route::get('/settings/updates', SettingsUpdates::class)->name('settings.updates');
+        Route::get('/settings/experience', \App\Livewire\Settings\Experience::class)->name('settings.experience');
 
         Route::get('/settings/backup', SettingsBackup::class)->name('settings.backup');
         Route::get('/settings/email', SettingsEmail::class)->name('settings.email');
@@ -311,6 +312,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
             ->name('settings.oauth.provider');
     });
     Route::get('/profile', ProfileIndex::class)->name('profile');
+    Route::get('/profile/manager', \App\Livewire\Profile\Manager::class)->name('profile.manager');
     Route::get('/profile/avatar', ProfileAvatarController::class)->name('profile.avatar');
     Route::get('/profile/appearance', ProfileAppearance::class)->name('profile.appearance');
     Route::get('/profile/passkeys/confirm', fn () => redirect()->route('profile')->with('status', 'passkey-add'))
@@ -366,8 +368,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/files', FilesIndex::class)->name('files.index')->middleware('access.team-wide');
     Route::get('/assistant', AssistantIndex::class)->name('assistant.index')->middleware('access.team-wide');
     Route::get('/workflows', WorkflowsIndex::class)->name('workflows.index')->middleware('access.team-wide');
+    Route::get('/editorial', \App\Livewire\Editorial\Index::class)->name('editorial.index')->middleware('access.team-wide');
     Route::get('/dev/environments', DevEnvironments::class)->name('dev.environments')->middleware('access.team-wide');
-    Route::get('/live', LiveMetrics::class)->name('live.metrics')->middleware('access.team-wide');
+    Route::redirect('/live', '/metrics')->name('live.metrics');
     Route::get('/modules/{module?}', ModulesIndex::class)->name('modules.index')->middleware('access.team-wide');
     Route::get('/analyze', Analyze::class)->name('analyze.index')->middleware('access.team-wide');
     Route::get('/maintenance', MaintenanceIndex::class)->name('maintenance.index')->middleware('access.team-wide');

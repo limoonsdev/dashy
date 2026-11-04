@@ -31,6 +31,12 @@ class Cli extends Component
 
     public function generate(): void
     {
+        if (! (instanceSettings()->is_cli_pairing_enabled ?? true)) {
+            $this->dispatch('error', 'CLI pairing is disabled for this instance. Enable it in Settings → Experience.');
+
+            return;
+        }
+
         $abilities = CliPairing::ABILITIES[$this->ability] ?? ['read'];
 
         $issued = CliPairing::issue(auth()->user(), currentTeam(), $abilities);

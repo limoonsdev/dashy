@@ -86,20 +86,33 @@ if (-not $NodeExe) {
 }
 
 # ── CLI ────────────────────────────────────────────────────────────────────────
-$CliPath = Join-Path $BinDir 'dashy.cjs'
-$LocalCopy = Join-Path $PSScriptRoot 'dashy.js'
+$CliPath = Join-Path $BinDir 'dashy.mjs'
+$LocalBuild = Join-Path $PSScriptRoot 'dist/cli.js'
+$LocalPortable = Join-Path $PSScriptRoot 'dashy.js'
 
-if (Test-Path $LocalCopy) {
-    Copy-Item $LocalCopy $CliPath -Force
-    Write-Ok "CLI copied from $LocalCopy"
+if (Test-Path $LocalBuild) {
+    Copy-Item $LocalBuild $CliPath -Force
+    Write-Ok "CLI copied from $LocalBuild"
+}
+elseif (Test-Path $LocalPortable) {
+    $CliPath = Join-Path $BinDir 'dashy.cjs'
+    Copy-Item $LocalPortable $CliPath -Force
+    Write-Ok "Portable CLI copied from $LocalPortable"
 }
 else {
     Write-Step 'Downloading the CLI'
     try {
-        Invoke-WebRequest -Uri "$RawUrl/dashy.js" -OutFile $CliPath -UseBasicParsing
+        Invoke-WebRequest -Uri "$RawUrl/dist/cli.js" -OutFile $CliPath -UseBasicParsing
     }
     catch {
-        Fail "Could not download the CLI from $RawUrl/dashy.js"
+        Write-Warn 'The full-screen build is unavailable, using the portable CLI'
+        $CliPath = Join-Path $BinDir 'dashy.cjs'
+        try {
+            Invoke-WebRequest -Uri "$RawUrl/dashy.js" -OutFile $CliPath -UseBasicParsing
+        }
+        catch {
+            Fail "Could not download the CLI from $RawUrl/dashy.js"
+        }
     }
     Write-Ok 'CLI downloaded'
 }

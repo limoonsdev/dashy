@@ -15,7 +15,8 @@ INSTALL_DIR="${DASHY_INSTALL_DIR:-$HOME/.dashy}"
 BIN_DIR="$INSTALL_DIR/bin"
 NODE_DIR="$INSTALL_DIR/node"
 RAW_URL="${DASHY_RAW_URL:-https://raw.githubusercontent.com/limoonsdev/dashy/main/cli}"
-CLI_URL="$RAW_URL/dashy.js"
+CLI_URL="$RAW_URL/dist/cli.js"
+FALLBACK_URL="$RAW_URL/dashy.js"
 
 BRAND='\033[38;2;139;92;246m'
 ACCENT='\033[38;2;34;211;238m'
@@ -96,17 +97,25 @@ install_node() {
 
 install_cli() {
   mkdir -p "$BIN_DIR"
-  local target="$BIN_DIR/dashy.cjs"
-  local local_copy
-  local_copy="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" 2>/dev/null && pwd)/dashy.js" || local_copy=""
+  local target="$BIN_DIR/dashy.mjs"
+  local source_dir
+  source_dir="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" 2>/dev/null && pwd)" || source_dir=""
 
-  if [ -n "$local_copy" ] && [ -f "$local_copy" ]; then
-    cp "$local_copy" "$target"
-    ok "CLI copied from $local_copy"
+  if [ -n "$source_dir" ] && [ -f "$source_dir/dist/cli.js" ]; then
+    cp "$source_dir/dist/cli.js" "$target"
+    ok "CLI copied from $source_dir/dist/cli.js"
+  elif [ -n "$source_dir" ] && [ -f "$source_dir/dashy.js" ]; then
+    target="$BIN_DIR/dashy.cjs"
+    cp "$source_dir/dashy.js" "$target"
+    ok "Portable CLI copied from $source_dir/dashy.js"
   else
     step "Downloading the CLI"
     if ! curl -fsSL "$CLI_URL" -o "$target"; then
-      fail "Could not download the CLI from $CLI_URL"
+      warn "The full-screen build is unavailable, using the portable CLI"
+      target="$BIN_DIR/dashy.cjs"
+      if ! curl -fsSL "$FALLBACK_URL" -o "$target"; then
+        fail "Could not download the CLI from $FALLBACK_URL"
+      fi
     fi
     ok "CLI downloaded"
   fi

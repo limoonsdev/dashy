@@ -46,6 +46,10 @@ class InstanceSettings extends Model
         'custom_dns_servers',
         'domain_connect_private_key',
         'instance_name',
+        'is_boot_screen_enabled',
+        'is_cli_pairing_enabled',
+        'metrics_refresh_seconds',
+        'metrics_retention_days',
         'is_api_enabled',
         'allowed_ips',
         'auto_update_frequency',
@@ -87,6 +91,10 @@ class InstanceSettings extends Model
 
     protected $casts = [
         'smtp_enabled' => 'boolean',
+        'is_boot_screen_enabled' => 'boolean',
+        'is_cli_pairing_enabled' => 'boolean',
+        'metrics_refresh_seconds' => 'integer',
+        'metrics_retention_days' => 'integer',
         'smtp_from_address' => 'encrypted',
         'smtp_from_name' => 'encrypted',
         'notification_from_address' => 'encrypted',

@@ -26,6 +26,10 @@ class CliController
             'name' => ['nullable', 'string', 'max:64'],
         ]);
 
+        if (! (instanceSettings()->is_cli_pairing_enabled ?? true)) {
+            return response()->json(['message' => 'CLI pairing is disabled for this instance.'], 403);
+        }
+
         $payload = CliPairing::redeem($data['code']);
 
         if ($payload === null) {
@@ -92,6 +96,22 @@ class CliController
 
         return response()->json([
             'instance' => $this->instancePayload(),
+            'counts' => [
+                'servers' => $servers->count(),
+                'applications' => \App\Models\Application::query()->when($teamId !== null, fn ($query) => $query->where('team_id', $teamId))->count(),
+                'databases' => collect([
+                    \App\Models\StandalonePostgresql::class,
+                    \App\Models\StandaloneMysql::class,
+                    \App\Models\StandaloneMariadb::class,
+                    \App\Models\StandaloneMongodb::class,
+                    \App\Models\StandaloneRedis::class,
+                    \App\Models\StandaloneClickhouse::class,
+                    \App\Models\StandaloneDragonfly::class,
+                    \App\Models\StandaloneKeydb::class,
+                    \App\Models\StandaloneSqlite::class,
+                ])->sum(fn ($model) => $model::query()->when($teamId !== null, fn ($query) => $query->where('team_id', $teamId))->count()),
+                'services' => \App\Models\Service::query()->when($teamId !== null, fn ($query) => $query->where('team_id', $teamId))->count(),
+            ],
             'user' => [
                 'id' => $user?->id,
                 'name' => $user?->name,
