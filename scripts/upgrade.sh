@@ -1,7 +1,11 @@
 #!/bin/bash
 ## Do not modify this file. You will lose the ability to autoupdate!
+## DASHY_REF - Git branch or tag used to fetch the Compose files (default: main)
+## DASHY_RAW_URL - Raw GitHub base URL (default: https://raw.githubusercontent.com/limoonsdev/dashy/$DASHY_REF)
 
-CDN="https://cdn.coollabs.io/dashy"
+DASHY_REF=${DASHY_REF:-main}
+DASHY_RAW_URL=${DASHY_RAW_URL:-https://raw.githubusercontent.com/limoonsdev/dashy/$DASHY_REF}
+DASHY_RAW_URL=${DASHY_RAW_URL%/}
 LATEST_IMAGE=${1:-latest}
 LATEST_HELPER_VERSION=${2:-latest}
 ENV_FILE="/data/dashy/source/.env"
@@ -112,19 +116,54 @@ echo "Helper Version: ${LATEST_HELPER_VERSION}" >>"$LOGFILE"
 echo "Registry URL: ${REGISTRY_URL}" >>"$LOGFILE"
 echo "============================================================" >>"$LOGFILE"
 
-log_section "Step 1/6: Downloading configuration files"
-write_status "1" "Downloading configuration files"
-echo "1/6 Downloading latest configuration files..."
-log "Downloading docker-compose.yml from ${CDN}/docker-compose.yml"
-curl -fsSL -L $CDN/docker-compose.yml -o /data/dashy/source/docker-compose.yml
-log "Downloading docker-compose.prod.yml from ${CDN}/docker-compose.prod.yml"
-curl -fsSL -L $CDN/docker-compose.prod.yml -o /data/dashy/source/docker-compose.prod.yml
-log "Downloading .env.production from ${CDN}/.env.production"
-curl -fsSL -L $CDN/.env.production -o /data/dashy/source/.env.production
-log "Downloading upgrade-postgres.sh from ${CDN}/upgrade-postgres.sh"
-curl -fsSL -L $CDN/upgrade-postgres.sh -o /data/dashy/source/upgrade-postgres.sh
-chmod +x /data/dashy/source/upgrade-postgres.sh
-log "Configuration files downloaded successfully"
+log_section "Step 1/6: Syncing configuration files"
+write_status "1" "Syncing configuration files"
+echo "1/6 Syncing latest configuration files..."
+
+download_source_file() {
+    local source_path="$1"
+    local target_name="${2:-$1}"
+    local target="/data/dashy/source/$target_name"
+    local tmp="${target}.download"
+
+    if ! curl -fsSL --retry 3 "$DASHY_RAW_URL/$source_path" -o "$tmp"; then
+        rm -f "$tmp"
+        log "WARNING: Could not download $source_path from $DASHY_RAW_URL; keeping the existing $target_name"
+        echo "     Warning: could not download $target_name; keeping the existing file."
+        return 1
+    fi
+
+    case "$target_name" in
+    *.yml)
+        if ! grep -qE '^[[:space:]]*services:' "$tmp"; then
+            rm -f "$tmp"
+            log "ERROR: $source_path from $DASHY_RAW_URL is not a Compose file"
+            echo "     ERROR: $target_name is not a valid Compose file. Aborting upgrade."
+            return 1
+        fi
+        ;;
+    esac
+
+    mv "$tmp" "$target"
+    log "Downloaded $source_path from $DASHY_RAW_URL/$source_path"
+}
+
+log "Downloading configuration files from ${DASHY_RAW_URL}"
+download_source_file "docker-compose.yml" || true
+download_source_file "docker-compose.prod.yml" || true
+download_source_file ".env.production" || true
+download_source_file "scripts/upgrade-postgres.sh" "upgrade-postgres.sh" || true
+chmod +x /data/dashy/source/upgrade-postgres.sh 2>/dev/null || true
+
+for required in docker-compose.yml docker-compose.prod.yml .env.production; do
+    if [ ! -s "/data/dashy/source/$required" ]; then
+        log "ERROR: Missing /data/dashy/source/$required"
+        echo "     ERROR: Missing $required. Aborting upgrade."
+        exit 1
+    fi
+done
+
+log "Configuration files ready"
 echo "     Done."
 
 # Extract all images from docker-compose configuration
@@ -145,14 +184,24 @@ fi
 
 # Get all unique images from docker compose config
 # LATEST_IMAGE env var is needed for image substitution in compose files
-IMAGES=$(REGISTRY_URL=${REGISTRY_URL} LATEST_IMAGE=${LATEST_IMAGE} docker compose --env-file "$ENV_FILE" $COMPOSE_FILES config --images 2>/dev/null | sort -u)
+COMPOSE_STDERR=$(mktemp)
+set +e
+IMAGES=$(REGISTRY_URL=${REGISTRY_URL} LATEST_IMAGE=${LATEST_IMAGE} docker compose --env-file "$ENV_FILE" $COMPOSE_FILES config --images 2>"$COMPOSE_STDERR")
+COMPOSE_STATUS=$?
+set -e
+COMPOSE_ERROR=$(cat "$COMPOSE_STDERR" 2>/dev/null || true)
+rm -f "$COMPOSE_STDERR"
 
-if [ -z "$IMAGES" ]; then
-    log "ERROR: Failed to extract images from docker-compose files"
+if [ "$COMPOSE_STATUS" -ne 0 ] || [ -z "$IMAGES" ]; then
+    log "ERROR: Failed to extract images from docker-compose files: ${COMPOSE_ERROR:-no images found}"
     write_status "error" "Failed to parse docker-compose configuration"
     echo "     ERROR: Failed to parse docker-compose configuration. Aborting upgrade."
+    if [ -n "$COMPOSE_ERROR" ]; then
+        echo "     ${COMPOSE_ERROR}"
+    fi
     exit 1
 fi
+IMAGES=$(printf '%s\n' "$IMAGES" | sort -u)
 
 log "Images to pull:"
 echo "$IMAGES" | while read img; do log "  - $img"; done

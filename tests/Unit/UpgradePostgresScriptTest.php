@@ -28,12 +28,11 @@ it('ships postgres upgrade scripts with valid bash syntax', function () {
     assertBashSyntaxIsValid('scripts/upgrade-postgres.sh');
 });
 
-it('downloads postgres upgrade script during install and upgrade without auto-running it', function (string $path) {
+it('ships postgres upgrade script during install and upgrade without auto-running it', function (string $path) {
     $script = file_get_contents(getcwd().'/'.$path);
 
     expect($script)
         ->toContain('upgrade-postgres.sh')
-        ->toContain('curl -fsSL -L $CDN/upgrade-postgres.sh -o /data/dashy/source/upgrade-postgres.sh')
         ->toContain('chmod +x')
         ->not->toContain('bash /data/dashy/source/upgrade-postgres.sh');
 })->with([

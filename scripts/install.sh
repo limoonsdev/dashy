@@ -14,6 +14,7 @@
 ## REGISTRY_URL - Custom registry URL for Docker images (default: docker.io)
 ## DASHY_REPO_URL - Git repository to install from (default: https://github.com/limoonsdev/dashy.git)
 ## DASHY_REF - Git branch or tag to install (default: main)
+## DASHY_RAW_URL - Raw GitHub base URL for upgrade configuration files (default: .../$DASHY_REF)
 
 ## Arguments that can be passed:
 ## --preview or --nightly - Install the newest version of the preview or nightly channel and switch the instance to that update channel
@@ -33,14 +34,13 @@ if [ "${DASHY_INSTALLER_RELOCATED:-0}" != "1" ] && [ -f "$0" ] && [ -d "$(dirnam
     exec "$RELOCATED" "$@"
 fi
 
-CDN="https://cdn.coollabs.io/dashy"
 DASHY_REPO_URL=${DASHY_REPO_URL:-https://github.com/limoonsdev/dashy.git}
 DASHY_REF=${DASHY_REF:-main}
+export DASHY_REF
 CHANNEL="stable"
 case "$1" in
 --preview | --nightly)
     CHANNEL="${1#--}"
-    CDN="https://cdn.coollabs.io/dashy/$CHANNEL"
     shift
     ;;
 esac
