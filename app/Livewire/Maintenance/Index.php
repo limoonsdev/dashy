@@ -34,12 +34,14 @@ class Index extends Component
     public function mount(): void
     {
         $settings = MaintenanceSetting::forTeam(currentTeam()->id);
-        $this->dailyEnabled = $settings->daily_enabled;
-        $this->dailyTime = $settings->daily_time;
-        $this->weeklyEnabled = $settings->weekly_enabled;
-        $this->weeklyDay = $settings->weekly_day;
-        $this->weeklyTime = $settings->weekly_time;
-        $this->options = (array) $settings->options;
+        // Existing rows can predate the column defaults, so never assign null
+        // to these typed properties.
+        $this->dailyEnabled = (bool) $settings->daily_enabled;
+        $this->dailyTime = (string) ($settings->daily_time ?: '03:30');
+        $this->weeklyEnabled = (bool) $settings->weekly_enabled;
+        $this->weeklyDay = (string) ($settings->weekly_day ?: 'sunday');
+        $this->weeklyTime = (string) ($settings->weekly_time ?: '04:30');
+        $this->options = array_values(array_map('strval', (array) $settings->options));
         $this->serverUuid = (string) (Server::query()->where('team_id', currentTeam()->id)->value('uuid') ?? '');
     }
 

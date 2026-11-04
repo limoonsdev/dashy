@@ -25,7 +25,7 @@
         }
 
         // Probe once a second for six seconds, then report the resolved endpoint so a
-        // wrong host or port is obvious instead of an endless "reconnecting".
+        // wrong host or port is obvious instead of an endless 'reconnecting'.
         let checks = 0;
         let checkPusherInterval = null;
         const checkPusher = () => {

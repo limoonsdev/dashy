@@ -15,14 +15,16 @@ return [
     'provider' => env('VM_PROVIDER', 'proxmox'),
 
     'incus' => [
-        'url' => env('INCUS_URL', 'https://127.0.0.1:8443'),
+        // No placeholder: an empty URL means "not configured" instead of a
+        // failed request to the Dashy container itself.
+        'url' => env('INCUS_URL'),
         'token' => env('INCUS_TOKEN'),
         'project' => env('INCUS_PROJECT', 'default'),
         'remote' => env('INCUS_REMOTE', 'images'),
         'image' => env('INCUS_IMAGE', 'debian/12'),
         'storage' => env('INCUS_STORAGE', 'default'),
         'network' => env('INCUS_NETWORK', 'incusbr0'),
-        'verify_tls' => env('INCUS_VERIFY_TLS', true),
+        'verify_tls' => filter_var(env('INCUS_VERIFY_TLS', true), FILTER_VALIDATE_BOOL),
         'timeout' => (int) env('INCUS_TIMEOUT', 60),
     ],
 
@@ -46,7 +48,7 @@ return [
         'storage' => env('PROXMOX_STORAGE', 'local-lvm'),
         'iso_storage' => env('PROXMOX_ISO_STORAGE', 'local'),
         'bridge' => env('PROXMOX_BRIDGE', 'vmbr0'),
-        'verify_tls' => env('PROXMOX_VERIFY_TLS', true),
+        'verify_tls' => filter_var(env('PROXMOX_VERIFY_TLS', true), FILTER_VALIDATE_BOOL),
         'timeout' => (int) env('PROXMOX_TIMEOUT', 30),
         'task_timeout' => (int) env('PROXMOX_TASK_TIMEOUT', 900),
     ],

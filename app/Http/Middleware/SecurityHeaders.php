@@ -21,12 +21,17 @@ class SecurityHeaders
             'X-Frame-Options' => 'DENY',
             'Referrer-Policy' => 'strict-origin-when-cross-origin',
             'Permissions-Policy' => (string) config('security.headers.permissions_policy'),
-            'Cross-Origin-Opener-Policy' => 'same-origin',
             'Cross-Origin-Resource-Policy' => 'same-origin',
         ];
 
         if ($request->isSecure()) {
             $headers['Strict-Transport-Security'] = 'max-age='.(int) config('security.headers.hsts_max_age', 31536000).'; includeSubDomains';
+        }
+
+        // Browsers ignore COOP on plain HTTP unless the origin is localhost, and
+        // log a warning for every response when it is sent anyway.
+        if ($request->isSecure() || in_array($request->getHost(), ['localhost', '127.0.0.1', '::1'], true)) {
+            $headers['Cross-Origin-Opener-Policy'] = 'same-origin';
         }
 
         $csp = trim((string) config('security.csp'));

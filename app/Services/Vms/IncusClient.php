@@ -2,6 +2,7 @@
 
 namespace App\Services\Vms;
 
+use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
 
@@ -23,6 +24,21 @@ class IncusClient
     public static function fromConfig(): self
     {
         return new self((array) config('vms.incus', []));
+    }
+
+    /**
+     * Incus needs an address and some form of trust (token or certificate).
+     * Without both, the page must show setup instructions instead of firing a
+     * request that cannot succeed.
+     */
+    public function configured(): bool
+    {
+        $url = trim((string) ($this->config['url'] ?? ''));
+        $hasToken = filled($this->config['token'] ?? null);
+        $hasCertificate = filled($this->config['cert'] ?? null)
+            && filled($this->config['key'] ?? null);
+
+        return $url !== '' && ($hasToken || $hasCertificate);
     }
 
     /**
@@ -125,9 +141,27 @@ class IncusClient
             $options['ssl_key'] = (string) $this->config['key'];
         }
 
-        $response = $request->withOptions($options)->send($method, $base.$path.'?project='.rawurlencode((string) ($this->config['project'] ?? 'default')), [
-            'json' => $payload,
+        // Some endpoints already carry a query (recursion=1); always join with
+        // & instead of producing "?recursion=1?project=default".
+        $separator = str_contains($path, '?') ? '&' : '?';
+        $url = $base.$path.$separator.http_build_query([
+            'project' => (string) ($this->config['project'] ?? 'default'),
         ]);
+
+        try {
+            $response = $request->withOptions($options)->send($method, $url, [
+                'json' => $payload,
+            ]);
+        } catch (ConnectionException $e) {
+            throw new \RuntimeException(
+                'Cannot reach Incus at '.$base.'. Check INCUS_URL: it must be reachable from this Dashy instance. '.
+                'Inside Docker, 127.0.0.1 is the Dashy container itself, so use https://host.docker.internal:8443 '.
+                'or the host LAN address. For a self-signed certificate, set INCUS_VERIFY_TLS=false. '.
+                'Original error: '.$e->getMessage(),
+                0,
+                $e,
+            );
+        }
 
         if ($response->failed()) {
             throw new \RuntimeException('Incus returned HTTP '.$response->status().': '.$response->body());

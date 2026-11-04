@@ -51,12 +51,19 @@ class Updates extends Component
         }
 
         $this->settings = instanceSettings();
-        $this->auto_update_frequency = $this->settings->auto_update_frequency;
-        $this->update_check_frequency = $this->settings->update_check_frequency;
-        $this->is_auto_update_enabled = $this->settings->is_auto_update_enabled;
-        $this->docker_registry_url = $this->settings->docker_registry_url ?: 'docker.io';
-        $this->update_channel = $this->settings->update_channel;
-        $this->update_custom_tag = $this->settings->update_custom_tag;
+
+        // Older rows can carry nulls in any of these columns; the properties are
+        // typed, so normalise everything before assigning it.
+        $this->auto_update_frequency = (string) ($this->settings->auto_update_frequency ?: InstanceSettings::randomAutoUpdateFrequency());
+        $this->update_check_frequency = (string) ($this->settings->update_check_frequency ?: '0 * * * *');
+        $this->is_auto_update_enabled = (bool) $this->settings->is_auto_update_enabled;
+        $this->docker_registry_url = (string) ($this->settings->docker_registry_url ?: 'docker.io');
+
+        $channel = (string) ($this->settings->update_channel ?: 'stable');
+        $this->update_channel = in_array($channel, ['stable', 'preview', 'nightly', 'custom'], true) ? $channel : 'stable';
+        $this->update_custom_tag = $this->settings->update_custom_tag !== null
+            ? (string) $this->settings->update_custom_tag
+            : null;
         $this->check = UpdateChecker::run();
     }
 
@@ -189,7 +196,7 @@ class Updates extends Component
             $this->check = UpdateChecker::run(fresh: true);
             $this->dispatch('updateAvailable');
 
-            $reachable = $this->check['latest_tag'] !== null || $this->check['latest_commit'] !== null;
+            $reachable = ($this->check['latest_tag'] ?? null) !== null || ($this->check['latest_commit'] ?? null) !== null;
 
             if (! $reachable) {
                 $this->dispatch('error', 'Could not reach GitHub. '.($this->check['error'] ?? 'Try again in a moment.'));
@@ -198,8 +205,8 @@ class Updates extends Component
             }
 
             $this->dispatch('success', $this->check['available']
-                ? 'Update available: '.$this->check['latest']
-                : 'This instance is up to date ('.$this->check['current'].').');
+                ? 'Update available: '.($this->check['latest'] ?? 'unknown')
+                : 'This instance is up to date ('.($this->check['current'] ?? config('constants.dashy.version')).').');
         } catch (\Throwable $e) {
             return handleError($e, $this);
         }

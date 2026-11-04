@@ -1,3 +1,7 @@
+<noscript>
+    <style>#dashy-boot { display: none !important; }</style>
+</noscript>
+
 <div id="dashy-boot" aria-hidden="true">
     <div class="dashy-boot__inner">
         <pre class="dashy-boot__logo">██████╗  █████╗ ███████╗██╗  ██╗██╗   ██╗

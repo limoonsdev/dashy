@@ -91,7 +91,7 @@ class Index extends Component
     {
         $this->providers = [
             'proxmox' => ProxmoxClient::fromConfig()->configured(),
-            'incus' => filled(config('vms.incus.url')),
+            'incus' => IncusClient::fromConfig()->configured(),
         ];
         $this->configured = (bool) ($this->providers[$this->provider] ?? false);
 

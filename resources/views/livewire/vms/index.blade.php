@@ -52,9 +52,14 @@
         @if (! $configured)
             <div class="rounded-lg border border-warning/40 bg-warning/10 p-4 text-[12px]">
                 @if ($provider === 'incus')
-                    Set <code>INCUS_URL</code>, <code>INCUS_TOKEN</code> (or certificate) and optionally
-                    <code>INCUS_PROJECT</code>, then reload. Images are pulled from the simplestreams remote,
-                    so no ISO storage is needed.
+                    Set <code>INCUS_URL</code>, <code>INCUS_TOKEN</code> (or <code>INCUS_CERT</code> and
+                    <code>INCUS_KEY</code>) and optionally <code>INCUS_PROJECT</code>, then reload. Images are
+                    pulled from the simplestreams remote, so no ISO storage is needed.
+                    <span class="mt-1 block">
+                        In Docker, <code>127.0.0.1</code> points at the Dashy container: use
+                        <code>https://host.docker.internal:8443</code> or the host's LAN address. For a
+                        self-signed certificate, set <code>INCUS_VERIFY_TLS=false</code>.
+                    </span>
                 @else
                     Set <code>PROXMOX_URL</code>, <code>PROXMOX_TOKEN_ID</code> and
                     <code>PROXMOX_TOKEN_SECRET</code>, then reload. The token needs VM.Allocate, VM.Config.*,
