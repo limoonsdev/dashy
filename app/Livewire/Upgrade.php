@@ -102,6 +102,10 @@ class Upgrade extends Component
                     UpdateDashy::run(manual_update: true);
                 } catch (\Throwable $e) {
                     report($e);
+                    // Without this line the progress view spins until the status file
+                    // goes stale (ten minutes) even though the update already failed.
+                    $this->writeErrorStatus($e->getMessage());
+                    Cache::forget('dashy:upgrade:status');
                 }
             })->afterResponse();
 
@@ -152,6 +156,29 @@ class Upgrade extends Component
             runningVersion: (string) config('constants.dashy.version'),
             targetVersion: $this->latestVersion !== '' ? $this->latestVersion : get_latest_version_of_dashy(),
         );
+    }
+
+    /**
+     * Surfaces a failed update in the progress view instead of leaving it pending.
+     */
+    private function writeErrorStatus(string $message): void
+    {
+        $server = Server::find(0);
+
+        if (! $server) {
+            return;
+        }
+
+        $clean = mb_substr(preg_replace('/\s+/', ' ', $message) ?? 'Update failed', 0, 200);
+        $line = 'error|'.$clean.'|'.now()->toIso8601String();
+
+        try {
+            instant_remote_process([
+                'printf %s '.escapeshellarg($line).' > '.DashyUpgradeStatus::FILE.' 2>/dev/null || true',
+            ], $server, false, false, 10);
+        } catch (\Throwable) {
+            // Nothing else to do: the original error is already in the log.
+        }
     }
 
     /**
