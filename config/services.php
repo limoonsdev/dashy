@@ -2,6 +2,11 @@
 
 return [
 
+    'github' => [
+        // Optional: raises the update check from 60 to 5,000 requests per hour.
+        'token' => env('GITHUB_TOKEN'),
+    ],
+
     /*
     |--------------------------------------------------------------------------
     | Third Party Services

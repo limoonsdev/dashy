@@ -3,8 +3,6 @@
 namespace App\Services;
 
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Log;
 
 /**
  * One update check that answers every question the settings page asks: which
@@ -44,13 +42,13 @@ class UpdateChecker
             Cache::forget(self::CACHE_KEY);
         }
 
-        return Cache::remember(self::CACHE_KEY, self::CACHE_SECONDS, fn () => self::check());
+        return Cache::remember(self::CACHE_KEY, self::CACHE_SECONDS, fn () => self::check($fresh));
     }
 
     /**
      * @return array<string, mixed>
      */
-    public static function check(): array
+    public static function check(bool $fresh = false): array
     {
         $repository = DashySourceRelease::repository();
         $branch = DashySourceRelease::branch();
@@ -59,71 +57,24 @@ class UpdateChecker
         $settings = instanceSettings();
         $channel = (string) ($settings->update_channel ?: 'stable');
         $error = null;
-        $tag = null;
-        $release = null;
-        $commit = null;
+        $tag = DashySourceRelease::latestTag($fresh);
+        $commit = DashySourceRelease::latest($fresh);
 
-        $headers = [
-            'Accept' => 'application/vnd.github+json',
-            'User-Agent' => 'Dashy',
-        ];
-
-        $token = (string) env('GITHUB_TOKEN', '');
-        if ($token !== '') {
-            $headers['Authorization'] = 'Bearer '.$token;
-        }
-
-        try {
-            $releaseResponse = Http::timeout(10)->connectTimeout(6)->withHeaders($headers)
-                ->get("https://api.github.com/repos/{$repository}/releases/latest");
-
-            if ($releaseResponse->successful()) {
-                $releaseTag = (string) $releaseResponse->json('tag_name');
-                $tag = $releaseTag !== '' ? ltrim($releaseTag, 'v') : null;
-                $release = [
-                    'tag' => $releaseTag,
-                    'name' => (string) ($releaseResponse->json('name') ?: $releaseTag),
-                    'url' => (string) $releaseResponse->json('html_url'),
-                    'published_at' => $releaseResponse->json('published_at'),
-                    'notes' => (string) $releaseResponse->json('body'),
-                ];
-            } elseif ($releaseResponse->status() === 404) {
-                // The repository has no release yet: fall back to the newest tag.
-                $tagsResponse = Http::timeout(10)->connectTimeout(6)->withHeaders($headers)
-                    ->get("https://api.github.com/repos/{$repository}/tags", ['per_page' => 1]);
-
-                $tagName = (string) $tagsResponse->json('0.name');
-                if ($tagsResponse->successful() && $tagName !== '') {
-                    $tag = ltrim($tagName, 'v');
-                }
-            } else {
-                $error = 'GitHub answered HTTP '.$releaseResponse->status().' for the release list.';
-            }
-
-            $commitResponse = Http::timeout(10)->connectTimeout(6)->withHeaders($headers)
-                ->get("https://api.github.com/repos/{$repository}/commits/{$branch}");
-
-            if ($commitResponse->successful()) {
-                $sha = (string) $commitResponse->json('sha');
-
-                if ($sha !== '') {
-                    $commit = [
-                        'sha' => $sha,
-                        'short' => substr($sha, 0, 7),
-                        'message' => str((string) $commitResponse->json('commit.message'))->before("\n")->limit(120)->toString(),
-                        'date' => $commitResponse->json('commit.committer.date'),
-                        'url' => "https://github.com/{$repository}/commit/{$sha}",
-                    ];
-                }
-            } elseif ($error === null) {
-                $error = 'GitHub answered HTTP '.$commitResponse->status().' for the '.$branch.' branch.';
-            }
-        } catch (\Throwable $e) {
-            Log::warning('Update check failed', ['error' => $e->getMessage()]);
-            $error = $e->getMessage();
-        }
+        $release = $tag !== null ? [
+            'tag' => $tag,
+            'name' => $tag,
+            'url' => "https://github.com/{$repository}/releases",
+            'published_at' => null,
+            'notes' => null,
+        ] : null;
 
         $isSourceBuild = $currentCommit !== null;
+
+        if ($isSourceBuild && $commit === null) {
+            $error = 'Could not read the latest '.$branch.' commit from GitHub.'.(DashySourceRelease::lastError() ? ' '.DashySourceRelease::lastError() : '');
+        } elseif (! $isSourceBuild && $tag === null) {
+            $error = 'Could not read the latest Dashy release from GitHub.'.(DashySourceRelease::lastError() ? ' '.DashySourceRelease::lastError() : '');
+        }
         $available = false;
         $source = 'release';
         $latest = $tag ?? $current;
@@ -180,7 +131,7 @@ class UpdateChecker
     {
         $check = self::run($fresh);
 
-        if (($check['error'] ?? null) !== null && $check['latest_tag'] === null) {
+        if (($check['error'] ?? null) !== null && $check['latest_tag'] === null && $check['latest_commit'] === null) {
             return 'Update check failed';
         }
 

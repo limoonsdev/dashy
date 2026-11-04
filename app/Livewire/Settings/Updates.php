@@ -196,7 +196,11 @@ class Updates extends Component
             $this->check = UpdateChecker::run(fresh: true);
             $this->dispatch('updateAvailable');
 
-            $reachable = ($this->check['latest_tag'] ?? null) !== null || ($this->check['latest_commit'] ?? null) !== null;
+            // A source build follows commits, so a release tag alone is not enough:
+            // without the branch head the instance cannot know whether it is behind.
+            $reachable = ($this->check['current_commit'] ?? null) !== null
+                ? ($this->check['latest_commit'] ?? null) !== null
+                : ($this->check['latest_tag'] ?? null) !== null || ($this->check['latest_commit'] ?? null) !== null;
 
             if (! $reachable) {
                 $this->dispatch('error', 'Could not reach GitHub. '.($this->check['error'] ?? 'Try again in a moment.'));

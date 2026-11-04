@@ -18,22 +18,22 @@ access control, and a terminal client that talks to the same API.
 
 ## Install
 
-Requirements: a Linux host with Docker and Docker Compose.
+Requirements: a Linux host with root access. The installer installs Docker and
+Docker Compose when they are missing.
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/limoonsdev/dashy/main/InstallDASHY.sh | bash
+curl -fsSL https://raw.githubusercontent.com/limoonsdev/dashy/main/InstallDASHY.sh | sudo bash
 ```
 
-The script clones the instance to `~/.dashy-instance` and starts it with Compose.
-To choose the directory, set `DASHY_INSTALL_DIR`. To update later, run the same
-command again.
+The installer prepares `/data/dashy/source`, generates `.env`, builds or pulls
+the Dashy image, creates the `dashy` Docker network and starts both
+`docker-compose.yml` and `docker-compose.prod.yml`. To update later, run the same
+command again or use the update page in Settings.
 
-Manual install:
+Manual install from a checkout:
 
 ```bash
-git clone https://github.com/limoonsdev/dashy.git
-cd dashy
-docker compose up -d
+sudo ./scripts/install.sh
 ```
 
 Then open `http://localhost:8000` and create the first account. That account is
