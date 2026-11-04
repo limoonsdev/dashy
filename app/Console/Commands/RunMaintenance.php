@@ -19,7 +19,10 @@ class RunMaintenance extends Command
         $ran = 0;
 
         foreach (MaintenanceSetting::query()->get() as $settings) {
-            if (! $this->option('force') && ! $cleaner->isDue($settings)) {
+            $daily = $cleaner->dailyDue($settings);
+            $weekly = $cleaner->weeklyDue($settings);
+
+            if (! $this->option('force') && ! $daily && ! $weekly) {
                 continue;
             }
 
@@ -30,10 +33,12 @@ class RunMaintenance extends Command
                 $ran++;
             }
 
-            $settings->forceFill([
-                'last_daily_at' => now(),
-                'last_weekly_at' => now(),
-            ])->save();
+            // Only the window that actually fired is marked, so a daily run never
+            // swallows the weekly one.
+            $settings->forceFill(array_filter([
+                'last_daily_at' => ($daily || $this->option('force')) ? now() : null,
+                'last_weekly_at' => ($weekly || $this->option('force')) ? now() : null,
+            ]))->save();
         }
 
         $this->info($ran.' server(s) cleaned.');

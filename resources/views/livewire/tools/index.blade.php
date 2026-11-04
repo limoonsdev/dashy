@@ -9,6 +9,25 @@
             </p>
         </header>
 
+        @if ($error)
+            <div class="rounded-lg border border-error/40 bg-error/10 p-3 text-[12px]">{{ $error }}</div>
+        @endif
+        @if ($output)
+            <pre class="max-h-56 overflow-auto rounded-lg border border-neutral-200 p-3 text-[11px] dark:border-white/[0.08] dark:bg-white/[0.02]">{{ $output }}</pre>
+        @endif
+
+        <div class="grid items-end gap-4 lg:grid-cols-3">
+            <div class="lg:col-span-2">
+                <label class="text-[12px] text-neutral-500 dark:text-fg-faint">Target server</label>
+                <select wire:model="serverUuid" class="mt-1 w-full rounded-lg border border-neutral-200 p-2 text-[13px] dark:border-white/[0.08] dark:bg-white/[0.02]">
+                    @foreach ($servers as $server)
+                        <option value="{{ $server->uuid }}">{{ $server->name }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <p class="text-[11px] text-neutral-500 dark:text-fg-dim">Starting a container needs a team admin.</p>
+        </div>
+
         <div class="flex flex-wrap gap-2">
             @foreach ($categories as $category)
                 <button type="button" wire:click="setCategory('{{ $category }}')"
@@ -31,6 +50,13 @@
                     </div>
                     <p class="mt-2 text-[12px] text-neutral-600 dark:text-fg-dim">{{ $tool['description'] }}</p>
                     <pre class="mt-3 overflow-auto rounded-lg border border-neutral-200 p-2 text-[11px] leading-5 dark:border-white/[0.08] dark:bg-white/[0.02]">{{ $tool['run'] }}</pre>
+                    <div class="mt-2 text-right">
+                        <button type="button" class="button h-7! px-2.5! text-[11px]!"
+                            wire:click="run('{{ $tool['name'] }}')"
+                            wire:confirm="Start {{ $tool['name'] }} on the selected server?">
+                            Run on server
+                        </button>
+                    </div>
                 </div>
             @endforeach
         </div>

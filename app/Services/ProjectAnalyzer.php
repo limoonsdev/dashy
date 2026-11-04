@@ -61,7 +61,10 @@ class ProjectAnalyzer
 
         $files = [];
         $scanned = 0;
+        $manifests = ['composer.json', 'package.json', 'requirements.txt', 'pyproject.toml', 'go.mod', 'Gemfile', 'Cargo.toml', 'Dockerfile', 'docker-compose.yml', 'compose.yml', '.env.example'];
 
+        // One pass: read a manifest while its entry is still at hand, instead of
+        // scanning the archive once per candidate file.
         for ($index = 0; $index < min($zip->numFiles, self::MAX_ENTRIES); $index++) {
             $name = $zip->getNameIndex($index);
 
@@ -70,17 +73,12 @@ class ProjectAnalyzer
             }
 
             $scanned++;
-            $files[$this->stripRoot($name)] = null;
-        }
+            $relative = $this->stripRoot($name);
+            $files[$relative] = null;
 
-        foreach (['composer.json', 'package.json', 'requirements.txt', 'pyproject.toml', 'go.mod', 'Gemfile', 'Cargo.toml', 'Dockerfile', 'docker-compose.yml', 'compose.yml', '.env.example'] as $candidate) {
-            foreach ($files as $path => $_) {
-                if (basename($path) === $candidate || $path === $candidate) {
-                    $content = $zip->getFromName($this->originalName($zip, $path));
-                    if ($content !== false && strlen($content) <= self::MAX_READ) {
-                        $files[$path] = $content;
-                    }
-                }
+            if (in_array(basename($relative), $manifests, true) || in_array($relative, $manifests, true)) {
+                $content = $zip->getFromName($name);
+                $files[$relative] = ($content !== false && strlen($content) <= self::MAX_READ) ? $content : null;
             }
         }
 
@@ -279,18 +277,6 @@ class ProjectAnalyzer
         $slash = strpos($name, '/');
 
         return $slash === false ? $name : substr($name, $slash + 1);
-    }
-
-    private function originalName(ZipArchive $zip, string $path): string
-    {
-        for ($index = 0; $index < $zip->numFiles; $index++) {
-            $name = $zip->getNameIndex($index);
-            if (is_string($name) && str_ends_with($name, '/'.$path)) {
-                return $name;
-            }
-        }
-
-        return $path;
     }
 
     /**

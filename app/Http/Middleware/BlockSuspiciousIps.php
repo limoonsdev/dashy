@@ -16,8 +16,11 @@ class BlockSuspiciousIps
     public function handle(Request $request, Closure $next): Response
     {
         $ip = (string) $request->ip();
+        $trusted = array_filter(array_map('trim', explode(',', (string) env('DASHY_TRUSTED_IPS', ''))));
 
-        if (app()->runningInConsole() || app()->runningUnitTests() || in_array($ip, ['127.0.0.1', '::1'], true)) {
+        if (app()->runningInConsole() || app()->runningUnitTests()
+            || in_array($ip, ['127.0.0.1', '::1'], true)
+            || in_array($ip, $trusted, true)) {
             return $next($request);
         }
 

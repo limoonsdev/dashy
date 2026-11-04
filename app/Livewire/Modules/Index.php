@@ -20,6 +20,8 @@ class Index extends Component
 
     public string $recipients = '';
 
+    public string $shareUrl = '';
+
     public function mount(string $module = 'calendar'): void
     {
         $this->module = array_key_exists($module, ModuleRecord::MODULES) ? $module : 'calendar';
@@ -90,12 +92,25 @@ class Index extends Component
         $this->editing = null;
     }
 
-    public function shareLink(string $uuid): string
+    public function share(string $uuid): void
     {
         $record = $this->find($uuid);
-        $record->forceFill(['payload' => array_merge((array) $record->payload, ['share_token' => $record->payload['share_token'] ?? Str::random(40)])])->save();
+        $payload = (array) $record->payload;
+        $payload['share_token'] ??= Str::random(40);
+        $payload['shared_at'] = now()->toIso8601String();
+        $record->forceFill(['payload' => $payload])->save();
 
-        return url('/share/'.$record->payload['share_token']);
+        $this->shareUrl = url('/share/'.$payload['share_token']);
+    }
+
+    public function revokeShare(string $uuid): void
+    {
+        $record = $this->find($uuid);
+        $payload = (array) $record->payload;
+        unset($payload['share_token'], $payload['shared_at']);
+        $record->forceFill(['payload' => $payload])->save();
+
+        $this->shareUrl = '';
     }
 
     public function render()

@@ -592,6 +592,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/security/api-tokens', ApiTokens::class)->name('security.api-tokens');
 });
 
+// Read-only module shares. The token lives in the record payload and can be
+// revoked from the Workspace page.
+Route::get('/share/{token}', function (string $token) {
+    $record = \App\Models\ModuleRecord::query()->where('payload->share_token', $token)->firstOrFail();
+
+    return response()->view('modules.share', ['record' => $record])->header('X-Robots-Tag', 'noindex');
+})->name('modules.share')->where('token', '[A-Za-z0-9]{20,64}');
+
 Route::middleware(['auth'])->group(function () {
     Route::get('/two-factor', SecurityChallenge::class)->name('security.challenge');
     Route::get('/profile/security', ProfileSecurity::class)->name('profile.security');

@@ -57,26 +57,35 @@ class MaintenanceCleaner
         return $results;
     }
 
+    public function dailyDue(MaintenanceSetting $settings): bool
+    {
+        if (! $settings->daily_enabled) {
+            return false;
+        }
+
+        $now = now();
+        $window = $now->copy()->setTimeFromTimeString($settings->daily_time);
+
+        return $now->greaterThanOrEqualTo($window)
+            && ($settings->last_daily_at === null || $settings->last_daily_at->lt($now->copy()->startOfDay()));
+    }
+
+    public function weeklyDue(MaintenanceSetting $settings): bool
+    {
+        if (! $settings->weekly_enabled) {
+            return false;
+        }
+
+        $now = now();
+        $window = $now->copy()->setTimeFromTimeString($settings->weekly_time);
+
+        return strtolower($now->englishDayOfWeek) === strtolower($settings->weekly_day)
+            && $now->greaterThanOrEqualTo($window)
+            && ($settings->last_weekly_at === null || $settings->last_weekly_at->lt($now->copy()->startOfWeek()));
+    }
+
     public function isDue(MaintenanceSetting $settings): bool
     {
-        $now = now();
-
-        if ($settings->daily_enabled) {
-            $daily = $now->copy()->setTimeFromTimeString($settings->daily_time);
-            if ($now->greaterThanOrEqualTo($daily) && ($settings->last_daily_at === null || $settings->last_daily_at->lt($now->copy()->startOfDay()))) {
-                return true;
-            }
-        }
-
-        if ($settings->weekly_enabled) {
-            $weekly = $now->copy()->setTimeFromTimeString($settings->weekly_time);
-            if (strtolower($now->englishDayOfWeek) === strtolower($settings->weekly_day)
-                && $now->greaterThanOrEqualTo($weekly)
-                && ($settings->last_weekly_at === null || $settings->last_weekly_at->lt($now->copy()->startOfWeek()))) {
-                return true;
-            }
-        }
-
-        return false;
+        return $this->dailyDue($settings) || $this->weeklyDue($settings);
     }
 }

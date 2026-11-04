@@ -18,7 +18,13 @@ class OtpService
 
     public function send(User $user, string $purpose = 'login', ?string $ip = null): bool
     {
-        $settings = SmtpSetting::forTeam((int) $user->teams()->value('teams.id'));
+        $teamId = (int) (auth()->check() ? (currentTeam()?->id ?? 0) : 0);
+
+        if ($teamId === 0) {
+            $teamId = (int) $user->teams()->value('teams.id');
+        }
+
+        $settings = SmtpSetting::forTeam($teamId);
 
         if (! $settings->enabled) {
             return false;

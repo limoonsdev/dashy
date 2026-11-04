@@ -64,7 +64,7 @@
                             @endif
                             @if ($module === 'doc' || $module === 'design')
                                 <button type="button" class="text-[11px] hover:underline" wire:click="setStatus('{{ $record->uuid }}', 'published')">Publish</button>
-                            @endif
+                            @endif                            <button type="button" class="text-[11px] hover:underline" wire:click="share('{{ $record->uuid }}')">Share</button>
                             <button type="button" class="text-[11px] text-error hover:underline"
                                 wire:click="remove('{{ $record->uuid }}')"
                                 wire:confirm="Delete this record?">Delete</button>
@@ -73,6 +73,14 @@
                         <p class="py-4 text-[13px] text-neutral-500 dark:text-fg-dim">Nothing here yet.</p>
                     @endforelse
                 </div>
+
+                @if ($shareUrl)
+                    <div class="mt-4 flex gap-2">
+                        <input readonly value="{{ $shareUrl }}" class="input min-w-0 flex-1 font-mono text-[12px]">
+                        <a href="{{ $shareUrl }}" target="_blank" rel="noopener" class="button h-8! px-3! text-[12px]!">Open</a>
+                    </div>
+                    <p class="mt-1 text-[11px] text-neutral-500 dark:text-fg-dim">Anyone with this link can read the record.</p>
+                @endif
             </x-application.settings-section>
         </div>
     </div>
