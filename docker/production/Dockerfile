@@ -100,6 +100,11 @@ COPY docker/dashy-terminal/terminal-server.js /terminal/terminal-server.js
 COPY docker/dashy-terminal/terminal-utils.js /terminal/terminal-utils.js
 
 # =================================================================
+# Bun: compiles on-demand CLI binaries (Settings → CLI)
+# =================================================================
+FROM oven/bun:1-alpine AS bun
+
+# =================================================================
 # Final Stage: Production image
 # =================================================================
 FROM serversideup/php:${SERVERSIDEUP_PHP_VERSION}
@@ -209,6 +214,8 @@ RUN composer dump-autoload
 
 # Install terminal WebSocket server dependencies
 COPY --from=nodejs /usr/local/bin/node /usr/local/bin/node
+# Bun compiles CLI binaries on demand for Settings → CLI.
+COPY --from=bun /usr/local/bin/bun /usr/local/bin/bun
 COPY --from=terminal-dependencies --chown=www-data:www-data /terminal /terminal
 
 # Configure Nginx and S6 overlay

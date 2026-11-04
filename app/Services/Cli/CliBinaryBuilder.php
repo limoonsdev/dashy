@@ -4,6 +4,7 @@ namespace App\Services\Cli;
 
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Process;
+use Illuminate\Support\Str;
 use RuntimeException;
 
 /**
@@ -114,17 +115,35 @@ class CliBinaryBuilder
             File::delete($path);
         }
 
-        $result = Process::path(base_path())
-            ->timeout(600)
-            ->run([
-                $bun,
-                'build',
-                '--compile',
-                '--target='.self::PLATFORMS[$platform]['target'],
-                '--outfile',
-                $path,
-                $entry,
-            ]);
+        // Bun downloads the target runtime into this folder. Keep it out of
+        // the shared home directory and remove it whether the build succeeds
+        // or fails, so only the executable survives.
+        $cache = storage_path('app/cli-builds/.bun-cache-'.Str::random(8));
+        File::ensureDirectoryExists($cache);
+
+        try {
+            $result = Process::path(base_path())
+                ->timeout(600)
+                ->env([
+                    'BUN_INSTALL_CACHE_DIR' => $cache,
+                    'HOME' => $cache,
+                ])
+                ->run([
+                    $bun,
+                    'build',
+                    '--compile',
+                    '--target='.self::PLATFORMS[$platform]['target'],
+                    '--outfile',
+                    $path,
+                    $entry,
+                ]);
+        } catch (\Throwable $e) {
+            File::delete($path);
+
+            throw $e;
+        } finally {
+            File::deleteDirectory($cache);
+        }
 
         if (! $result->successful() || ! File::exists($path)) {
             $detail = trim($result->errorOutput()) ?: trim($result->output());
