@@ -1,4 +1,4 @@
-﻿# Dashy CLI installer — Windows (x64 and ARM64)
+# Dashy CLI installer - Windows (x64 and ARM64)
 #
 #   irm https://raw.githubusercontent.com/limoonsdev/dashy/main/InstallCLI.ps1 | iex
 #   powershell -ExecutionPolicy Bypass -File .\InstallCLI.ps1
@@ -46,26 +46,24 @@ $ScriptRoot = if ($PSScriptRoot) { $PSScriptRoot } else { $null }
 
 function Write-Logo {
     Write-Host ''
-    Write-Host '   ██████╗  █████╗ ███████╗██╗  ██╗██╗   ██╗' -ForegroundColor Magenta
-    Write-Host '   ██╔══██╗██╔══██╗██╔════╝██║  ██║╚██╗ ██╔╝' -ForegroundColor Magenta
-    Write-Host '   ██║  ██║███████║███████╗███████║ ╚████╔╝ ' -ForegroundColor Cyan
-    Write-Host '   ██║  ██║██╔══██║╚════██║██╔══██║  ╚██╔╝  ' -ForegroundColor Cyan
-    Write-Host '   ██████╔╝██║  ██║███████║██║  ██║   ██║   ' -ForegroundColor DarkGray
-    Write-Host '   ╚═════╝ ╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝   ╚═╝   ' -ForegroundColor DarkGray
+    Write-Host '   +----------------------+' -ForegroundColor Magenta
+    Write-Host '   |        D A S H Y     |' -ForegroundColor Magenta
+    Write-Host '   |   CLI installer      |' -ForegroundColor Cyan
+    Write-Host '   +----------------------+' -ForegroundColor DarkGray
     Write-Host ''
-    Write-Host '   CLI installer · Windows · x64 & ARM64' -ForegroundColor DarkGray
+    Write-Host '   Windows - x64 / ARM64' -ForegroundColor DarkGray
     Write-Host ''
 }
 
 function Write-Step([string] $Message) {
     Write-Host '  ' -NoNewline
-    Write-Host '▸' -NoNewline -ForegroundColor Cyan
+    Write-Host '>' -NoNewline -ForegroundColor Cyan
     Write-Host " $Message"
 }
 
 function Write-Ok([string] $Message) {
     Write-Host '  ' -NoNewline
-    Write-Host '✔' -NoNewline -ForegroundColor Green
+    Write-Host '+' -NoNewline -ForegroundColor Green
     Write-Host " $Message"
 }
 
@@ -77,7 +75,7 @@ function Write-Warn([string] $Message) {
 
 function Write-Bad([string] $Message) {
     Write-Host '  ' -NoNewline
-    Write-Host '✖' -NoNewline -ForegroundColor Red
+    Write-Host 'x' -NoNewline -ForegroundColor Red
     Write-Host " $Message"
 }
 
@@ -315,7 +313,7 @@ setlocal
     Write-Host '  Installed.' -ForegroundColor Green
     Write-Host ''
     Write-Host '  Next steps' -ForegroundColor DarkGray
-    Write-Host '  1. In Dashy: Settings → CLI → Generate a sign-in code' -ForegroundColor Gray
+    Write-Host '  1. In Dashy: Settings -> CLI -> Generate a sign-in code' -ForegroundColor Gray
     Write-Host '  2. Run: dashy connect DASHY-XXXX-XXXX' -ForegroundColor Gray
     Write-Host '  3. Run: dashy' -ForegroundColor Gray
     Write-Host ''
