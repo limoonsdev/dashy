@@ -269,7 +269,7 @@ class SettingsEmail extends Component
 
             $this->dispatch('success', $config['label'].' connection details filled in. Add your username and password, then save.');
         } catch (\Throwable $e) {
-            return handleError($e, $this);
+            handleError($e, $this);
         }
     }
 
