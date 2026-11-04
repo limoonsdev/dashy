@@ -910,6 +910,15 @@ step_done
 step_start "Fetching Dashy from Git" "$DASHY_REF"
 log "Repository: $DASHY_REPO_URL (ref: $DASHY_REF)"
 
+# The source tree belongs to the dashy container user (UID 9999), so Git refuses to
+# touch it as root with "detected dubious ownership". Trusting this one directory keeps
+# the ownership the container needs and lets the installer work on the checkout.
+# The system config is preferred so the exception also applies to other sudo HOME values.
+if ! git config --system --get-all safe.directory 2>/dev/null | grep -qxF /data/dashy/source; then
+    git config --system --add safe.directory /data/dashy/source 2>/dev/null ||
+        git config --global --add safe.directory /data/dashy/source 2>/dev/null || true
+fi
+
 # The source tree is a Git checkout. Fetching into the existing directory keeps
 # .env, the installation log and the data directories untouched.
 if [ ! -d /data/dashy/source/.git ]; then
