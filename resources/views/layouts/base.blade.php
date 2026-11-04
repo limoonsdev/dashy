@@ -425,6 +425,9 @@
 <body class="dark:text-inherit text-black">
     <x-toast />
     <x-icon-tooltip />
+    @auth
+        <livewire:dashyst />
+    @endauth
     <script data-navigate-once>
         // Global HTML sanitization function using DOMPurify
         window.sanitizeHTML = function (html) {

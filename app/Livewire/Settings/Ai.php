@@ -36,6 +36,18 @@ class Ai extends Component
 
     public function updatedProvider(string $provider): void
     {
+        $entry = $this->providerEntry($provider);
+
+        if ($entry !== null && filled($entry['base'] ?? null)) {
+            $this->baseUrl = (string) $entry['base'];
+        }
+
+        if ($entry !== null && ! empty($entry['models'])) {
+            $this->model = (string) $entry['models'][0];
+
+            return;
+        }
+
         $this->baseUrl = match ($provider) {
             'openai' => 'https://api.openai.com/v1',
             'openrouter' => 'https://openrouter.ai/api/v1',
@@ -44,10 +56,26 @@ class Ai extends Component
         };
     }
 
+    /** @return array<int, string> */
+    private function providerIds(): array
+    {
+        $ids = array_values(array_filter(array_column(config('ai_providers.providers', []), 'id')));
+
+        return $ids !== [] ? $ids : array_keys(AiSetting::PROVIDERS);
+    }
+
+    /** @return array<string, mixed>|null */
+    private function providerEntry(string $provider): ?array
+    {
+        $entry = collect(config('ai_providers.providers', []))->firstWhere('id', $provider);
+
+        return is_array($entry) ? $entry : null;
+    }
+
     public function save(): void
     {
         $this->validate([
-            'provider' => ['required', 'in:'.implode(',', array_keys(AiSetting::PROVIDERS))],
+            'provider' => ['required', 'in:'.implode(',', $this->providerIds())],
             'baseUrl' => ['required', 'url', 'max:255'],
             'apiKey' => ['nullable', 'string', 'max:4096'],
             'model' => ['required', 'string', 'max:120'],
@@ -77,6 +105,11 @@ class Ai extends Component
 
     public function render()
     {
-        return view('livewire.settings.ai');
+        $entry = $this->providerEntry($this->provider);
+
+        return view('livewire.settings.ai', [
+            'providers' => config('ai_providers.providers', []),
+            'models' => $entry['models'] ?? [],
+        ]);
     }
 }
