@@ -25,7 +25,16 @@ use App\Http\Middleware\UseSessionTeamApiToken;
 use App\Livewire\Admin\Index as AdminIndex;
 use App\Livewire\Analytics;
 use App\Livewire\Assistant\Index as AssistantIndex;
+use App\Livewire\Analyze;
 use App\Livewire\Dev\Environments as DevEnvironments;
+use App\Livewire\LiveMetrics;
+use App\Livewire\Maintenance\Index as MaintenanceIndex;
+use App\Livewire\Modules\Index as ModulesIndex;
+use App\Livewire\Profile\Security as ProfileSecurity;
+use App\Livewire\Security\Challenge as SecurityChallenge;
+use App\Livewire\Security\Ips as SecurityIps;
+use App\Livewire\Settings\Smtp as SettingsSmtp;
+use App\Livewire\Tools\Index as ToolsIndex;
 use App\Livewire\Files\Index as FilesIndex;
 use App\Livewire\Settings\Ai as SettingsAi;
 use App\Livewire\Settings\Bot as SettingsBot;
@@ -295,6 +304,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/settings/oauth', SettingsOauth::class)->name('settings.oauth');
         Route::get('/settings/bot', SettingsBot::class)->name('settings.bot');
         Route::get('/settings/ai', SettingsAi::class)->name('settings.ai');
+        Route::get('/settings/smtp', SettingsSmtp::class)->name('settings.smtp');
         Route::get('/settings/oauth/{provider}', SettingsOauth::class)
             ->where('provider', '[A-Za-z0-9_-]+')
             ->name('settings.oauth.provider');
@@ -356,6 +366,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/assistant', AssistantIndex::class)->name('assistant.index')->middleware('access.team-wide');
     Route::get('/workflows', WorkflowsIndex::class)->name('workflows.index')->middleware('access.team-wide');
     Route::get('/dev/environments', DevEnvironments::class)->name('dev.environments')->middleware('access.team-wide');
+    Route::get('/live', LiveMetrics::class)->name('live.metrics')->middleware('access.team-wide');
+    Route::get('/modules/{module?}', ModulesIndex::class)->name('modules.index')->middleware('access.team-wide');
+    Route::get('/analyze', Analyze::class)->name('analyze.index')->middleware('access.team-wide');
+    Route::get('/maintenance', MaintenanceIndex::class)->name('maintenance.index')->middleware('access.team-wide');
+    Route::get('/tools', ToolsIndex::class)->name('tools.index')->middleware('access.team-wide');
+    Route::get('/security/ips', SecurityIps::class)->name('security.ips')->middleware('access.team-wide');
     Route::get('/vms', VmsIndex::class)->name('vms.index')->middleware('access.team-wide');
     Route::post('/terminal/auth', function () {
         if (auth()->check()) {
@@ -577,6 +593,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
 });
 
 Route::middleware(['auth'])->group(function () {
+    Route::get('/two-factor', SecurityChallenge::class)->name('security.challenge');
+    Route::get('/profile/security', ProfileSecurity::class)->name('profile.security');
     Route::get('/select-team', SelectTeam::class)->name('team.select');
 });
 

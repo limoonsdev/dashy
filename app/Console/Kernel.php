@@ -69,6 +69,7 @@ class Kernel extends ConsoleKernel
             ->runInBackground();
         $this->scheduleInstance->command('sanctum:prune-expired --hours=1')->hourly()->onOneServer();
         $this->scheduleInstance->command('cleanup:database-import-uploads')->hourly()->onOneServer();
+        $this->scheduleInstance->command('dashy:maintenance')->hourly()->onOneServer()->withoutOverlapping(120);
         $this->scheduleInstance->command('dns:release-orphaned-records')
             ->hourly()
             ->onOneServer()

@@ -11,6 +11,8 @@
             ['label' => 'Backup', 'route' => 'settings.backup', 'icon' => 'database'],
             ['label' => 'Chat bot', 'route' => 'settings.bot', 'icon' => 'link'],
             ['label' => 'AI assistant', 'route' => 'settings.ai', 'icon' => 'admin'],
+            ['label' => 'Mail (SMTP)', 'route' => 'settings.smtp', 'icon' => 'mail'],
+            ['label' => 'Blocked addresses', 'route' => 'security.ips', 'icon' => 'keys'],
         ],
     ];
 @endphp

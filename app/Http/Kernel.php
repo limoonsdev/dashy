@@ -7,6 +7,7 @@ use App\Http\Middleware\ApiAbility;
 use App\Http\Middleware\ApiIpAllowed;
 use App\Http\Middleware\ApiSensitiveData;
 use App\Http\Middleware\Authenticate;
+use App\Http\Middleware\BlockSuspiciousIps;
 use App\Http\Middleware\CanAccessTerminal;
 use App\Http\Middleware\CanCreateResources;
 use App\Http\Middleware\CanUpdateResource;
@@ -20,6 +21,7 @@ use App\Http\Middleware\EnsureTokenBelongsToCurrentTeamMember;
 use App\Http\Middleware\KeepConcurrentTeamSwitch;
 use App\Http\Middleware\PreventRequestsDuringMaintenance;
 use App\Http\Middleware\RedirectIfAuthenticated;
+use App\Http\Middleware\RequireTwoFactor;
 use App\Http\Middleware\RequirePassword;
 use App\Http\Middleware\RequireTeamTwoFactor;
 use App\Http\Middleware\SecurityHeaders;
@@ -64,6 +66,7 @@ class Kernel extends HttpKernel
         TrimStrings::class,
         ConvertEmptyStringsToNull::class,
         InvokeDeferredCallbacks::class,
+        BlockSuspiciousIps::class,
 
     ];
 
@@ -84,6 +87,7 @@ class Kernel extends HttpKernel
             CheckForcePasswordReset::class,
             DecideWhatToDoWithUser::class,
             RequireTeamTwoFactor::class,
+            RequireTwoFactor::class,
             SecurityHeaders::class,
 
         ],

@@ -128,6 +128,11 @@
                         ['label' => 'Workflows', 'icon' => 'time-back', 'href' => route('workflows.index'), 'active' => request()->is('workflows*'), 'visible' => $teamWide],
                         ['label' => 'AI assistant', 'icon' => 'admin', 'href' => route('assistant.index'), 'active' => request()->is('assistant*'), 'visible' => $teamWide],
                         ['label' => 'Dev environments', 'icon' => 'browser-terminal', 'href' => route('dev.environments'), 'active' => request()->is('dev/*'), 'visible' => $teamWide],
+                        ['label' => 'Live metrics', 'icon' => 'graph', 'href' => route('live.metrics'), 'active' => request()->is('live'), 'visible' => $teamWide],
+                        ['label' => 'Workspace', 'icon' => 'projects', 'href' => route('modules.index'), 'active' => request()->is('modules*'), 'visible' => $teamWide],
+                        ['label' => 'Analyze project', 'icon' => 'sources', 'href' => route('analyze.index'), 'active' => request()->is('analyze'), 'visible' => $teamWide],
+                        ['label' => 'Clean-up', 'icon' => 'refresh3', 'href' => route('maintenance.index'), 'active' => request()->is('maintenance'), 'visible' => $teamWide],
+                        ['label' => 'Toolbox', 'icon' => 'layers', 'href' => route('tools.index'), 'active' => request()->is('tools'), 'visible' => $teamWide],
                         ['label' => 'Virtual machines', 'icon' => 'servers', 'href' => route('vms.index'), 'active' => request()->is('vms*'), 'visible' => $teamWide],
                     ],
                     'Infrastructure' => [
@@ -154,6 +159,7 @@
                             ['label' => 'Members', 'icon' => 'teams', 'href' => route('team.member.index'), 'active' => request()->is('team/members*')],
                             ['label' => 'Audit log', 'icon' => 'time-back', 'href' => route('team.audit-log'), 'active' => request()->is('team/audit-log'), 'visible' => auth()->user()?->isAdminOfTeam(currentTeam()->id)],
                             ['label' => 'Admin View', 'icon' => 'admin', 'href' => route('team.admin-view'), 'active' => request()->is('team/admin'), 'visible' => isInstanceAdmin()],
+                            ['label' => 'My security', 'icon' => 'keys', 'href' => route('profile.security'), 'active' => request()->is('profile/security'), 'visible' => true],
                             ['label' => 'Danger Zone', 'icon' => 'danger', 'href' => route('team.danger-zone'), 'active' => request()->is('team/danger'), 'visible' => auth()->user()?->can('delete', currentTeam()), 'sectionStart' => true],
                         ]],
                         ['label' => 'Notifications', 'icon' => 'notifications', 'visible' => $teamWide, 'children' => [
