@@ -43,5 +43,8 @@
     "resource.delete_connected_networks": "Slett alle ikke-forhåndsdefinerte nettverk tilknyttet denne ressursen permanent.",
     "resource.delete_configurations": "Slett alle konfigurasjonsfiler fra serveren permanent.",
     "database.delete_backups_locally": "Alle sikkerhetskopier vil bli slettet permanent fra lokal lagring.",
-    "warning.sslipdomain": "Konfigurasjonen din er lagret, men sslip-domene med https er <span class='dark:text-red-500 text-red-500 font-bold'>IKKE</span> anbefalt, fordi Let's Encrypt-servere med dette offentlige domenet er hastighetsbegrenset (SSL-sertifikatvalidering vil mislykkes). <br><br>Bruk ditt eget domene i stedet."
+    "warning.sslipdomain": "Konfigurasjonen din er lagret, men sslip-domene med https er <span class='dark:text-red-500 text-red-500 font-bold'>IKKE</span> anbefalt, fordi Let's Encrypt-servere med dette offentlige domenet er hastighetsbegrenset (SSL-sertifikatvalidering vil mislykkes). <br><br>Bruk ditt eget domene i stedet.",
+    "auth.login.oidc": "Logg inn med SSO",
+    "auth.login.zitadel": "Logg inn med Zitadel",
+    "auth.forgot_password_disabled_tooltip": "Tilbakestilling av passord er utilgjengelig fordi transaksjons-e-post (SMTP eller Resend) ikke er konfigurert på denne instansen."
 }

@@ -41,5 +41,10 @@
     "resource.delete_volumes": "Ștergeți definitiv toate volumele asociate cu această resursă.",
     "resource.delete_connected_networks": "Ștergeți definitiv toate rețelele non-predefinite asociate cu această resursă.",
     "resource.delete_configurations": "Ștergeți definitiv toate fișierele de configurare de pe server.",
-    "database.delete_backups_locally": "Toate copiile de rezervă vor fi șterse definitiv din stocarea locală."
+    "database.delete_backups_locally": "Toate copiile de rezervă vor fi șterse definitiv din stocarea locală.",
+    "auth.login.authentik": "Conectare cu Authentik",
+    "auth.login.oidc": "Conectare cu SSO",
+    "auth.login.zitadel": "Conectare cu Zitadel",
+    "auth.forgot_password_disabled_tooltip": "Resetarea parolei nu este disponibilă deoarece e-mailul tranzacțional (SMTP sau Resend) nu este configurat pe această instanță.",
+    "warning.sslipdomain": "Configurația este salvată, dar un domeniu sslip cu https <span class='dark:text-red-500 text-red-500 font-bold'>NU</span> este recomandat, deoarece serverele Let's Encrypt cu acest domeniu public au limită de cereri (validarea certificatului SSL va eșua). <br><br>Folosește propriul domeniu."
 }

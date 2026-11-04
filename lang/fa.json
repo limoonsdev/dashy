@@ -34,5 +34,17 @@
     "input.code": "کد یک‌ بار مصرف",
     "input.recovery_code": "کد بازیابی",
     "button.save": "ذخیره",
-    "repository.url": "<span class='text-helper'>مثال‌ها</span><br>برای مخازن عمومی، از <span class='text-helper'>https://...</span> استفاده کنید.<br>برای مخازن خصوصی، از <span class='text-helper'>git@...</span> استفاده کنید.<br><br>شاخه <span class='text-helper'>main</span> انتخاب خواهد شد.<br>https://github.com/limoonsdev/dashy/tree/nodejs-fastify شاخه <span class='text-helper'>nodejs-fastify</span> انتخاب خواهد شد.<br>https://gitea.com/sedlav/expressjs.git شاخه <span class='text-helper'>main</span> انتخاب خواهد شد.<br>https://gitlab.com/andrasbacsai/nodejs-example.git شاخه <span class='text-helper'>main</span> انتخاب خواهد شد."
+    "repository.url": "<span class='text-helper'>مثال‌ها</span><br>برای مخازن عمومی، از <span class='text-helper'>https://...</span> استفاده کنید.<br>برای مخازن خصوصی، از <span class='text-helper'>git@...</span> استفاده کنید.<br><br>شاخه <span class='text-helper'>main</span> انتخاب خواهد شد.<br>https://github.com/limoonsdev/dashy/tree/nodejs-fastify شاخه <span class='text-helper'>nodejs-fastify</span> انتخاب خواهد شد.<br>https://gitea.com/sedlav/expressjs.git شاخه <span class='text-helper'>main</span> انتخاب خواهد شد.<br>https://gitlab.com/andrasbacsai/nodejs-example.git شاخه <span class='text-helper'>main</span> انتخاب خواهد شد.",
+    "auth.login.authentik": "ورود با Authentik",
+    "auth.login.oidc": "ورود با SSO",
+    "auth.login.zitadel": "ورود با Zitadel",
+    "auth.forgot_password_disabled_tooltip": "بازیابی رمز عبور در دسترس نیست زیرا ایمیل تراکنشی (SMTP یا Resend) در این نمونه پیکربندی نشده است.",
+    "service.stop": "این سرویس متوقف خواهد شد.",
+    "resource.docker_cleanup": "اجرای پاک‌سازی Docker (حذف ایمیج‌های بلااستفاده و کش ساخت).",
+    "resource.non_persistent": "همه داده‌های غیرپایدار حذف خواهند شد.",
+    "resource.delete_volumes": "حذف دائمی همه والیوم‌های مرتبط با این منبع.",
+    "resource.delete_connected_networks": "حذف دائمی همه شبکه‌های غیرپیش‌فرض مرتبط با این منبع.",
+    "resource.delete_configurations": "حذف دائمی همه فایل‌های پیکربندی از سرور.",
+    "database.delete_backups_locally": "همه پشتیبان‌ها برای همیشه از فضای ذخیره‌سازی محلی حذف می‌شوند.",
+    "warning.sslipdomain": "پیکربندی ذخیره شد، اما دامنه sslip با https <span class='dark:text-red-500 text-red-500 font-bold'>توصیه نمی‌شود</span>، زیرا سرورهای Let's Encrypt با این دامنه عمومی محدودیت نرخ دارند (اعتبارسنجی گواهی SSL شکست می‌خورد). <br><br>به‌جای آن از دامنه خودتان استفاده کنید."
 }

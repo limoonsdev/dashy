@@ -36,5 +36,15 @@
     "input.code": "Einmalcode",
     "input.recovery_code": "Wiederherstellungscode",
     "button.save": "Speichern",
-    "repository.url": "<span class='text-helper'>Beispiele</span><br>Für öffentliche Repositories benutze <span class='text-helper'>https://...</span>.<br>Für private Repositories benutze <span class='text-helper'>git@...</span>.<br><br>https://github.com/limoonsdev/dashy <span class='text-helper'>main</span> Branch wird ausgewählt<br>https://github.com/limoonsdev/dashy/tree/nodejs-fastify <span class='text-helper'>nodejs-fastify</span> Branch wird ausgewählt.<br>https://gitea.com/sedlav/expressjs.git <span class='text-helper'>main</span> Branch wird ausgewählt.<br>https://gitlab.com/andrasbacsai/nodejs-example.git <span class='text-helper'>main</span> Branch wird ausgewählt."
+    "repository.url": "<span class='text-helper'>Beispiele</span><br>Für öffentliche Repositories benutze <span class='text-helper'>https://...</span>.<br>Für private Repositories benutze <span class='text-helper'>git@...</span>.<br><br>https://github.com/limoonsdev/dashy <span class='text-helper'>main</span> Branch wird ausgewählt<br>https://github.com/limoonsdev/dashy/tree/nodejs-fastify <span class='text-helper'>nodejs-fastify</span> Branch wird ausgewählt.<br>https://gitea.com/sedlav/expressjs.git <span class='text-helper'>main</span> Branch wird ausgewählt.<br>https://gitlab.com/andrasbacsai/nodejs-example.git <span class='text-helper'>main</span> Branch wird ausgewählt.",
+    "auth.login.authentik": "Mit Authentik anmelden",
+    "auth.forgot_password_disabled_tooltip": "Das Zurücksetzen des Passworts ist nicht verfügbar, weil auf dieser Instanz keine Transaktions-E-Mail (SMTP oder Resend) eingerichtet ist.",
+    "service.stop": "Dieser Dienst wird gestoppt.",
+    "resource.docker_cleanup": "Docker-Bereinigung ausführen (unbenutzte Images und Build-Cache entfernen).",
+    "resource.non_persistent": "Alle nicht persistenten Daten werden gelöscht.",
+    "resource.delete_volumes": "Alle Volumes dieser Ressource endgültig löschen.",
+    "resource.delete_connected_networks": "Alle nicht vordefinierten Netzwerke dieser Ressource endgültig löschen.",
+    "resource.delete_configurations": "Alle Konfigurationsdateien endgültig vom Server löschen.",
+    "database.delete_backups_locally": "Alle Backups werden endgültig aus dem lokalen Speicher gelöscht.",
+    "warning.sslipdomain": "Deine Konfiguration ist gespeichert, aber eine sslip-Domain mit https ist <span class='dark:text-red-500 text-red-500 font-bold'>NICHT</span> empfohlen, weil Let's Encrypt-Server mit dieser öffentlichen Domain rate-limitiert sind (die SSL-Zertifikatsprüfung schlägt fehl). <br><br>Verwende stattdessen deine eigene Domain."
 }

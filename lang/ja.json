@@ -34,5 +34,17 @@
     "input.code": "ワンタイムコード",
     "input.recovery_code": "リカバリーコード",
     "button.save": "保存",
-    "repository.url": "<span class='text-helper'>例</span><br>公開リポジトリの場合は<span class='text-helper'>https://...</span>を使用してください。<br>プライベートリポジトリの場合は<span class='text-helper'>git@...</span>を使用してください。<br><br>https://github.com/limoonsdev/dashy <span class='text-helper'>main</span>ブランチが選択されます<br>https://github.com/limoonsdev/dashy/tree/nodejs-fastify <span class='text-helper'>nodejs-fastify</span>ブランチが選択されます。<br>https://gitea.com/sedlav/expressjs.git <span class='text-helper'>main</span>ブランチが選択されます。<br>https://gitlab.com/andrasbacsai/nodejs-example.git <span class='text-helper'>main</span>ブランチが選択されます。"
+    "repository.url": "<span class='text-helper'>例</span><br>公開リポジトリの場合は<span class='text-helper'>https://...</span>を使用してください。<br>プライベートリポジトリの場合は<span class='text-helper'>git@...</span>を使用してください。<br><br>https://github.com/limoonsdev/dashy <span class='text-helper'>main</span>ブランチが選択されます<br>https://github.com/limoonsdev/dashy/tree/nodejs-fastify <span class='text-helper'>nodejs-fastify</span>ブランチが選択されます。<br>https://gitea.com/sedlav/expressjs.git <span class='text-helper'>main</span>ブランチが選択されます。<br>https://gitlab.com/andrasbacsai/nodejs-example.git <span class='text-helper'>main</span>ブランチが選択されます。",
+    "auth.login.authentik": "Authentik でログイン",
+    "auth.login.oidc": "SSO でログイン",
+    "auth.login.zitadel": "Zitadel でログイン",
+    "auth.forgot_password_disabled_tooltip": "このインスタンスではトランザクションメール（SMTP または Resend）が設定されていないため、パスワードのリセットは利用できません。",
+    "service.stop": "このサービスは停止されます。",
+    "resource.docker_cleanup": "Docker クリーンアップを実行（未使用のイメージとビルドキャッシュを削除）。",
+    "resource.non_persistent": "永続化されていないデータはすべて削除されます。",
+    "resource.delete_volumes": "このリソースに関連するすべてのボリュームを完全に削除します。",
+    "resource.delete_connected_networks": "このリソースに関連する定義済み以外のネットワークをすべて完全に削除します。",
+    "resource.delete_configurations": "サーバー上のすべての設定ファイルを完全に削除します。",
+    "database.delete_backups_locally": "すべてのバックアップがローカルストレージから完全に削除されます。",
+    "warning.sslipdomain": "設定は保存されましたが、https 付きの sslip ドメインは<span class='dark:text-red-500 text-red-500 font-bold'>推奨されません</span>。この公開ドメインを使う Let's Encrypt サーバーはレート制限があり、SSL 証明書の検証に失敗します。<br><br>代わりに独自ドメインを使用してください。"
 }

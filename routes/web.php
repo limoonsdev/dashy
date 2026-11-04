@@ -592,6 +592,17 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/security/api-tokens', ApiTokens::class)->name('security.api-tokens');
 });
 
+// Language picker. GET so it also works on the signed-out screens; the only
+// effect is a session value that the SetLocale middleware validates.
+Route::get('/locale/{locale}', function (string $locale) {
+    abort_unless(array_key_exists($locale, (array) config('locales.supported', [])), 404);
+
+    session(['locale' => $locale]);
+    app()->setLocale($locale);
+
+    return back();
+})->name('locale.switch')->where('locale', '[a-z]{2}(-[a-z]{2})?');
+
 // Read-only module shares. The token lives in the record payload and can be
 // revoked from the Workspace page.
 Route::get('/share/{token}', function (string $token) {

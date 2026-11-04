@@ -34,5 +34,17 @@
     "input.code": "One-time code",
     "input.recovery_code": "Mã khôi phục",
     "button.save": "Lưu",
-    "repository.url": "<span class='text-helper'>Ví dụ</span><br>Với repo công khai, sử dụng <span class='text-helper'>https://...</span>.<br>Với repo riêng tư, sử dụng <span class='text-helper'>git@...</span>.<br><br>https://github.com/limoonsdev/dashy <span class='text-helper'>nhánh chính</span> sẽ được chọn<br>https://github.com/limoonsdev/dashy/tree/nodejs-fastify <span class='text-helper'>nhánh nodejs-fastify</span> sẽ được chọn.<br>https://gitea.com/sedlav/expressjs.git <span class='text-helper'>nhánh chính</span> sẽ được chọn.<br>https://gitlab.com/andrasbacsai/nodejs-example.git <span class='text-helper'>nhánh chính</span> sẽ được chọn."
+    "repository.url": "<span class='text-helper'>Ví dụ</span><br>Với repo công khai, sử dụng <span class='text-helper'>https://...</span>.<br>Với repo riêng tư, sử dụng <span class='text-helper'>git@...</span>.<br><br>https://github.com/limoonsdev/dashy <span class='text-helper'>nhánh chính</span> sẽ được chọn<br>https://github.com/limoonsdev/dashy/tree/nodejs-fastify <span class='text-helper'>nhánh nodejs-fastify</span> sẽ được chọn.<br>https://gitea.com/sedlav/expressjs.git <span class='text-helper'>nhánh chính</span> sẽ được chọn.<br>https://gitlab.com/andrasbacsai/nodejs-example.git <span class='text-helper'>nhánh chính</span> sẽ được chọn.",
+    "auth.login.authentik": "Đăng nhập bằng Authentik",
+    "auth.login.oidc": "Đăng nhập bằng SSO",
+    "auth.login.zitadel": "Đăng nhập bằng Zitadel",
+    "auth.forgot_password_disabled_tooltip": "Không thể đặt lại mật khẩu vì email giao dịch (SMTP hoặc Resend) chưa được cấu hình trên phiên bản này.",
+    "service.stop": "Dịch vụ này sẽ bị dừng.",
+    "resource.docker_cleanup": "Chạy dọn dẹp Docker (xóa image không dùng và bộ nhớ đệm build).",
+    "resource.non_persistent": "Toàn bộ dữ liệu không lưu trữ lâu dài sẽ bị xóa.",
+    "resource.delete_volumes": "Xóa vĩnh viễn mọi volume gắn với tài nguyên này.",
+    "resource.delete_connected_networks": "Xóa vĩnh viễn mọi mạng không phải mặc định gắn với tài nguyên này.",
+    "resource.delete_configurations": "Xóa vĩnh viễn mọi tệp cấu hình khỏi máy chủ.",
+    "database.delete_backups_locally": "Mọi bản sao lưu sẽ bị xóa vĩnh viễn khỏi lưu trữ cục bộ.",
+    "warning.sslipdomain": "Cấu hình đã được lưu, nhưng tên miền sslip với https <span class='dark:text-red-500 text-red-500 font-bold'>KHÔNG</span> được khuyến nghị, vì máy chủ Let's Encrypt với tên miền công khai này bị giới hạn tần suất (xác thực chứng chỉ SSL sẽ thất bại). <br><br>Hãy dùng tên miền riêng của bạn."
 }

@@ -44,5 +44,7 @@
     "resource.delete_connected_networks": "Excluir permanentemente todas as redes não predefinidas associadas a este recurso.",
     "resource.delete_configurations": "Excluir permanentemente todos os arquivos de configuração do servidor.",
     "database.delete_backups_locally": "Todos os backups serão excluídos permanentemente do armazenamento local.",
-    "warning.sslipdomain": "Sua configuração foi salva, mas o domínio sslip com https <span class='dark:text-red-500 text-red-500 font-bold'>NÃO</span> é recomendado, porque os servidores do Let's Encrypt com este domínio público têm limitação de taxa (a validação do certificado SSL falhará). <br><br>Use seu próprio domínio em vez disso."
+    "warning.sslipdomain": "Sua configuração foi salva, mas o domínio sslip com https <span class='dark:text-red-500 text-red-500 font-bold'>NÃO</span> é recomendado, porque os servidores do Let's Encrypt com este domínio público têm limitação de taxa (a validação do certificado SSL falhará). <br><br>Use seu próprio domínio em vez disso.",
+    "auth.login.oidc": "Entrar com SSO",
+    "auth.forgot_password_disabled_tooltip": "A redefinição de palavra-passe não está disponível porque o email transacional (SMTP ou Resend) não está configurado nesta instância."
 }

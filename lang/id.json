@@ -43,5 +43,8 @@
     "resource.delete_connected_networks": "Hapus permanen semua jaringan non-predefined yang terkait dengan sumber daya ini.",
     "resource.delete_configurations": "Hapus permanen semua file konfigurasi dari server.",
     "database.delete_backups_locally": "Semua backup akan dihapus permanen dari penyimpanan lokal.",
-    "warning.sslipdomain": "Konfigurasi Anda disimpan, tetapi domain sslip dengan https <span class='font-bold text-red-500 dark:text-red-500'>TIDAK</span> direkomendasikan, karena server Let's Encrypt dengan domain publik ini dibatasi (validasi sertifikat SSL akan gagal). <br><br>Gunakan domain Anda sendiri sebagai gantinya."
+    "warning.sslipdomain": "Konfigurasi Anda disimpan, tetapi domain sslip dengan https <span class='font-bold text-red-500 dark:text-red-500'>TIDAK</span> direkomendasikan, karena server Let's Encrypt dengan domain publik ini dibatasi (validasi sertifikat SSL akan gagal). <br><br>Gunakan domain Anda sendiri sebagai gantinya.",
+    "auth.login.oidc": "Masuk dengan SSO",
+    "auth.login.zitadel": "Masuk dengan Zitadel",
+    "auth.forgot_password_disabled_tooltip": "Reset kata sandi tidak tersedia karena email transaksional (SMTP atau Resend) belum dikonfigurasi pada instans ini."
 }

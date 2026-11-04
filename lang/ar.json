@@ -43,5 +43,8 @@
     "resource.delete_connected_networks": "حذف جميع الشبكات غير المحددة مسبقًا والمرتبطة بهذا المورد بشكل دائم.",
     "resource.delete_configurations": "حذف جميع ملفات التعريف من الخادم بشكل دائم.",
     "database.delete_backups_locally": "حذف كافة النسخ الاحتياطية نهائيًا من التخزين المحلي.",
-    "warning.sslipdomain": "تم حفظ ملفات التعريف الخاصة بك، ولكن استخدام نطاق sslip مع https <span class='dark:text-red-500 text-red-500 font-bold'>غير</span> مستحسن، لأن خوادم Let's Encrypt مع هذا النطاق العام محدودة المعدل (ستفشل عملية التحقق من شهادة SSL). <br><br>استخدم نطاقك الخاص بدلاً من ذلك."
+    "warning.sslipdomain": "تم حفظ ملفات التعريف الخاصة بك، ولكن استخدام نطاق sslip مع https <span class='dark:text-red-500 text-red-500 font-bold'>غير</span> مستحسن، لأن خوادم Let's Encrypt مع هذا النطاق العام محدودة المعدل (ستفشل عملية التحقق من شهادة SSL). <br><br>استخدم نطاقك الخاص بدلاً من ذلك.",
+    "auth.login.oidc": "تسجيل الدخول عبر SSO",
+    "auth.login.zitadel": "تسجيل الدخول عبر Zitadel",
+    "auth.forgot_password_disabled_tooltip": "إعادة تعيين كلمة المرور غير متاحة لأن البريد الإلكتروني المعاملاتي (SMTP أو Resend) غير مُهيأ على هذا المثيل."
 }

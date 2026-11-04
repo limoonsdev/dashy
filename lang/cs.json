@@ -34,5 +34,17 @@
     "input.code": "Jednorázový kód",
     "input.recovery_code": "Obnovovací kód",
     "button.save": "Uložit",
-    "repository.url": "<span class='text-helper'>Příklady</span><br>Pro veřejné repozitáře, použijte <span class='text-helper'>https://...</span>.<br>Pro soukromé repozitáře, použijte <span class='text-helper'>git@...</span>.<br><br>https://github.com/limoonsdev/dashy <span class='text-helper'>main</span> branch bude zvolena<br>https://github.com/limoonsdev/dashy/tree/nodejs-fastify <span class='text-helper'>nodejs-fastify</span> branch bude vybrána.<br>https://gitea.com/sedlav/expressjs.git <span class='text-helper'>main</span> branch vybrána.<br>https://gitlab.com/andrasbacsai/nodejs-example.git <span class='text-helper'>main</span> branch bude vybrána."
+    "repository.url": "<span class='text-helper'>Příklady</span><br>Pro veřejné repozitáře, použijte <span class='text-helper'>https://...</span>.<br>Pro soukromé repozitáře, použijte <span class='text-helper'>git@...</span>.<br><br>https://github.com/limoonsdev/dashy <span class='text-helper'>main</span> branch bude zvolena<br>https://github.com/limoonsdev/dashy/tree/nodejs-fastify <span class='text-helper'>nodejs-fastify</span> branch bude vybrána.<br>https://gitea.com/sedlav/expressjs.git <span class='text-helper'>main</span> branch vybrána.<br>https://gitlab.com/andrasbacsai/nodejs-example.git <span class='text-helper'>main</span> branch bude vybrána.",
+    "auth.login.authentik": "Přihlásit se přes Authentik",
+    "auth.login.oidc": "Přihlásit se přes SSO",
+    "auth.login.zitadel": "Přihlásit se přes Zitadel",
+    "auth.forgot_password_disabled_tooltip": "Obnovení hesla není dostupné, protože na této instanci není nastaven transakční e-mail (SMTP nebo Resend).",
+    "service.stop": "Tato služba bude zastavena.",
+    "resource.docker_cleanup": "Spustit čištění Dockeru (odstranit nepoužívané obrazy a mezipaměť sestavování).",
+    "resource.non_persistent": "Všechna neperzistentní data budou smazána.",
+    "resource.delete_volumes": "Trvale smazat všechny svazky spojené s tímto prostředkem.",
+    "resource.delete_connected_networks": "Trvale smazat všechny nepředdefinované sítě spojené s tímto prostředkem.",
+    "resource.delete_configurations": "Trvale smazat všechny konfigurační soubory ze serveru.",
+    "database.delete_backups_locally": "Všechny zálohy budou trvale smazány z místního úložiště.",
+    "warning.sslipdomain": "Konfigurace je uložena, ale doména sslip s https <span class='dark:text-red-500 text-red-500 font-bold'>NENÍ</span> doporučena, protože servery Let's Encrypt s touto veřejnou doménou mají omezenou rychlost požadavků (ověření SSL certifikátu selže). <br><br>Použijte raději vlastní doménu."
 }

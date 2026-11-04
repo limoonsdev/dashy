@@ -44,5 +44,7 @@
     "resource.delete_connected_networks": "永久删除与此资源关联的所有非预定义网络。",
     "resource.delete_configurations": "永久删除服务器上的所有配置文件。",
     "database.delete_backups_locally": "所有备份将从本地存储中永久删除。",
-    "warning.sslipdomain": "您的配置已保存，但不建议将 sslip 域与 https 一起使用，因为 Let's Encrypt 服务器对此公共域有速率限制（SSL 证书验证将失败）。<br><br>请改用您自己的域名。"
+    "warning.sslipdomain": "您的配置已保存，但不建议将 sslip 域与 https 一起使用，因为 Let's Encrypt 服务器对此公共域有速率限制（SSL 证书验证将失败）。<br><br>请改用您自己的域名。",
+    "auth.login.oidc": "使用 SSO 登录",
+    "auth.forgot_password_disabled_tooltip": "无法重置密码，因为此实例未配置事务邮件（SMTP 或 Resend）。"
 }

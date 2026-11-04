@@ -25,6 +25,7 @@ use App\Http\Middleware\RequireTwoFactor;
 use App\Http\Middleware\RequirePassword;
 use App\Http\Middleware\RequireTeamTwoFactor;
 use App\Http\Middleware\SecurityHeaders;
+use App\Http\Middleware\SetLocale;
 use App\Http\Middleware\TrimStrings;
 use App\Http\Middleware\TrustProxies;
 use App\Http\Middleware\ValidateSignature;
@@ -88,6 +89,7 @@ class Kernel extends HttpKernel
             DecideWhatToDoWithUser::class,
             RequireTeamTwoFactor::class,
             RequireTwoFactor::class,
+            SetLocale::class,
             SecurityHeaders::class,
 
         ],

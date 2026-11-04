@@ -43,5 +43,8 @@
     "resource.delete_connected_networks": "Supprimer définitivement tous les réseaux non-prédéfinis associés à cette ressource.",
     "resource.delete_configurations": "Supprimer définitivement tous les fichiers de configuration du serveur.",
     "database.delete_backups_locally": "Toutes les sauvegardes seront définitivement supprimées du stockage local.",
-    "warning.sslipdomain": "Votre configuration est enregistrée, mais l'utilisation du domaine sslip avec https <span class='dark:text-red-500 text-red-500 font-bold'>N'EST PAS</span> recommandée, car les serveurs Let's Encrypt avec ce domaine public sont limités en taux (la validation du certificat SSL échouera). <br><br>Utilisez plutôt votre propre domaine."
+    "warning.sslipdomain": "Votre configuration est enregistrée, mais l'utilisation du domaine sslip avec https <span class='dark:text-red-500 text-red-500 font-bold'>N'EST PAS</span> recommandée, car les serveurs Let's Encrypt avec ce domaine public sont limités en taux (la validation du certificat SSL échouera). <br><br>Utilisez plutôt votre propre domaine.",
+    "auth.login.oidc": "Connexion avec SSO",
+    "auth.login.zitadel": "Connexion avec Zitadel",
+    "auth.forgot_password_disabled_tooltip": "La réinitialisation du mot de passe est indisponible car l'e-mail transactionnel (SMTP ou Resend) n'est pas configuré sur cette instance."
 }

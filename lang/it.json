@@ -43,5 +43,8 @@
     "resource.delete_connected_networks": "Elimina definitivamente tutte le reti non predefinite associate a questa risorsa.",
     "resource.delete_configurations": "Elimina definitivamente tutti i file di configurazione dal server.",
     "database.delete_backups_locally": "Tutti i backup verranno eliminati definitivamente dall'archiviazione locale.",
-    "warning.sslipdomain": "La tua configurazione è stata salvata, ma il dominio sslip con https <span class='dark:text-red-500 text-red-500 font-bold'>NON</span> è raccomandato, poiché i server di Let's Encrypt con questo dominio pubblico hanno limitazioni di frequenza (la convalida del certificato SSL fallirà). <br><br>Utilizza invece il tuo dominio personale."
+    "warning.sslipdomain": "La tua configurazione è stata salvata, ma il dominio sslip con https <span class='dark:text-red-500 text-red-500 font-bold'>NON</span> è raccomandato, poiché i server di Let's Encrypt con questo dominio pubblico hanno limitazioni di frequenza (la convalida del certificato SSL fallirà). <br><br>Utilizza invece il tuo dominio personale.",
+    "auth.login.oidc": "Accedi con SSO",
+    "auth.login.zitadel": "Accedi con Zitadel",
+    "auth.forgot_password_disabled_tooltip": "La reimpostazione della password non è disponibile perché l'email transazionale (SMTP o Resend) non è configurata su questa istanza."
 }

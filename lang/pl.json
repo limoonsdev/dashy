@@ -45,5 +45,6 @@
     "resource.delete_connected_networks": "Trwale usuń wszystkie niepredefiniowane sieci powiązane z tym zasobem.",
     "resource.delete_configurations": "Trwale usuń wszystkie pliki konfiguracyjne z serwera.",
     "database.delete_backups_locally": "Wszystkie backupy zostaną trwale usunięte z lokalnej pamięci.",
-    "warning.sslipdomain": "Twoja konfiguracja została zapisana, lecz domena sslip z https jest <span class='dark:text-red-500 text-red-500 font-bold'>NIEZALECANA</span>, ponieważ serwery Let's Encrypt z tą publiczną domeną są pod rate limitem (walidacja certyfikatu SSL certificate się nie powiedzie). <br><br>Lepiej użyj własnej domeny."
+    "warning.sslipdomain": "Twoja konfiguracja została zapisana, lecz domena sslip z https jest <span class='dark:text-red-500 text-red-500 font-bold'>NIEZALECANA</span>, ponieważ serwery Let's Encrypt z tą publiczną domeną są pod rate limitem (walidacja certyfikatu SSL certificate się nie powiedzie). <br><br>Lepiej użyj własnej domeny.",
+    "auth.forgot_password_disabled_tooltip": "Resetowanie hasła jest niedostępne, ponieważ na tej instancji nie skonfigurowano poczty transakcyjnej (SMTP lub Resend)."
 }

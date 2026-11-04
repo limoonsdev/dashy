@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html data-theme="dark" lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html data-theme="dark" lang="{{ str_replace('_', '-', app()->getLocale()) }}"
+    dir="{{ data_get(config('locales.supported.'.app()->getLocale()), 'rtl') ? 'rtl' : 'ltr' }}">
 <script data-navigate-once>
     // Immediate theme application - runs before any rendering
     (function () {
