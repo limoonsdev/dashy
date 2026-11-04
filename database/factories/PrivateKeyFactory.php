@@ -1,0 +1,31 @@
+<?php
+
+namespace Database\Factories;
+
+use App\Models\PrivateKey;
+use App\Models\Team;
+use Illuminate\Database\Eloquent\Factories\Factory;
+
+/**
+ * @extends Factory<PrivateKey>
+ */
+class PrivateKeyFactory extends Factory
+{
+    protected $model = PrivateKey::class;
+
+    public function definition(): array
+    {
+        return [
+            'name' => fake()->words(2, true),
+            'description' => fake()->sentence(),
+            'private_key' => $this->privateKey(),
+            'team_id' => Team::factory(),
+            'is_git_related' => false,
+        ];
+    }
+
+    private function privateKey(): string
+    {
+        return generateSSHKey('ed25519')['private'];
+    }
+}

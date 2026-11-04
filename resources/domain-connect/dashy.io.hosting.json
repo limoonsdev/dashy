@@ -1,0 +1,20 @@
+{
+    "providerId": "dashy.io",
+    "providerName": "Dashy",
+    "serviceId": "hosting",
+    "serviceName": "Dashy Hosting",
+    "version": 1,
+    "logoUrl": "https://dashy.io/dashy-transparent.png",
+    "description": "Point your domain to a Dashy-managed server via an A record.",
+    "variableDescription": "ip is the Dashy server IP. host is the subdomain relative to the zone (empty for apex).",
+    "syncPubKeyDomain": "domainconnect.dashy.io",
+    "syncBlock": false,
+    "records": [
+        {
+            "type": "A",
+            "host": "%host%",
+            "pointsTo": "%ip%",
+            "ttl": 3600
+        }
+    ]
+}

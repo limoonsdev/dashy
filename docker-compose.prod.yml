@@ -1,0 +1,102 @@
+services:
+  # Placeholder for "soketi" overrides in docker-compose.custom.yml from versions before 4.4.
+  # Realtime runs inside the dashy container now. Without this entry, such an override is an
+  # incomplete service and every upgrade fails. Zero replicas means it never starts, and
+  # "docker compose up" removes the old dashy-realtime container (an inactive profile keeps it).
+  # It uses the dashy image, so install and upgrade do not pull another image.
+  soketi:
+    image: "${REGISTRY_URL:-docker.io}/dashyapp/dashy:${LATEST_IMAGE:-latest}"
+    deploy:
+      replicas: 0
+  dashy:
+    image: "${REGISTRY_URL:-docker.io}/dashyapp/dashy:${LATEST_IMAGE:-latest}"
+    volumes:
+      - type: bind
+        source: /data/dashy/source/.env
+        target: /var/www/html/.env
+        read_only: true
+      - /data/dashy/ssh:/var/www/html/storage/app/ssh
+      - /data/dashy/applications:/var/www/html/storage/app/applications
+      - /data/dashy/databases:/var/www/html/storage/app/databases
+      - /data/dashy/services:/var/www/html/storage/app/services
+      - /data/dashy/backups:/var/www/html/storage/app/backups
+      - /data/dashy/images:/var/www/html/storage/app/images
+    environment:
+      - APP_ENV=${APP_ENV:-production}
+      - PHP_MEMORY_LIMIT=${PHP_MEMORY_LIMIT:-256M}
+      - PHP_FPM_PM_CONTROL=${PHP_FPM_PM_CONTROL:-dynamic}
+      - PHP_FPM_PM_START_SERVERS=${PHP_FPM_PM_START_SERVERS:-1}
+      - PHP_FPM_PM_MIN_SPARE_SERVERS=${PHP_FPM_PM_MIN_SPARE_SERVERS:-1}
+      - PHP_FPM_PM_MAX_CHILDREN=${PHP_FPM_PM_MAX_CHILDREN:-5}
+      - PHP_FPM_PM_MAX_SPARE_SERVERS=${PHP_FPM_PM_MAX_SPARE_SERVERS:-3}
+      - PUSHER_BACKEND_PORT=${PUSHER_BACKEND_PORT:-6001}
+    env_file:
+      - /data/dashy/source/.env
+    ports:
+      - "${APP_PORT:-8000}:8080"
+      - "${REVERB_PORT:-${SOKETI_PORT:-6001}}:6001"
+      - "6002:6002"
+    expose:
+      - "${APP_PORT:-8000}"
+      - "6001"
+      - "6002"
+    networks:
+      dashy:
+        # Realtime ran in the dashy-realtime container before 4.4; keep the name for existing proxy upstreams.
+        aliases:
+          - dashy-realtime
+    # A small worker pool (5 children) is enough for the dashboard, and each
+    # child carries a full PHP process. The cap keeps a runaway request from
+    # starving the apps deployed on the same host.
+    mem_limit: ${DASHY_APP_MEMORY:-1g}
+    healthcheck:
+      test: curl --fail http://127.0.0.1:8080/api/health && curl --fail http://127.0.0.1:${PUSHER_BACKEND_PORT:-6001}/up || exit 1
+      interval: 5s
+      retries: 24
+      start_period: 1m
+      timeout: 2s
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+  postgres:
+    # Trimmed from the upstream defaults: 64MB of shared buffers is plenty for
+    # the control-plane tables, and a 50-connection ceiling avoids a per-
+    # connection memory bill on small hosts.
+    command: postgres -c shared_buffers=64MB -c effective_cache_size=256MB -c work_mem=4MB -c maintenance_work_mem=64MB -c max_connections=50 -c wal_compression=on
+    mem_limit: ${DASHY_DB_MEMORY:-512m}
+    volumes:
+      - dashy-db:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: "${DB_USERNAME}"
+      POSTGRES_PASSWORD: "${DB_PASSWORD}"
+      POSTGRES_DB: "${DB_DATABASE:-dashy}"
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${DB_USERNAME}", "-d", "${DB_DATABASE:-dashy}" ]
+      interval: 5s
+      retries: 10
+      timeout: 2s
+  redis:
+    # volatile-lru only evicts keys that carry a TTL (cache, sessions), so
+    # queued jobs survive even when the cache fills up.
+    command: redis-server --save 20 1 --loglevel warning --requirepass ${REDIS_PASSWORD} --maxmemory ${DASHY_REDIS_MAXMEMORY:-128mb} --maxmemory-policy volatile-lru
+    mem_limit: ${DASHY_REDIS_MEMORY:-192m}
+    environment:
+      REDIS_PASSWORD: "${REDIS_PASSWORD}"
+    volumes:
+      - dashy-redis:/data
+    healthcheck:
+      test: redis-cli ping
+      interval: 5s
+      retries: 10
+      timeout: 2s
+volumes:
+  dashy-db:
+    name: dashy-db
+  dashy-redis:
+    name: dashy-redis
+
+networks:
+  dashy:
+    external: true

@@ -1,0 +1,32 @@
+services:
+    dashy:
+        container_name: dashy
+        restart: always
+        working_dir: /var/www/html
+        extra_hosts:
+            - host.docker.internal:host-gateway
+        expose:
+            - "6001"
+            - "6002"
+        networks:
+            - dashy
+        depends_on:
+            - postgres
+            - redis
+    postgres:
+        image: postgres:15-alpine
+        container_name: dashy-db
+        restart: always
+        networks:
+            - dashy
+    redis:
+        image: redis:7-alpine
+        container_name: dashy-redis
+        restart: always
+        networks:
+            - dashy
+networks:
+    dashy:
+        name: dashy
+        driver: bridge
+        external: false

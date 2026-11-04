@@ -1,0 +1,11 @@
+services:
+    dashy-bot:
+        build: .
+        container_name: dashy-bot
+        restart: unless-stopped
+        env_file:
+            - .env
+        ports:
+            - "${BOT_PORT:-8787}:8787"
+        # The bot is stateless: no volumes, no database, no queue worker.
+        mem_limit: ${BOT_MEMORY:-128m}

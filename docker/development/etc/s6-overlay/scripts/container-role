@@ -1,0 +1,26 @@
+#!/bin/sh
+
+dashy_container_role_value() {
+    role="${DASHY_CONTAINER_ROLE:-}"
+
+    if [ -z "$role" ]; then
+        role="$(grep -E '^DASHY_CONTAINER_ROLE=' .env 2>/dev/null | tail -n1 | cut -d= -f2- | tr -d '"' | tr -d "'")"
+    fi
+
+    printf '%s\n' "${role:-all}"
+}
+
+dashy_container_has_role() {
+    wanted_role="$1"
+    roles="$(dashy_container_role_value | tr '[:upper:]' '[:lower:]' | tr ',' ' ')"
+
+    for role in $roles; do
+        case "$role" in
+            all|"$wanted_role")
+                return 0
+                ;;
+        esac
+    done
+
+    return 1
+}
